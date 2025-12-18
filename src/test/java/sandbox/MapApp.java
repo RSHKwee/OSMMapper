@@ -1,4 +1,4 @@
-package osmmapper;
+package sandbox;
 
 import org.openstreetmap.gui.jmapviewer.*;
 import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource;
