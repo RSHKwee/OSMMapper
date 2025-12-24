@@ -36,5 +36,20 @@
             <version>2.16</version>
         </dependency>
         -->
+        <dependency>
+          <groupId>org.apache.poi</groupId>
+          <artifactId>poi</artifactId>
+          <version>5.2.5</version>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.poi</groupId>
+          <artifactId>poi-ooxml</artifactId>
+          <version>5.2.5</version>
+       </dependency>
+        <dependency>
+        	<groupId>kwee</groupId>
+        	<artifactId>library</artifactId>
+        	<version>1.1.0.3</version>
+        </dependency>
     </dependencies>
 </project>

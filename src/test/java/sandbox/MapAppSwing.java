@@ -1,4 +1,4 @@
-package osmmapper;
+package sandbox;
 
 import java.awt.BorderLayout;
 
