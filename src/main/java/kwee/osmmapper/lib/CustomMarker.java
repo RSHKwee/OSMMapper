@@ -1,4 +1,4 @@
-package osmmapper;
+package kwee.osmmapper.lib;
 
 import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
 import java.awt.Color;

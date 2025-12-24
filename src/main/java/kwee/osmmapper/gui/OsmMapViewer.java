@@ -1,4 +1,4 @@
-package osmmapper;
+package kwee.osmmapper.gui;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -7,6 +7,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+
+import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import org.openstreetmap.gui.jmapviewer.JMapViewerTree;
 import org.openstreetmap.gui.jmapviewer.OsmTileLoader;
@@ -16,16 +18,20 @@ import org.openstreetmap.gui.jmapviewer.interfaces.JMapViewerEventListener;
 import org.openstreetmap.gui.jmapviewer.interfaces.MapMarker;
 import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource;
 
+import kwee.osmmapper.lib.CustomMarker;
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JOptionPane;
 import javax.swing.BorderFactory;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 
@@ -43,6 +49,10 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
   private JLabel mperpLabelValue;
   private JLabel statusLabel;
 
+  private double totLongtitude = 0.0;
+  private double totLatitude = 0.0;
+  private int totalMarkers = 0;
+
   public OsmMapViewer() {
     super("OSM Map Viewer");
     treeMap = new JMapViewerTree("Locaties");
@@ -59,6 +69,11 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
     setupMarkerInteraction();
     enableMarkerTooltips();
     addSampleMarkers();
+
+    double lat = totLatitude / totalMarkers;
+    double lon = totLongtitude / totalMarkers;
+    map().setDisplayPosition(new Coordinate(lat, lon), 15);
+    updateZoomParameters();
 
     treeMap.setTreeVisible(true);
     add(treeMap, BorderLayout.CENTER);
@@ -105,10 +120,6 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
     return treeMap.getViewer();
   }
 
-  public static void main(String[] args) {
-    new OsmMapViewer().setVisible(true);
-  }
-
   private void updateZoomParameters() {
     if (mperpLabelValue != null)
       mperpLabelValue.setText(String.format("%s", map().getMeterPerPixel()));
@@ -130,6 +141,9 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
   public void addCustomMarker(double lat, double lon, String title, String description, String extraInfo, Color color) {
     CustomMarker marker = new CustomMarker(lat, lon, title, description, extraInfo, color);
     map().addMapMarker(marker);
+    totLongtitude = totLongtitude + lon;
+    totLatitude = totLatitude + lat;
+    totalMarkers++;
   }
 
   /**
@@ -208,10 +222,10 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
           }
           // Maak titel en extra informatie
           String title = houseNumber;
-          String description = "Adres in " + city;
-          String extraInfo = String.format(
-              "Straat: %s\nHuisnummer: %s\nPostcode: %s\nPlaats: %s\n %s\nCoördinaten: %.6f, %.6f", street, houseNumber,
-              postcode, city, sNameDetail, latitude, longitude);
+          // String description = "Adres in " + city;
+          String description = String.format("Adres: %s %s\nPostcode: %s\nPlaats: %s", street, houseNumber, postcode,
+              city);
+          String extraInfo = String.format(" %s\nCoördinaten: %.6f, %.6f", sNameDetail, latitude, longitude);
 
           // Bepaal kleur op basis van rij index (voor variatie)
           Color color;
@@ -307,10 +321,9 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
             for (MapMarker marker : map().getMapMarkerList()) {
               double markerLat = marker.getLat();
               double markerLon = marker.getLon();
-
               double distance = Math.sqrt(Math.pow(lat - markerLat, 2) + Math.pow(lon - markerLon, 2));
 
-              if (distance < 0.01 && distance < minDistance) {
+              if (distance < 0.005 && distance < minDistance) {
                 minDistance = distance;
                 clickedMarker = marker;
               }
@@ -383,7 +396,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
 
             double distance = Math.sqrt(Math.pow(lat - markerLat, 2) + Math.pow(lon - markerLon, 2));
 
-            if (distance < 0.003) {
+            if (distance < 0.0003) {
               // Set tooltip voor de kaart
               if (marker instanceof CustomMarker) {
                 CustomMarker customMarker = (CustomMarker) marker;
