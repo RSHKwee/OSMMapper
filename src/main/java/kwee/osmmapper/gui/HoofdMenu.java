@@ -1,10 +1,9 @@
 package kwee.osmmapper.gui;
 
-//HOOFDMENU.java - ALLES wat je nodig hebt
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
+
+import kwee.osmmapper.lib.KaartController;
 
 public class HoofdMenu {
   private JFrame hoofdFrame;
@@ -14,7 +13,7 @@ public class HoofdMenu {
     SwingUtilities.invokeLater(() -> new HoofdMenu().start());
   }
 
-  private void start() {
+  public void start() {
     hoofdFrame = new JFrame("Kaart Applicatie");
     hoofdFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     hoofdFrame.setSize(1000, 700);
@@ -75,69 +74,5 @@ public class HoofdMenu {
     panel.add(new JScrollPane(logArea), BorderLayout.CENTER);
 
     return panel;
-  }
-}
-
-//KAARTCONTROLLER.java - Vereenvoudigd
-class KaartController {
-  private JTabbedPane kaartTabPane;
-  private Map<String, OsmMapViewer> kaarten;
-
-  public KaartController(JPanel container) {
-    this.kaartTabPane = new JTabbedPane();
-    this.kaarten = new HashMap<>();
-
-    container.setLayout(new BorderLayout());
-    container.add(kaartTabPane, BorderLayout.CENTER);
-
-    String inputFile = "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\Hoevelaken-adressenlijst_met_coordinaten.xlsx";
-    String subtottitel = " Koophuizen";
-
-    String warmteFile = "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\Hoevelaken-warmtescan_met_coordinaten_new.xlsx";
-    String subtitel = " Warmtescan";
-
-    // Voeg standaard kaart toe
-    voegKaartToe(inputFile, subtottitel, 52.1326, 5.2913, 7);
-    voegKaartToe(warmteFile, subtitel, 52.1326, 5.2913, 7);
-  }
-
-  public void voegKaartToe(String fileNaam, String naam, double lat, double lon, int zoom) {
-    try {
-      // Maak nieuwe kaart
-      OsmMapViewer kaart = new OsmMapViewer(fileNaam, naam);
-      kaart.setVisible(false); // CRITIEK!
-
-      // Maak container panel
-      JPanel kaartContainer = new JPanel(new BorderLayout());
-      kaartContainer.add(kaart.getContentPane(), BorderLayout.CENTER);
-
-      // Voeg toe aan tabblad
-      kaartTabPane.addTab(naam, kaartContainer);
-      kaarten.put(naam, kaart);
-
-      System.out.println("Kaart toegevoegd: " + naam);
-
-    } catch (Exception e) {
-      System.err.println("Fout bij aanmaken kaart: " + e.getMessage());
-    }
-  }
-
-  public void toonKaart(String naam) {
-    for (int i = 0; i < kaartTabPane.getTabCount(); i++) {
-      if (kaartTabPane.getTitleAt(i).equals(naam)) {
-        kaartTabPane.setSelectedIndex(i);
-        System.out.println("Kaart getoond: " + naam);
-        return;
-      }
-    }
-    System.out.println("Kaart niet gevonden: " + naam);
-  }
-
-  public String[] getKaartNamen() {
-    String[] namen = new String[kaartTabPane.getTabCount()];
-    for (int i = 0; i < namen.length; i++) {
-      namen[i] = kaartTabPane.getTitleAt(i);
-    }
-    return namen;
   }
 }

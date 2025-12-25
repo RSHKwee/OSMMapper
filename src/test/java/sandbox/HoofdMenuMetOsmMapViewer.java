@@ -1,6 +1,9 @@
-package kwee.osmmapper.gui;
+package sandbox;
 
 import javax.swing.*;
+
+import kwee.osmmapper.gui.OsmMapViewer;
+
 import java.awt.*;
 
 public class HoofdMenuMetOsmMapViewer {

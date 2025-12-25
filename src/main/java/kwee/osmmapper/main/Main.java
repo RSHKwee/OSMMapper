@@ -1,15 +1,18 @@
 package kwee.osmmapper.main;
 
-import kwee.osmmapper.gui.OsmMapViewer;
+import javax.swing.SwingUtilities;
+
+import kwee.osmmapper.gui.HoofdMenu;
 
 public class Main {
-  public static void main(String[] args) {
-    // String inputFile =
-    // "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\Hoevelaken-adressenlijst_met_coordinaten.xlsx";
-    // String subtitel = " Koophuizen";
+  // String inputFile =
+  // "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\Hoevelaken-adressenlijst_met_coordinaten.xlsx";
+  // String subtitel = " Koophuizen";
 
-    String inputFile = "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\Hoevelaken-warmtescan_met_coordinaten_new.xlsx";
-    String subtitel = " Warmtescan";
-    new OsmMapViewer(inputFile, subtitel).setVisible(true);
+  String inputFile = "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\Hoevelaken-warmtescan_met_coordinaten_new.xlsx";
+  String subtitel = " Warmtescan";
+
+  public static void main(String[] args) {
+    SwingUtilities.invokeLater(() -> new HoofdMenu().start());
   }
 }
