@@ -11,6 +11,7 @@ import org.openstreetmap.gui.jmapviewer.interfaces.MapMarker;
 import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource;
 
 import kwee.osmmapper.lib.CustomMarker;
+import kwee.osmmapper.lib.Mediaan;
 import kwee.osmmapper.lib.MemoContent;
 import kwee.osmmapper.lib.ReadOSMMapExcel;
 
@@ -42,9 +43,8 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
   private JLabel mperpLabelValue;
   private JLabel statusLabel;
 
-  private double totLongtitude = 0.0;
-  private double totLatitude = 0.0;
-  private int totalMarkers = 0;
+  private ArrayList<Double> longarr = new ArrayList<Double>();
+  private ArrayList<Double> latarr = new ArrayList<Double>();
 
   // private String inputFile =
   // "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\Hoevelaken-adressenlijst_met_coordinaten.xlsx";
@@ -67,8 +67,8 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
     enableMarkerTooltips();
     addMarkers(inputFile);
 
-    double lat = totLatitude / totalMarkers;
-    double lon = totLongtitude / totalMarkers;
+    double lat = Mediaan.mediaanList(latarr);
+    double lon = Mediaan.mediaanList(longarr);
     map().setDisplayPosition(new Coordinate(lat, lon), 15);
     updateZoomParameters();
 
@@ -138,9 +138,8 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
   public void addCustomMarker(double lat, double lon, String title, String description, String extraInfo, Color color) {
     CustomMarker marker = new CustomMarker(lat, lon, title, description, extraInfo, color);
     map().addMapMarker(marker);
-    totLongtitude = totLongtitude + lon;
-    totLatitude = totLatitude + lat;
-    totalMarkers++;
+    longarr.add(lon);
+    latarr.add(lat);
   }
 
   /**
