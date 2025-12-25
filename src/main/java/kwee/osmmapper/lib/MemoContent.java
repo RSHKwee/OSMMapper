@@ -10,6 +10,7 @@ public class MemoContent {
   String phonenumber = "";
   String mailaddress = "";
   String projects = "";
+  String country = "";
 
   double longitude = 0.0;
   double latitude = 0.0;
@@ -32,6 +33,10 @@ public class MemoContent {
 
   public String getCity() {
     return city;
+  }
+
+  public String getCountry() {
+    return country;
   }
 
   public String getSurname() {
@@ -76,6 +81,10 @@ public class MemoContent {
 
   public void setCity(String city) {
     this.city = city;
+  }
+
+  public void setCountry(String country) {
+    this.country = country;
   }
 
   public void setSurname(String surname) {

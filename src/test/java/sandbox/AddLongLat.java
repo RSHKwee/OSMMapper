@@ -30,15 +30,15 @@ public class AddLongLat {
         // if (rowIndex < 10) {
         if (rowIndex == 0) {
           // HEADER RIJ: maak kolommen aan als ze nog niet bestaan
-          Cell longCell = row.getCell(7);
+          Cell longCell = row.getCell(14);
           if (longCell == null) {
-            longCell = row.createCell(7);
+            longCell = row.createCell(14);
           }
           longCell.setCellValue("Longitude");
 
-          Cell latCell = row.getCell(8);
+          Cell latCell = row.getCell(15);
           if (latCell == null) {
-            latCell = row.createCell(8);
+            latCell = row.createCell(15);
           }
           latCell.setCellValue("Latitude");
         } else {
@@ -67,9 +67,9 @@ public class AddLongLat {
               if (cellIndex == 1) { // huisnummer
                 String huisnr = Integer.toString((int) cell.getNumericCellValue());
                 l_address.setHouseNumber(huisnr);
-              } else if (cellIndex == 7) { // longitude (al aanwezig?)
+              } else if (cellIndex == 14) { // longitude (al aanwezig?)
                 // Al aanwezige longitude overschrijven we niet
-              } else if (cellIndex == 8) { // latitude (al aanwezig?)
+              } else if (cellIndex == 15) { // latitude (al aanwezig?)
                 // Al aanwezige latitude overschrijven we niet
               }
             }

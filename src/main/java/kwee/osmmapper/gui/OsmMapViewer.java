@@ -13,13 +13,14 @@ import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource;
 import kwee.osmmapper.lib.CustomMarker;
 import kwee.osmmapper.lib.Mediaan;
 import kwee.osmmapper.lib.MemoContent;
-import kwee.osmmapper.lib.ReadOSMMapExcel;
+import kwee.osmmapper.lib.OSMMapExcel;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JOptionPane;
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -48,10 +49,20 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
 
   // private String inputFile =
   // "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\Hoevelaken-adressenlijst_met_coordinaten.xlsx";
-  private String inputFile = "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\Hoevelaken-warmtescan_met_coordinaten.xlsx";
+  private String inputFile = "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\Hoevelaken-warmtescan_met_coordinaten_new.xlsx";
+
+  public OsmMapViewer(String inpFile, String subtitel) {
+    super("OSM Map Viewer " + subtitel);
+    inputFile = inpFile;
+    OsmMapViewerInit();
+  }
 
   public OsmMapViewer() {
     super("OSM Map Viewer");
+    OsmMapViewerInit();
+  }
+
+  private void OsmMapViewerInit() {
     treeMap = new JMapViewerTree("Locaties");
     setupJFrame();
     setupPanels();
@@ -149,7 +160,8 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
 
   private void addMarkers(String inputFile) {
     ArrayList<MemoContent> memocontarr = new ArrayList<MemoContent>();
-    memocontarr = ReadOSMMapExcel.ReadExcel(inputFile);
+    OSMMapExcel mExcel = new OSMMapExcel(inputFile);
+    memocontarr = mExcel.ReadExcel();
 
     memocontarr.forEach(memoinh -> {
       Double longitude = memoinh.getLongitude();
@@ -158,36 +170,41 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
       String houseNumber = memoinh.getHousenumber();
       String postcode = memoinh.getPostcode();
       String city = memoinh.getCity();
-      String sNameDetail = memoinh.getSurname() + " " + memoinh.getFamilyname() + "\nTel: " + memoinh.getPhonenumber()
-          + "\nMail: " + memoinh.getMailaddress();
 
-      // Maak titel en extra informatie
-      String title = houseNumber;
-      // String description = "Adres in " + city;
-      String description = String.format("Adres: %s %s\nPostcode: %s\nPlaats: %s", street, houseNumber, postcode, city);
-      String extraInfo = String.format(" %s\nCoördinaten: %.6f, %.6f", sNameDetail, latitude, longitude);
+      if (!street.isBlank()) {
+        String sNameDetail = memoinh.getSurname() + " " + memoinh.getFamilyname() + "\nTel: " + memoinh.getPhonenumber()
+            + "\nMail: " + memoinh.getMailaddress();
 
-      // Bepaal kleur op basis van rij index (voor variatie)
-      Color color;
-      switch (rowIndex % 5) {
-      case 0:
-        color = Color.RED;
-        break;
-      case 1:
-        color = Color.BLUE;
-        break;
-      case 2:
-        color = Color.GREEN;
-        break;
-      case 3:
-        color = Color.ORANGE;
-        break;
-      default:
-        color = Color.MAGENTA;
-        break;
+        // Maak titel en extra informatie
+        String title = houseNumber;
+        // String description = "Adres in " + city;
+        String description = String.format("Adres: %s %s\nPostcode: %s\nPlaats: %s", street, houseNumber, postcode,
+            city);
+        String extraInfo = String.format(" %s\nCoördinaten: %.6f, %.6f", sNameDetail, latitude, longitude);
+
+        // Bepaal kleur op basis van rij index (voor variatie)
+        Color color;
+        switch (rowIndex % 5) {
+        case 0:
+          color = Color.RED;
+          break;
+        case 1:
+          color = Color.BLUE;
+          break;
+        case 2:
+          color = Color.GREEN;
+          break;
+        case 3:
+          color = Color.ORANGE;
+          break;
+        default:
+          color = Color.MAGENTA;
+          break;
+        }
+        addCustomMarker(latitude, longitude, title, description, extraInfo, color);
+
+        rowIndex++;
       }
-      addCustomMarker(latitude, longitude, title, description, extraInfo, color);
-      rowIndex++;
     });
   }
 
@@ -337,5 +354,30 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
         }
       }
     });
+  }
+
+  public void centerOnLocation(double lat, double lon, int zoom) {
+    map().setDisplayPosition(new Coordinate(lat, lon), zoom);
+  }
+
+  // OPTIONEEL: Maak een methode om alleen de kaart component te krijgen
+  public JComponent getKaartComponent() {
+    // Als je een JMapViewer instantie hebt:
+    // return mapViewer;
+
+    // Of retourneer het complete content pane:
+    return (JComponent) getContentPane();
+  }
+
+  // Methode om te controleren of kaart geladen is
+  public boolean isKaartGeladen() {
+    return getContentPane().getComponentCount() > 0;
+  }
+
+  // Zorg dat de JFrame niet sluit bij gebruik in tabblad
+  @Override
+  public void setDefaultCloseOperation(int operation) {
+    // Overschrijf om te voorkomen dat de JFrame sluit
+    super.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
   }
 }

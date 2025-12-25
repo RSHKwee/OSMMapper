@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import kwee.osmmapper.lib.MemoContent;
 import kwee.osmmapper.lib.OSMMapExcel;
 
-public class ReadLongLat {
+public class AddLongLat2 {
   public static void main(String[] args) throws Exception {
     ArrayList<MemoContent> memocontarr = new ArrayList<MemoContent>();
     String inpFile = "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\Hoevelaken-adressenlijst.xlsx";
@@ -17,10 +17,6 @@ public class ReadLongLat {
     inpFile = "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\hoevelaken-warmtescan.xlsx";
     OSMMapExcel mexcel2 = new OSMMapExcel(inpFile);
     memocontarr = mexcel2.ReadExcel();
-    System.out.println();
-
-    String outFile = "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\hoevelaken-warmtescan_met_coordinaten_new.xlsx";
-    mexcel2.WriteExcel(outFile);
     System.out.println();
 
     inpFile = "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\Hoevelaken-warmtescan_met_coordinaten.xlsx";
