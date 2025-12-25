@@ -5,16 +5,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
 
 import kwee.library.swing.TextAreaHandler;
 import kwee.logger.MyLogger;
@@ -49,7 +44,6 @@ public class HoofdMenu {
 
     // 3. Onderste paneel voor logging
     hoofdFrame.add(createLogPaneel(), BorderLayout.SOUTH);
-
     hoofdFrame.setVisible(true);
   }
 
@@ -60,9 +54,113 @@ public class HoofdMenu {
     // Knop 1: Nieuwe kaart
     JButton nieuweKnop = new JButton("➕ Nieuwe Kaart");
     nieuweKnop.addActionListener(e -> {
-      String naam = JOptionPane.showInputDialog(hoofdFrame, "Naam voor nieuwe kaart:");
-      if (naam != null && !naam.trim().isEmpty()) {
-        kaartController.voegKaartToe("", naam, 52.1326, 5.2913, 7);
+      // Maak een JPanel met GridBagLayout voor nette uitlijning
+      JPanel panel2 = new JPanel(new GridBagLayout());
+      GridBagConstraints gbc = new GridBagConstraints();
+      gbc.fill = GridBagConstraints.HORIZONTAL;
+      gbc.insets = new Insets(5, 5, 5, 5);
+
+      // 1. Input file selector
+      gbc.gridx = 0;
+      gbc.gridy = 0;
+      panel2.add(new JLabel("XLSX Bestand:"), gbc);
+
+      JTextField fileField = new JTextField(25);
+      gbc.gridx = 1;
+      gbc.gridy = 0;
+      gbc.weightx = 1.0;
+      panel2.add(fileField, gbc);
+
+      JButton browseButton = new JButton("📁 Selecteer");
+      gbc.gridx = 2;
+      gbc.gridy = 0;
+      gbc.weightx = 0.0;
+      panel2.add(browseButton, gbc);
+
+      // 2. Titel string invoer
+      gbc.gridx = 0;
+      gbc.gridy = 1;
+      panel2.add(new JLabel("Titel:"), gbc);
+
+      JTextField titleField = new JTextField(25);
+      gbc.gridx = 1;
+      gbc.gridy = 1;
+      gbc.gridwidth = 2; // Span over 2 kolommen
+      gbc.weightx = 1.0;
+      panel2.add(titleField, gbc);
+
+      // Browse button functionaliteit
+      browseButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent evt) {
+          JFileChooser fileChooser = new JFileChooser();
+          fileChooser.setDialogTitle("Selecteer XLSX bestand");
+          fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+          // xlsxfilter
+          fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
+            @Override
+            public boolean accept(File f) {
+              return f.isDirectory() || f.getName().toLowerCase().endsWith(".xlsx");
+            }
+
+            @Override
+            public String getDescription() {
+              return "xlsxBestanden (*.xlsx)";
+            }
+          });
+
+          int result = fileChooser.showOpenDialog(panel2);
+          if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            fileField.setText(selectedFile.getAbsolutePath());
+
+            // Optioneel: Auto-vul titel op basis van bestandsnaam
+            if (titleField.getText().isEmpty()) {
+              String fileName = selectedFile.getName().replaceFirst("[.][^.]+$", "") // Verwijder extensie
+                  .replace("_", " ") // Vervang underscores
+                  .replace("-", " "); // Vervang koppeltekens
+              titleField.setText(fileName);
+            }
+          }
+        }
+      });
+
+      // Toon de dialoog
+      int result = JOptionPane.showConfirmDialog(null, panel2, "Gegevens voor Geo-info", JOptionPane.OK_CANCEL_OPTION,
+          JOptionPane.PLAIN_MESSAGE);
+
+      // Verwerk het resultaat
+      if (result == JOptionPane.OK_OPTION) {
+        String filePath = fileField.getText().trim();
+        String title = titleField.getText().trim();
+
+        // Validatie
+        if (filePath.isEmpty()) {
+          JOptionPane.showMessageDialog(null, "Selecteer eerst een xlsxbestand!", "Fout", JOptionPane.ERROR_MESSAGE);
+          return;
+        }
+
+        File inputFile = new File(filePath);
+        if (!inputFile.exists()) {
+          JOptionPane.showMessageDialog(null, "Bestand bestaat niet:\n" + filePath, "Fout", JOptionPane.ERROR_MESSAGE);
+          return;
+        }
+
+        if (title.isEmpty()) {
+          title = "Adressen"; // Default waarde
+        }
+
+        // Bevestigingsdialoog
+        int confirm = JOptionPane.showConfirmDialog(null,
+            "Bevestig verwerking:\n\n" + "Bestand: " + inputFile.getName() + "\n" + "Titel: " + title, "Bevestiging",
+            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+          kaartController.voegKaartToe(inputFile.getAbsolutePath(), title, 0.0, 0.0, 10);
+          JOptionPane.showMessageDialog(null, "Geo-info toegevoegd met titel:\n" + title, "Succes",
+              JOptionPane.INFORMATION_MESSAGE);
+        }
       }
     });
 
@@ -80,9 +178,6 @@ public class HoofdMenu {
     });
 
     // Knop 3: Voeg Geo info toe
-
-    // ... in je knop action listener:
-
     JButton addLongLatKnop = new JButton("🔀 Voeg Geo info toe");
     addLongLatKnop.addActionListener(e -> {
       // Maak een JPanel voor de bestandsselectie
@@ -94,7 +189,7 @@ public class HoofdMenu {
       // Input CSV bestand
       gbc.gridx = 0;
       gbc.gridy = 0;
-      filePanel.add(new JLabel("Input CSV bestand:"), gbc);
+      filePanel.add(new JLabel("Input XLSX bestand:"), gbc);
 
       JTextField inputField = new JTextField(25);
       gbc.gridx = 1;
@@ -111,7 +206,7 @@ public class HoofdMenu {
       // Output CSV bestand
       gbc.gridx = 0;
       gbc.gridy = 1;
-      filePanel.add(new JLabel("Output CSV bestand:"), gbc);
+      filePanel.add(new JLabel("Output XLSX bestand:"), gbc);
 
       JTextField outputField = new JTextField(25);
       gbc.gridx = 1;
@@ -129,14 +224,14 @@ public class HoofdMenu {
       inputBrowseButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
           JFileChooser fileChooser = new JFileChooser();
-          fileChooser.setDialogTitle("Selecteer CSV invoerbestand");
+          fileChooser.setDialogTitle("Selecteer XLSX invoerbestand");
           fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
           // Optioneel: CSV filter toevoegen
           fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
             @Override
             public boolean accept(File f) {
-              return f.isDirectory() || f.getName().toLowerCase().endsWith(".csv");
+              return f.isDirectory() || f.getName().toLowerCase().endsWith(".xlsx");
             }
 
             @Override
@@ -153,7 +248,7 @@ public class HoofdMenu {
             // Auto-suggest output naam
             if (outputField.getText().isEmpty()) {
               String baseName = selectedFile.getName().replaceFirst("[.][^.]+$", "");
-              String outputName = baseName + "_met_geo.csv";
+              String outputName = baseName + "_met_geo.xlsx";
               outputField.setText(new File(selectedFile.getParent(), outputName).getAbsolutePath());
             }
           }
@@ -164,19 +259,19 @@ public class HoofdMenu {
         @Override
         public void actionPerformed(ActionEvent evt) {
           JFileChooser fileChooser = new JFileChooser();
-          fileChooser.setDialogTitle("Opslaan CSV met geo-info");
+          fileChooser.setDialogTitle("Opslaan XLSX met geo-info");
           fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
           // CSV filter
           fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
             @Override
             public boolean accept(File f) {
-              return f.isDirectory() || f.getName().toLowerCase().endsWith(".csv");
+              return f.isDirectory() || f.getName().toLowerCase().endsWith(".xslx");
             }
 
             @Override
             public String getDescription() {
-              return "CSV Bestanden (*.csv)";
+              return "XLSX Bestanden (*.xlsx)";
             }
           });
 
@@ -194,8 +289,8 @@ public class HoofdMenu {
             File selectedFile = fileChooser.getSelectedFile();
             // Zorg dat het .csv extensie heeft
             String path = selectedFile.getAbsolutePath();
-            if (!path.toLowerCase().endsWith(".csv")) {
-              path += ".csv";
+            if (!path.toLowerCase().endsWith(".xlsx")) {
+              path += ".xlsx";
             }
             outputField.setText(path);
           }
@@ -247,22 +342,27 @@ public class HoofdMenu {
           }
         }
 
-        // Hier roep je je eigen methode aan om geo-info toe te voegen
-        try {
-          ArrayList<MemoContent> memocontarr = new ArrayList<MemoContent>();
-          OSMMapExcel mexcel = new OSMMapExcel(inputFile.getAbsolutePath());
-          memocontarr = mexcel.ReadExcel();
-          mexcel.WriteExcel(outputFile.getAbsolutePath());
+        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+          @Override
+          protected Void doInBackground() throws Exception {
+            ArrayList<MemoContent> memocontarr = new ArrayList<MemoContent>();
+            OSMMapExcel mexcel = new OSMMapExcel(inputFile.getAbsolutePath());
+            memocontarr = mexcel.ReadExcel();
+            mexcel.WriteExcel(outputFile.getAbsolutePath());
+            return null;
+          }
 
-          JOptionPane.showMessageDialog(null,
-              "Geo-informatie succesvol toegevoegd!\n\n" + "Invoer: " + inputPath + "\n" + "Uitvoer: " + outputPath,
-              "Succes", JOptionPane.INFORMATION_MESSAGE);
-
-        } catch (Exception ex) {
-          JOptionPane.showMessageDialog(null, "Fout bij toevoegen geo-info:\n" + ex.getMessage(), "Fout",
-              JOptionPane.ERROR_MESSAGE);
-          ex.printStackTrace();
-        }
+          @Override
+          protected void done() {
+            try {
+              get(); // Check voor excepties
+              JOptionPane.showMessageDialog(null, "Klaar!", "Succes", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception ex) {
+              JOptionPane.showMessageDialog(null, "Fout: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+          }
+        };
+        worker.execute();
       }
     });
 
