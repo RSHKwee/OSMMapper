@@ -10,6 +10,7 @@ import org.openstreetmap.gui.jmapviewer.interfaces.JMapViewerEventListener;
 import org.openstreetmap.gui.jmapviewer.interfaces.MapMarker;
 import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource;
 
+//import kwee.logger.MyLogger;
 import kwee.osmmapper.lib.CustomMarker;
 import kwee.osmmapper.lib.Mediaan;
 import kwee.osmmapper.lib.MemoContent;
@@ -29,11 +30,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import java.util.ArrayList;
+//import java.util.logging.Logger;
 
 /**
  * A demo class to start a Swing application which shows a map and has some pre-defined options set.
  */
 public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
+  // private static final Logger LOGGER = MyLogger.getLogger();
 
   private static final long serialVersionUID = 1L;
 
@@ -202,7 +205,6 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
           break;
         }
         addCustomMarker(latitude, longitude, title, description, extraInfo, color);
-
         rowIndex++;
       }
     });

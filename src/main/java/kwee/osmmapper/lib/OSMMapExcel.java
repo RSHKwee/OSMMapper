@@ -4,6 +4,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -14,8 +16,10 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import kwee.library.Address;
 import kwee.library.NominatimAPI;
+import kwee.logger.MyLogger;
 
 public class OSMMapExcel {
+  private static final Logger LOGGER = MyLogger.getLogger();
 
   int postcodeidx = -1;
   int huisnummeridx = -1;
@@ -80,12 +84,14 @@ public class OSMMapExcel {
                 // System.out.println("cellindex: " + cellindex);
               }
             } else {
-              System.out.println("Ander celltype: " + type.toString());
+              LOGGER.log(Level.FINE, "Ander celltype: " + type.toString());
+              // System.out.println("Ander celltype: " + type.toString());
             }
             maxCellCount = cellindex;
             cellindex++;
           }
-          System.out.println("maxCellCount: " + maxCellCount);
+          LOGGER.log(Level.FINE, "maxCellCount: " + maxCellCount);
+          // System.out.println("maxCellCount: " + maxCellCount);
         } else {
           MemoContent memocont = new MemoContent();
           memocont = getMemoContFromRow(row);
@@ -98,8 +104,7 @@ public class OSMMapExcel {
       workbook.close();
       file.close();
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOGGER.log(Level.WARNING, e.getMessage());
     }
     return memocontarr;
   }
@@ -165,8 +170,11 @@ public class OSMMapExcel {
               } catch (Exception e) {
                 // do nothing
               }
-              System.out.println("Row " + rowIndex + ": " + l_address.getRoad() + " " + l_address.getHouseNumber() + " "
-                  + l_address.getCity() + " -> " + l_address.getLongitude() + ", " + l_address.getLatitude());
+              LOGGER.log(Level.INFO, "Row " + rowIndex + ": " + l_address.getRoad() + " " + l_address.getHouseNumber()
+                  + " " + l_address.getCity() + " -> " + l_address.getLongitude() + ", " + l_address.getLatitude());
+              // System.out.println("Row " + rowIndex + ": " + l_address.getRoad() + " " + l_address.getHouseNumber() +
+              // " "
+              // + l_address.getCity() + " -> " + l_address.getLongitude() + ", " + l_address.getLatitude());
             }
           }
         }
@@ -176,14 +184,15 @@ public class OSMMapExcel {
       // 4. SLA OP NAAR EEN NIEUW BESTAND
       try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
         workbook.write(outputStream);
-        System.out.println("Bestand opgeslagen als: " + outputFile);
+        LOGGER.log(Level.INFO, "Bestand opgeslagen als: " + outputFile);
+        // System.out.println("Bestand opgeslagen als: " + outputFile);
       }
 
       // 5. Sluit de werkmap en input stream
       workbook.close();
       file.close();
     } catch (IOException e) {
-
+      LOGGER.log(Level.WARNING, e.getMessage());
     }
   }
 

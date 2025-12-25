@@ -3,14 +3,19 @@ package kwee.osmmapper.lib;
 import java.awt.BorderLayout;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import kwee.logger.MyLogger;
 import kwee.osmmapper.gui.OsmMapViewer;
 
 //KAARTCONTROLLER.java - Vereenvoudigd
 public class KaartController {
+  private static final Logger LOGGER = MyLogger.getLogger();
+
   private JTabbedPane kaartTabPane;
   private Map<String, OsmMapViewer> kaarten;
 
@@ -45,11 +50,9 @@ public class KaartController {
       // Voeg toe aan tabblad
       kaartTabPane.addTab(naam, kaartContainer);
       kaarten.put(naam, kaart);
-
-      System.out.println("Kaart toegevoegd: " + naam);
-
+      LOGGER.log(Level.INFO, "Kaart toegevoegd: " + naam);
     } catch (Exception e) {
-      System.err.println("Fout bij aanmaken kaart: " + e.getMessage());
+      LOGGER.log(Level.WARNING, "Fout bij aanmaken kaart: " + e.getMessage());
     }
   }
 
@@ -57,11 +60,11 @@ public class KaartController {
     for (int i = 0; i < kaartTabPane.getTabCount(); i++) {
       if (kaartTabPane.getTitleAt(i).equals(naam)) {
         kaartTabPane.setSelectedIndex(i);
-        System.out.println("Kaart getoond: " + naam);
+        LOGGER.log(Level.INFO, "Kaart getoond: " + naam);
         return;
       }
     }
-    System.out.println("Kaart niet gevonden: " + naam);
+    LOGGER.log(Level.INFO, "Kaart niet gevonden: " + naam);
   }
 
   public String[] getKaartNamen() {
