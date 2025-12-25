@@ -1,13 +1,5 @@
 package kwee.osmmapper.gui;
 
-import org.apache.poi.EncryptedDocumentException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import org.openstreetmap.gui.jmapviewer.JMapViewerTree;
@@ -19,6 +11,8 @@ import org.openstreetmap.gui.jmapviewer.interfaces.MapMarker;
 import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource;
 
 import kwee.osmmapper.lib.CustomMarker;
+import kwee.osmmapper.lib.MemoContent;
+import kwee.osmmapper.lib.ReadOSMMapExcel;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -32,8 +26,7 @@ import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * A demo class to start a Swing application which shows a map and has some pre-defined options set.
@@ -53,6 +46,10 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
   private double totLatitude = 0.0;
   private int totalMarkers = 0;
 
+  // private String inputFile =
+  // "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\Hoevelaken-adressenlijst_met_coordinaten.xlsx";
+  private String inputFile = "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\Hoevelaken-warmtescan_met_coordinaten.xlsx";
+
   public OsmMapViewer() {
     super("OSM Map Viewer");
     treeMap = new JMapViewerTree("Locaties");
@@ -68,7 +65,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
 
     setupMarkerInteraction();
     enableMarkerTooltips();
-    addSampleMarkers();
+    addMarkers(inputFile);
 
     double lat = totLatitude / totalMarkers;
     double lon = totLongtitude / totalMarkers;
@@ -149,120 +146,50 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
   /**
    * Voegt markers toe vanuit Excel bestand
    */
-  private void addSampleMarkers() {
-    String inputFile = "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\Hoevelaken-adressenlijst_met_coordinaten.xlsx";
-    // String inputFile = "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\Hoevelaken-warmtescan_met_coordinaten.xlsx";
+  int rowIndex = 0;
 
-    try (FileInputStream file = new FileInputStream(inputFile); Workbook workbook = WorkbookFactory.create(file)) {
+  private void addMarkers(String inputFile) {
+    ArrayList<MemoContent> memocontarr = new ArrayList<MemoContent>();
+    memocontarr = ReadOSMMapExcel.ReadExcel(inputFile);
 
-      Sheet sheet = workbook.getSheetAt(0);
-      int rowIndex = 0;
+    memocontarr.forEach(memoinh -> {
+      Double longitude = memoinh.getLongitude();
+      Double latitude = memoinh.getLatitude();
+      String street = memoinh.getStreet();
+      String houseNumber = memoinh.getHousenumber();
+      String postcode = memoinh.getPostcode();
+      String city = memoinh.getCity();
+      String sNameDetail = memoinh.getSurname() + " " + memoinh.getFamilyname() + "\nTel: " + memoinh.getPhonenumber()
+          + "\nMail: " + memoinh.getMailaddress();
 
-      for (Row row : sheet) {
-        if (rowIndex == 0) {
-          // Skip header rij
-          rowIndex++;
-          continue;
-        }
+      // Maak titel en extra informatie
+      String title = houseNumber;
+      // String description = "Adres in " + city;
+      String description = String.format("Adres: %s %s\nPostcode: %s\nPlaats: %s", street, houseNumber, postcode, city);
+      String extraInfo = String.format(" %s\nCoördinaten: %.6f, %.6f", sNameDetail, latitude, longitude);
 
-        try {
-          // Lees coördinaten (pas kolomnummers aan indien nodig)
-          Cell longCell = row.getCell(7);
-          Cell latCell = row.getCell(8);
-
-          if (longCell == null || latCell == null) {
-            continue;
-          }
-
-          Double longitude = longCell.getNumericCellValue();
-          Double latitude = latCell.getNumericCellValue();
-
-          // Lees extra gegevens (voorbeeld - pas aan naar jouw Excel structuur)
-          String street = row.getCell(3) != null ? row.getCell(3).getStringCellValue() : "";
-          String houseNumber = "";
-          try {
-            houseNumber = row.getCell(1) != null ? row.getCell(1).getStringCellValue() : "";
-          } catch (Exception e) {
-            Double huisnr = row.getCell(1).getNumericCellValue();
-            int iHuisnr = huisnr.intValue();
-            houseNumber = Integer.toString(iHuisnr);
-          }
-          houseNumber = houseNumber + row.getCell(2).getStringCellValue();
-
-          String postcode = row.getCell(0) != null ? row.getCell(0).getStringCellValue() : "";
-          String city = row.getCell(4) != null ? row.getCell(4).getStringCellValue() : "";
-
-          String sNameDetail = "";
-          try {
-            Cell nameDetailCell = row.getCell(13);
-            CellType type = nameDetailCell.getCellType();
-            if (type == CellType.STRING) {
-              if (nameDetailCell != null) {
-                sNameDetail = sNameDetail + " " + nameDetailCell.getStringCellValue();
-              }
-            }
-
-            nameDetailCell = row.getCell(14);
-            type = nameDetailCell.getCellType();
-            if (type == CellType.STRING) {
-              if (nameDetailCell != null) {
-                sNameDetail = sNameDetail + "\n" + nameDetailCell.getStringCellValue();
-              }
-            }
-
-            nameDetailCell = row.getCell(15);
-            type = nameDetailCell.getCellType();
-            if (type == CellType.STRING) {
-              if (nameDetailCell != null) {
-                sNameDetail = sNameDetail + " " + nameDetailCell.getStringCellValue();
-              }
-            }
-          } catch (Exception e) {
-
-          }
-          // Maak titel en extra informatie
-          String title = houseNumber;
-          // String description = "Adres in " + city;
-          String description = String.format("Adres: %s %s\nPostcode: %s\nPlaats: %s", street, houseNumber, postcode,
-              city);
-          String extraInfo = String.format(" %s\nCoördinaten: %.6f, %.6f", sNameDetail, latitude, longitude);
-
-          // Bepaal kleur op basis van rij index (voor variatie)
-          Color color;
-          switch (rowIndex % 5) {
-          case 0:
-            color = Color.RED;
-            break;
-          case 1:
-            color = Color.BLUE;
-            break;
-          case 2:
-            color = Color.GREEN;
-            break;
-          case 3:
-            color = Color.ORANGE;
-            break;
-          default:
-            color = Color.MAGENTA;
-            break;
-          }
-
-          addCustomMarker(latitude, longitude, title, description, extraInfo, color);
-
-        } catch (Exception e) {
-          System.err.println("Fout in rij " + rowIndex + ": " + e.getMessage());
-        }
-
-        rowIndex++;
+      // Bepaal kleur op basis van rij index (voor variatie)
+      Color color;
+      switch (rowIndex % 5) {
+      case 0:
+        color = Color.RED;
+        break;
+      case 1:
+        color = Color.BLUE;
+        break;
+      case 2:
+        color = Color.GREEN;
+        break;
+      case 3:
+        color = Color.ORANGE;
+        break;
+      default:
+        color = Color.MAGENTA;
+        break;
       }
-
-      System.out.println("Aantal markers toegevoegd: " + (rowIndex - 1));
-
-    } catch (EncryptedDocumentException | IOException e) {
-      e.printStackTrace();
-      JOptionPane.showMessageDialog(this, "Fout bij laden Excel bestand: " + e.getMessage(), "Fout",
-          JOptionPane.ERROR_MESSAGE);
-    }
+      addCustomMarker(latitude, longitude, title, description, extraInfo, color);
+      rowIndex++;
+    });
   }
 
   /**
@@ -285,7 +212,6 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
           for (MapMarker marker : map().getMapMarkerList()) {
             double markerLat = marker.getLat();
             double markerLon = marker.getLon();
-
             double distance = Math.sqrt(Math.pow(lat - markerLat, 2) + Math.pow(lon - markerLon, 2));
 
             if (distance < 0.005 && distance < minDistance) {
