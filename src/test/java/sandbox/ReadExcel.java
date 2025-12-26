@@ -13,6 +13,8 @@ public class ReadExcel {
     // 2. Kies het eerste werkblad
     Sheet sheet = workbook.getSheetAt(0);
     // Sheet sheet = workbook.getSheetAt(1);
+    int totalRows = sheet.getLastRowNum() + 1;
+    System.out.println("Totaal aantal rijen in Excel: " + totalRows);
 
     // 3. Loop door alle rijen en cellen
     for (Row row : sheet) {

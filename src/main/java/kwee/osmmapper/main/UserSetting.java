@@ -1,12 +1,18 @@
 package kwee.osmmapper.main;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import kwee.logger.MyLogger;
+import kwee.osmmapper.lib.TabInfo;
 
 /**
  * User setting persistence.
@@ -15,27 +21,28 @@ import kwee.logger.MyLogger;
  *
  */
 public class UserSetting {
+  private static final Logger LOGGER = MyLogger.getLogger();
+
   private static UserSetting uniqueInstance;
   private static UserSetting freezeInstance = null;
 
-  private static final Logger LOGGER = MyLogger.getLogger();
   public static String NodePrefName = "kwee.osmmapper";
 
   private String c_Level = "Level";
   private String c_LevelValue = "INFO";
 
-  private String c_OsmMapperExe = "OsmMapperExe";
-
   private String c_ConfirmOnExit = "ConfirmOnExit";
   private String c_toDisk = "ToDisk";
-
-  private String c_OutputFolder = "OutputFolder";
-  private String c_CsvFiles = "CsvFiles";
   private String c_LookAndFeel = "LookAndFeel";
   private String c_LookAndFeelVal = "Nimbus";
 
   private String c_LogDir = "LogDir";
   private String c_Language = "Language";
+
+  private String c_KeyTabData = "Tab_data";
+  private String c_InpDirectory = "InputDirectory";
+  private String c_InpExcelFile = "InputExcelFile";
+  private String c_outpExcelFile = "OutputExcelFile";
 
   private String m_Level = c_LevelValue;
   private String m_LookAndFeel;
@@ -45,6 +52,11 @@ public class UserSetting {
 
   private boolean m_ConfirmOnExit = false;
   private boolean m_toDisk = false;
+
+  private String m_KeyTabData = "[]";
+  private String m_InpDirectory = "";
+  private String m_InpExcelFile = "";
+  private String m_outpExcelFile = "";
 
   private Preferences pref;
   private Preferences userPrefs = Preferences.userRoot();
@@ -69,16 +81,17 @@ public class UserSetting {
     pref = userPrefs.node(NodePrefName);
 
     m_toDisk = pref.getBoolean(c_toDisk, false);
-
     m_ConfirmOnExit = pref.getBoolean(c_ConfirmOnExit, false);
-
     m_LookAndFeel = pref.get(c_LookAndFeel, c_LookAndFeelVal);
-    m_OutputFolder = pref.get(c_OutputFolder, "");
-
     m_Language = pref.get(c_Language, "nl");
 
     m_Level = pref.get(c_Level, c_LevelValue);
     m_LogDir = pref.get(c_LogDir, "");
+
+    m_KeyTabData = pref.get(c_KeyTabData, "[]");
+    m_InpDirectory = pref.get(c_InpDirectory, "");
+    m_InpExcelFile = pref.get(c_InpExcelFile, "");
+    m_outpExcelFile = pref.get(c_outpExcelFile, "");
   }
 
   // Getters for all parameters
@@ -110,18 +123,41 @@ public class UserSetting {
     return m_ConfirmOnExit;
   }
 
+  // Laad de opgeslagen lijst met tab-info
+  public List<TabInfo> get_TabState() {
+    try {
+      m_KeyTabData = pref.get(c_KeyTabData, "[]"); // Lege array als default
+      ObjectMapper mapper = new ObjectMapper();
+      return mapper.readValue(m_KeyTabData, mapper.getTypeFactory().constructCollectionType(List.class, TabInfo.class));
+    } catch (Exception e) {
+      LOGGER.log(Level.WARNING, e.getMessage());
+      return new ArrayList<>(); // Geef lege lijst terug bij fout
+    }
+  }
+
+  public List<TabInfo> get_TabStateNoDup() {
+    List<TabInfo> localList = new ArrayList<TabInfo>();
+    localList = get_TabState();
+    // Gebruik LinkedHashSet om volgorde te behouden
+    Set<TabInfo> uniekeSet = new LinkedHashSet<>(TabInfo.verwijderDuplicatenOpFile(localList));
+    return new ArrayList<>(uniekeSet);
+  }
+
+  public String get_InpDirectory() {
+    return m_InpDirectory;
+  }
+
+  public String get_InpExcelFile() {
+    return m_InpExcelFile;
+  }
+
+  public String get_OutpExcelFile() {
+    return m_outpExcelFile;
+  }
+
+  // == Setters ========
   public void set_LogDir(String m_LogDir) {
     this.m_LogDir = m_LogDir;
-  }
-
-  public void set_OutputFolder(File a_OutputFolder) {
-    pref.put(c_OutputFolder, a_OutputFolder.getAbsolutePath());
-    this.m_OutputFolder = a_OutputFolder.getAbsolutePath();
-  }
-
-  public void set_OutputFolder(String a_OutputFolder) {
-    pref.put(c_OutputFolder, a_OutputFolder);
-    this.m_OutputFolder = a_OutputFolder;
   }
 
   public void set_Language(String m_Language) {
@@ -148,6 +184,36 @@ public class UserSetting {
     this.m_ConfirmOnExit = a_ConfirmOnExit;
   }
 
+  public void set_TabState(List<TabInfo> tabList) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      this.m_KeyTabData = mapper.writeValueAsString(tabList);
+      pref.put(c_KeyTabData, m_KeyTabData);
+    } catch (Exception e) {
+      LOGGER.log(Level.WARNING, e.getMessage());
+    }
+  }
+
+  private void set_TabState(String tabList) {
+    this.m_KeyTabData = tabList;
+    pref.put(c_KeyTabData, m_KeyTabData);
+  }
+
+  public void set_InpDirectory(String InpDirectory) {
+    pref.put(c_InpDirectory, InpDirectory);
+    this.m_InpDirectory = InpDirectory;
+  }
+
+  public void set_InpExcelFile(String InpDirectory) {
+    pref.put(c_InpExcelFile, InpDirectory);
+    this.m_InpExcelFile = InpDirectory;
+  }
+
+  public void set_OutpExcelFile(String OutpDirectory) {
+    pref.put(c_outpExcelFile, OutpDirectory);
+    this.m_outpExcelFile = OutpDirectory;
+  }
+
   /**
    * Save all settings
    */
@@ -159,10 +225,13 @@ public class UserSetting {
 
       pref.put(c_Language, m_Language);
       pref.put(c_LookAndFeel, m_LookAndFeel);
-      pref.put(c_OutputFolder, m_OutputFolder);
-
       pref.put(c_Level, m_Level);
       pref.put(c_LogDir, m_LogDir);
+
+      pref.put(c_KeyTabData, m_KeyTabData);
+      pref.put(c_InpDirectory, m_InpDirectory);
+      pref.put(c_InpExcelFile, m_InpExcelFile);
+      pref.put(c_outpExcelFile, m_outpExcelFile);
 
       pref.flush();
     } catch (BackingStoreException e) {
@@ -179,15 +248,16 @@ public class UserSetting {
     if (freezeInstance == null) {
       freezeInstance = new UserSetting();
       freezeInstance.set_toDisk(m_toDisk);
-
       freezeInstance.set_ConfirmOnExit(m_ConfirmOnExit);
       freezeInstance.set_Language(m_Language);
-
       freezeInstance.set_LookAndFeel(m_LookAndFeel);
-      freezeInstance.set_OutputFolder(m_OutputFolder);
-
       freezeInstance.set_Level(Level.parse(m_Level));
       freezeInstance.set_LogDir(m_LogDir);
+
+      freezeInstance.set_TabState(m_KeyTabData);
+      freezeInstance.set_InpDirectory(m_InpDirectory);
+      freezeInstance.set_InpExcelFile(m_InpExcelFile);
+      freezeInstance.set_OutpExcelFile(m_outpExcelFile);
     } else {
       LOGGER.log(Level.INFO, "Nothing to freeze....");
     }
@@ -199,12 +269,14 @@ public class UserSetting {
 
       uniqueInstance.set_ConfirmOnExit(freezeInstance.is_ConfirmOnExit());
       uniqueInstance.set_Language(freezeInstance.get_Language());
-
       uniqueInstance.set_LookAndFeel(freezeInstance.get_LookAndFeel());
-      uniqueInstance.set_OutputFolder(freezeInstance.get_OutputFolder());
-
       uniqueInstance.set_Level(freezeInstance.get_Level());
       uniqueInstance.set_LogDir(freezeInstance.get_LogDir());
+
+      uniqueInstance.set_TabState(m_KeyTabData);
+      uniqueInstance.set_InpDirectory(m_InpDirectory);
+      uniqueInstance.set_InpExcelFile(m_InpExcelFile);
+      uniqueInstance.set_OutpExcelFile(m_outpExcelFile);
 
       freezeInstance = null;
     } else {
@@ -223,11 +295,14 @@ public class UserSetting {
     l_line = l_line + c_toDisk + ": " + m_toDisk + "\n";
     l_line = l_line + c_Language + ": " + m_Language + "\n";
     l_line = l_line + c_ConfirmOnExit + ": " + m_ConfirmOnExit + "\n";
-
     l_line = l_line + c_LookAndFeel + ": " + m_LookAndFeel + "\n";
-    l_line = l_line + c_OutputFolder + ": " + m_OutputFolder + "\n";
     l_line = l_line + c_Level + ": " + m_Level + "\n";
     l_line = l_line + c_LogDir + ": " + m_LogDir + "\n";
+
+    l_line = l_line + c_KeyTabData + ": " + m_KeyTabData + "\n";
+    l_line = l_line + c_InpDirectory + ": " + m_InpDirectory + "\n";
+    l_line = l_line + c_InpExcelFile + ": " + m_InpExcelFile + "\n";
+    l_line = l_line + c_outpExcelFile + ": " + m_outpExcelFile + "\n";
 
     return l_line;
   }

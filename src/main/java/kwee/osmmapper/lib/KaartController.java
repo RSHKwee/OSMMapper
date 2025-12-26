@@ -1,7 +1,9 @@
 package kwee.osmmapper.lib;
 
 import java.awt.BorderLayout;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,30 +13,51 @@ import javax.swing.JTabbedPane;
 
 import kwee.logger.MyLogger;
 import kwee.osmmapper.gui.OsmMapViewer;
+import kwee.osmmapper.main.UserSetting;
 
-//KAARTCONTROLLER.java - Vereenvoudigd
 public class KaartController {
   private static final Logger LOGGER = MyLogger.getLogger();
-
+  private static KaartController uniqueInstance;
+  private UserSetting m_params;
   private JTabbedPane kaartTabPane;
   private Map<String, OsmMapViewer> kaarten;
+  private List<TabInfo> tablist;
 
-  public KaartController(JPanel container) {
-    this.kaartTabPane = new JTabbedPane();
+  public static KaartController getInstance() {
+    if (uniqueInstance == null) {
+      uniqueInstance = new KaartController();
+    }
+    return uniqueInstance;
+  }
+
+  private KaartController() {
     this.kaarten = new HashMap<>();
+    this.m_params = UserSetting.getInstance();
+    this.tablist = new ArrayList<TabInfo>();
+  }
+
+  public void InitPanel(JPanel container, boolean duplicates) {
+    this.kaartTabPane = new JTabbedPane();
 
     container.setLayout(new BorderLayout());
     container.add(kaartTabPane, BorderLayout.CENTER);
 
-    String inputFile = "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\Hoevelaken-adressenlijst_met_coordinaten.xlsx";
-    String subtottitel = " Koophuizen";
-
-    String warmteFile = "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\Hoevelaken-warmtescan_met_coordinaten_new.xlsx";
-    String subtitel = " Warmtescan";
-
-    // Voeg standaard kaart toe
-    voegKaartToe(inputFile, subtottitel, 52.1326, 5.2913, 7);
-    voegKaartToe(warmteFile, subtitel, 52.1326, 5.2913, 7);
+    List<TabInfo> itemsToProcess = new ArrayList<>();
+    if (duplicates) {
+      synchronized (m_params.get_TabState()) {
+        itemsToProcess.addAll(m_params.get_TabState());
+      }
+    } else {
+      synchronized (m_params.get_TabStateNoDup()) {
+        itemsToProcess.addAll(m_params.get_TabStateNoDup());
+      }
+    }
+    // Verwerk de items
+    for (TabInfo tab : itemsToProcess) {
+      String inputFile = tab.getFilePath();
+      String subtottitel = tab.getTitle();
+      voegKaartToe(inputFile, subtottitel, 0.0, 0.0, 0);
+    }
   }
 
   public void voegKaartToe(String fileNaam, String naam, double lat, double lon, int zoom) {
@@ -50,6 +73,15 @@ public class KaartController {
       // Voeg toe aan tabblad
       kaartTabPane.addTab(naam, kaartContainer);
       kaarten.put(naam, kaart);
+      synchronized (tablist) {
+        TabInfo tab = new TabInfo();
+        tab.setFilePath(fileNaam);
+        tab.setTitle(naam);
+        tablist.add(tab);
+        m_params.set_TabState(tablist);
+        m_params.save();
+      }
+
       LOGGER.log(Level.INFO, "Kaart toegevoegd: " + naam);
     } catch (Exception e) {
       LOGGER.log(Level.WARNING, "Fout bij aanmaken kaart: " + e.getMessage());
@@ -65,6 +97,46 @@ public class KaartController {
       }
     }
     LOGGER.log(Level.INFO, "Kaart niet gevonden: " + naam);
+  }
+
+  // 1. Verwijder specifieke kaart
+  public boolean verwijderKaart(String kaartNaam) {
+    if (!kaarten.containsKey(kaartNaam))
+      return false;
+
+    // Verwijder uit map
+    OsmMapViewer kaart = kaarten.remove(kaartNaam);
+    if (kaart != null) {
+      kaart.dispose(); // Belangrijk voor JFrame cleanup
+    }
+
+    // Verwijder tabblad
+    for (int i = 0; i < kaartTabPane.getTabCount(); i++) {
+      if (kaartTabPane.getTitleAt(i).equals(kaartNaam)) {
+        kaartTabPane.removeTabAt(i);
+        System.out.println("Kaart verwijderd: " + kaartNaam);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // 2. Verwijder huidige kaart
+  public boolean verwijderHuidigeKaart() {
+    int index = kaartTabPane.getSelectedIndex();
+    if (index == -1)
+      return false;
+
+    String naam = kaartTabPane.getTitleAt(index);
+    return verwijderKaart(naam);
+  }
+
+  // 3. Verwijder alle kaarten
+  public void verwijderAlleKaarten() {
+    while (kaartTabPane.getTabCount() > 0) {
+      String naam = kaartTabPane.getTitleAt(0);
+      verwijderKaart(naam);
+    }
   }
 
   public String[] getKaartNamen() {

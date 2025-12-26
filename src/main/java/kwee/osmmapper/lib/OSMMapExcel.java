@@ -46,7 +46,6 @@ public class OSMMapExcel {
     // 1. Open het bestand
     try (FileInputStream file = new FileInputStream(m_ExcelFile); Workbook workbook = WorkbookFactory.create(file)) {
       Sheet sheet = workbook.getSheetAt(0);
-
       int rowIndex = 0;
       for (Row row : sheet) {
         if (rowIndex == 0) {
@@ -81,17 +80,15 @@ public class OSMMapExcel {
               } else if (str.toLowerCase().contains("lat")) {
                 latIndex = cellindex;
               } else {
-                // System.out.println("cellindex: " + cellindex);
+                LOGGER.log(Level.FINE, "cellindex: " + cellindex);
               }
             } else {
               LOGGER.log(Level.FINE, "Ander celltype: " + type.toString());
-              // System.out.println("Ander celltype: " + type.toString());
             }
             maxCellCount = cellindex;
             cellindex++;
           }
           LOGGER.log(Level.FINE, "maxCellCount: " + maxCellCount);
-          // System.out.println("maxCellCount: " + maxCellCount);
         } else {
           MemoContent memocont = new MemoContent();
           memocont = getMemoContFromRow(row);
@@ -117,6 +114,8 @@ public class OSMMapExcel {
   public void WriteExcel(String outputFile) {
     try (FileInputStream file = new FileInputStream(m_ExcelFile); Workbook workbook = WorkbookFactory.create(file)) {
       Sheet sheet = workbook.getSheetAt(0);
+      int totalRows = sheet.getLastRowNum() + 1;
+      LOGGER.log(Level.INFO, "Totaal aantal rijen te verwerken: ~" + totalRows);
 
       int rowIndex = 0;
       for (Row row : sheet) {
@@ -172,9 +171,6 @@ public class OSMMapExcel {
               }
               LOGGER.log(Level.INFO, "Row " + rowIndex + ": " + l_address.getRoad() + " " + l_address.getHouseNumber()
                   + " " + l_address.getCity() + " -> " + l_address.getLongitude() + ", " + l_address.getLatitude());
-              // System.out.println("Row " + rowIndex + ": " + l_address.getRoad() + " " + l_address.getHouseNumber() +
-              // " "
-              // + l_address.getCity() + " -> " + l_address.getLongitude() + ", " + l_address.getLatitude());
             }
           }
         }
@@ -185,7 +181,6 @@ public class OSMMapExcel {
       try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
         workbook.write(outputStream);
         LOGGER.log(Level.INFO, "Bestand opgeslagen als: " + outputFile);
-        // System.out.println("Bestand opgeslagen als: " + outputFile);
       }
 
       // 5. Sluit de werkmap en input stream
