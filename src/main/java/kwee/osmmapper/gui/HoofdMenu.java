@@ -8,9 +8,11 @@ import java.io.IOException;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import kwee.library.ApplicationMessages;
 import kwee.library.swing.TextAreaHandler;
+import kwee.logger.MyConsTxtFormatter;
 import kwee.logger.MyLogger;
 import kwee.osmmapper.lib.CustomJULHandler;
 import kwee.osmmapper.lib.KaartController;
@@ -86,12 +88,27 @@ public class HoofdMenu {
     julLogger.addHandler(new CustomJULHandler());
 
     Logger rootLogger = Logger.getLogger("");
+    boolean btexthdlr = false;
     for (Handler handler : rootLogger.getHandlers()) {
       if (handler instanceof TextAreaHandler) {
         TextAreaHandler textAreaHandler = (TextAreaHandler) handler;
         logArea = textAreaHandler.getTextArea();
         logArea.setFont(customFont);
+        btexthdlr = true;
       }
+    }
+
+    if (!btexthdlr) {
+      // Voeg TextAreaHandler toe
+      TextAreaHandler textAreaHandler = new TextAreaHandler();
+      SimpleFormatter formatterConsTxt = new MyConsTxtFormatter();
+
+      textAreaHandler.setLevel(m_Level);
+      logArea = textAreaHandler.getTextArea();
+      logArea.setFont(customFont);
+      textAreaHandler.setFormatter(formatterConsTxt);
+
+      rootLogger.addHandler(textAreaHandler);
     }
 
     logArea.setEditable(false);

@@ -161,7 +161,7 @@ public class KaartController {
       for (int i = 0; i < kaartTabPane.getTabCount(); i++) {
         if (kaartTabPane.getTitleAt(i).equals(kaartNaam)) {
           kaartTabPane.removeTabAt(i);
-          LOGGER.log(Level.INFO, "Kaart verwijderd: " + kaartNaam);
+          LOGGER.log(Level.FINE, "Kaart verwijderd: " + kaartNaam);
           bstat = true;
         }
       }
@@ -204,7 +204,9 @@ public class KaartController {
       int tabIndex = kaartTabPane.getSelectedIndex();
       if (tabIndex != -1) {
         String naam = kaartTabPane.getTitleAt(tabIndex);
-        verwijderKaartMetBevestiging(naam, kaartTabPane);
+        if (verwijderKaartMetBevestiging(naam, kaartTabPane)) {
+          LOGGER.log(Level.INFO, "Kaart " + naam + " verwijderd.");
+        }
       }
     });
 
@@ -217,6 +219,7 @@ public class KaartController {
 
         if (nieuweNaam != null && !nieuweNaam.trim().isEmpty()) {
           hernoemKaart(oudeNaam, nieuweNaam);
+          LOGGER.log(Level.FINE, "Kaart hernoemd: " + oudeNaam + " -> " + nieuweNaam);
           synchronized (tablist) {
             List<TabInfo> l_tablist = new ArrayList<TabInfo>(tablist);
             for (int i = 0; i < tablist.size(); i++) {
@@ -265,11 +268,11 @@ public class KaartController {
   }
 
   // Verwijder met bevestigingsdialoog
-  public void verwijderKaartMetBevestiging(String kaartNaam, Component parent) {
+  public boolean verwijderKaartMetBevestiging(String kaartNaam, Component parent) {
     if (!kaarten.containsKey(kaartNaam)) {
       JOptionPane.showMessageDialog(parent, "Kaart '" + kaartNaam + "' niet gevonden.", "Fout",
           JOptionPane.ERROR_MESSAGE);
-      return;
+      return false;
     }
 
     // Toon bevestigingsdialoog
@@ -284,7 +287,9 @@ public class KaartController {
         JOptionPane.showMessageDialog(parent, "Kaart '" + kaartNaam + "' succesvol verwijderd.", "Succes",
             JOptionPane.INFORMATION_MESSAGE);
       }
+      return succes;
     }
+    return false;
   }
 
   private void hernoemKaart(String oudeNaam, String nieuweNaam) {
@@ -304,7 +309,6 @@ public class KaartController {
             for (Component c : ((JPanel) tabComp).getComponents()) {
               if (c instanceof JLabel) {
                 ((JLabel) c).setText(nieuweNaam);
-                LOGGER.log(Level.INFO, "Kaart hernoemd: " + oudeNaam + " -> " + nieuweNaam);
               }
             }
           }
