@@ -44,8 +44,9 @@ public class HoofdMenu {
     this.m_toDisk = m_params.is_toDisk();
     this.m_LogDir = m_params.get_LogDir();
     this.m_DuplicateTabs = m_params.is_DuplicateTabs();
+    String apptxt = bundle.getMessage("AppTitel", Main.m_creationtime, Main.c_CopyrightYear);
 
-    hoofdFrame = new JFrame("OSM Mapper (" + Main.c_CopyrightYear + " " + Main.m_creationtime + ")");
+    hoofdFrame = new JFrame(apptxt);
     hoofdFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     hoofdFrame.setSize(1000, 700);
 
@@ -60,13 +61,14 @@ public class HoofdMenu {
     // 2. Midden: Kaarten container
     JPanel kaartenContainer = new JPanel();
     kaartController = KaartController.getInstance();
-    kaartController.InitPanel(kaartenContainer, m_DuplicateTabs);
     hoofdFrame.add(kaartenContainer, BorderLayout.CENTER);
 
     // 3. Onderste paneel voor logging
     hoofdFrame.add(createLogPaneel(), BorderLayout.SOUTH);
     hoofdFrame.setVisible(true);
 
+    LOGGER.log(Level.INFO, "" + apptxt);
+    kaartController.InitPanel(kaartenContainer, m_DuplicateTabs);
   }
 
   private JPanel createLogPaneel() {
