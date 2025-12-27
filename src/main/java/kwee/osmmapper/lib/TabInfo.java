@@ -11,6 +11,9 @@ public class TabInfo {
   private final String id; // final maakt het immutable
   private String filePath;
   private String title;
+  private double latitude = 0.0;
+  private double longtitude = 0.0;
+  private int zoomfactor = 5;
 
   // Default constructor nodig voor Jackson
   public TabInfo() {
@@ -28,16 +31,45 @@ public class TabInfo {
     return filePath;
   }
 
-  public void setFilePath(String filePath) {
-    this.filePath = filePath;
-  }
-
   public String getTitle() {
     return title;
   }
 
+  public String getId() {
+    return id;
+  }
+
+  public double getLatitude() {
+    return latitude;
+  }
+
+  public double getLongtitude() {
+    return longtitude;
+  }
+
+  public int getZoomfactor() {
+    return zoomfactor;
+  }
+
+  // Setters
+  public void setFilePath(String filePath) {
+    this.filePath = filePath;
+  }
+
   public void setTitle(String title) {
     this.title = title;
+  }
+
+  public void setLatitude(double latitude) {
+    this.latitude = latitude;
+  }
+
+  public void setLongtitude(double longtitude) {
+    this.longtitude = longtitude;
+  }
+
+  public void setZoomfactor(int zoomfactor) {
+    this.zoomfactor = zoomfactor;
   }
 
   @Override
@@ -58,6 +90,11 @@ public class TabInfo {
     return Objects.hash(id); // consistent met equals()
   }
 
+  /**
+   * 
+   * @param tabList
+   * @return
+   */
   public static List<TabInfo> verwijderDuplicatenOpFile(List<TabInfo> tabList) {
     if (tabList == null || tabList.isEmpty()) {
       return new ArrayList<>();
@@ -72,6 +109,7 @@ public class TabInfo {
 
   @Override
   public String toString() {
-    return "TabInfo{filePath='" + filePath + "', title='" + title + "'}";
+    return "TabInfo{filePath='" + filePath + "', title='" + title + "', latitude='" + latitude + "', longtitude='"
+        + longtitude + "', zoomfactor='" + zoomfactor + "'}";
   }
 }

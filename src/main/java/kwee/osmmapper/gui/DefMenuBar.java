@@ -18,6 +18,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import kwee.library.ApplicationMessages;
@@ -27,7 +28,7 @@ import kwee.logger.MyLogger;
 import kwee.osmmapper.main.Main;
 import kwee.osmmapper.main.UserSetting;
 
-public class MenuBar {
+public class DefMenuBar {
   private static final Logger LOGGER = MyLogger.getLogger();
 
   static final String c_CopyrightYear = Main.c_CopyrightYear;
@@ -38,6 +39,7 @@ public class MenuBar {
   private boolean m_toDisk = false;
   private Level m_Level = Level.INFO;
   private String m_LogDir = "c:/";
+  private boolean m_DuplicateTabs = false; // NO duplicate tabs.
 
   private ApplicationMessages bundle = ApplicationMessages.getInstance();
 
@@ -83,9 +85,8 @@ public class MenuBar {
           m_param.save();
 
           bundle.changeLanguage(language);
-          // TODO
-          // restartGUI();
-          // setLocale(m_Language);
+          hoofdFrame.dispose(); // Dispose of the current GUI window or frame
+          SwingUtilities.invokeLater(() -> new HoofdMenu().start());
         }
       }
     });
@@ -103,6 +104,7 @@ public class MenuBar {
         if (level != null) {
           m_Level = Level.parse(level.toUpperCase());
           m_param.set_Level(m_Level);
+          m_param.save();
           MyLogger.changeLogLevel(m_Level);
         }
       }
@@ -126,8 +128,7 @@ public class MenuBar {
           // Set the look and feel for the frame and update the UI
           // to use a new selected look and feel.
           UIManager.setLookAndFeel(lookAndFeelInfo.getClassName());
-          // TODO
-          // SwingUtilities.updateComponentTreeUI(this);
+          SwingUtilities.updateComponentTreeUI(hoofdFrame);
           m_param.set_LookAndFeel(lookAndFeelInfo.getClassName());
 
           // Pas het standaard lettertype aan voor ALLE UI-elementen
@@ -162,10 +163,12 @@ public class MenuBar {
             m_param.set_LogDir(m_LogDir);
             m_param.set_toDisk(true);
             m_toDisk = selected;
+            m_param.save();
           }
         } else {
           m_param.set_toDisk(false);
           m_toDisk = selected;
+          m_param.save();
         }
         try {
           MyLogger.setup(m_Level, m_LogDir, m_toDisk);
@@ -176,6 +179,28 @@ public class MenuBar {
       }
     });
     mnSettings.add(mntmLogToDisk);
+
+    // Option Double tabs
+    JCheckBoxMenuItem mntmDoubleTabs = new JCheckBoxMenuItem(bundle.getMessage("DoubleTabs"));
+    mntmDoubleTabs.setState(m_param.is_DuplicateTabs());
+    mntmDoubleTabs.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        boolean selected = mntmDoubleTabs.isSelected();
+        if (selected) {
+          m_param.set_DuplicateTabs(selected);
+          m_DuplicateTabs = selected;
+          m_param.save();
+          LOGGER.log(Level.INFO, bundle.getMessage("DoubleTabsSet", Boolean.toString(selected)));
+        } else {
+          m_param.set_DuplicateTabs(selected);
+          m_DuplicateTabs = selected;
+          m_param.save();
+          LOGGER.log(Level.INFO, bundle.getMessage("DoubleTabsSet", Boolean.toString(selected)));
+        }
+      }
+    });
+    mnSettings.add(mntmDoubleTabs);
 
     // Option Preferences
     JMenuItem mntmPreferences = new JMenuItem(bundle.getMessage("Preferences"));

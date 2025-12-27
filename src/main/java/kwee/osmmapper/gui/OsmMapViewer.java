@@ -50,8 +50,6 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
   private ArrayList<Double> longarr = new ArrayList<Double>();
   private ArrayList<Double> latarr = new ArrayList<Double>();
 
-  // private String inputFile =
-  // "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\Hoevelaken-adressenlijst_met_coordinaten.xlsx";
   private String inputFile = "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\Hoevelaken-warmtescan_met_coordinaten_new.xlsx";
 
   public OsmMapViewer(String inpFile, String subtitel) {

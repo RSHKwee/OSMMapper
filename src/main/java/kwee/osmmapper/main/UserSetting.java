@@ -43,6 +43,7 @@ public class UserSetting {
   private String c_InpDirectory = "InputDirectory";
   private String c_InpExcelFile = "InputExcelFile";
   private String c_outpExcelFile = "OutputExcelFile";
+  private String c_DuplicateTabs = "DuplicateTabs";
 
   private String m_Level = c_LevelValue;
   private String m_LookAndFeel;
@@ -57,6 +58,7 @@ public class UserSetting {
   private String m_InpDirectory = "";
   private String m_InpExcelFile = "";
   private String m_outpExcelFile = "";
+  private boolean m_DuplicateTabs = false; // NO duplicate tabs.
 
   private Preferences pref;
   private Preferences userPrefs = Preferences.userRoot();
@@ -92,6 +94,7 @@ public class UserSetting {
     m_InpDirectory = pref.get(c_InpDirectory, "");
     m_InpExcelFile = pref.get(c_InpExcelFile, "");
     m_outpExcelFile = pref.get(c_outpExcelFile, "");
+    m_DuplicateTabs = pref.getBoolean(c_DuplicateTabs, false);
   }
 
   // Getters for all parameters
@@ -123,12 +126,22 @@ public class UserSetting {
     return m_ConfirmOnExit;
   }
 
+  public boolean is_DuplicateTabs() {
+    return m_DuplicateTabs;
+  }
+
   // Laad de opgeslagen lijst met tab-info
   public List<TabInfo> get_TabState() {
     try {
       m_KeyTabData = pref.get(c_KeyTabData, "[]"); // Lege array als default
       ObjectMapper mapper = new ObjectMapper();
-      return mapper.readValue(m_KeyTabData, mapper.getTypeFactory().constructCollectionType(List.class, TabInfo.class));
+      List<TabInfo> localList = new ArrayList<TabInfo>();
+      localList = mapper.readValue(m_KeyTabData,
+          mapper.getTypeFactory().constructCollectionType(List.class, TabInfo.class));
+      if (localList.size() > 20) {
+        localList = localList.subList(0, 20);
+      }
+      return localList;
     } catch (Exception e) {
       LOGGER.log(Level.WARNING, e.getMessage());
       return new ArrayList<>(); // Geef lege lijst terug bij fout
@@ -214,6 +227,11 @@ public class UserSetting {
     this.m_outpExcelFile = OutpDirectory;
   }
 
+  public void set_DuplicateTabs(boolean DuplicateTabs) {
+    pref.putBoolean(c_DuplicateTabs, DuplicateTabs);
+    this.m_DuplicateTabs = DuplicateTabs;
+  }
+
   /**
    * Save all settings
    */
@@ -232,6 +250,7 @@ public class UserSetting {
       pref.put(c_InpDirectory, m_InpDirectory);
       pref.put(c_InpExcelFile, m_InpExcelFile);
       pref.put(c_outpExcelFile, m_outpExcelFile);
+      pref.putBoolean(c_DuplicateTabs, m_DuplicateTabs);
 
       pref.flush();
     } catch (BackingStoreException e) {
@@ -258,6 +277,7 @@ public class UserSetting {
       freezeInstance.set_InpDirectory(m_InpDirectory);
       freezeInstance.set_InpExcelFile(m_InpExcelFile);
       freezeInstance.set_OutpExcelFile(m_outpExcelFile);
+      freezeInstance.set_DuplicateTabs(m_DuplicateTabs);
     } else {
       LOGGER.log(Level.INFO, "Nothing to freeze....");
     }
@@ -277,6 +297,7 @@ public class UserSetting {
       uniqueInstance.set_InpDirectory(m_InpDirectory);
       uniqueInstance.set_InpExcelFile(m_InpExcelFile);
       uniqueInstance.set_OutpExcelFile(m_outpExcelFile);
+      uniqueInstance.set_DuplicateTabs(m_DuplicateTabs);
 
       freezeInstance = null;
     } else {
@@ -303,6 +324,7 @@ public class UserSetting {
     l_line = l_line + c_InpDirectory + ": " + m_InpDirectory + "\n";
     l_line = l_line + c_InpExcelFile + ": " + m_InpExcelFile + "\n";
     l_line = l_line + c_outpExcelFile + ": " + m_outpExcelFile + "\n";
+    l_line = l_line + c_DuplicateTabs + ": " + m_DuplicateTabs + "\n";
 
     return l_line;
   }
