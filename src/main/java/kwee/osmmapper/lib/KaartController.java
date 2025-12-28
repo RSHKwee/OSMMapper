@@ -108,7 +108,7 @@ public class KaartController {
   public void voegKaartToe(String fileNaam, String naam, double lat, double lon, int zoom, boolean administrate) {
     try {
       // Maak nieuwe kaart
-      OsmMapViewer kaart = new OsmMapViewer(fileNaam, naam);
+      OsmMapViewer kaart = new OsmMapViewer(fileNaam, naam, lat, lon, zoom);
       kaart.setVisible(false);
 
       // Maak container panel

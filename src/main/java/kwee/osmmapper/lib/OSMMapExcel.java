@@ -124,6 +124,19 @@ public class OSMMapExcel {
    * 
    * @param outputFile Excel with Longtitude and Latitude
    */
+  public void WriteExcel(String outputFile) {
+    m_ProgressBar = new JProgressBar();
+    m_Progresslabel = new JLabel();
+    WriteExcel(outputFile, m_ProgressBar, m_Progresslabel);
+  }
+
+  /**
+   * Add Longitude and Latitude to Address.
+   * 
+   * @param outputFile      Excel with Longtitude and Latitude
+   * @param a_ProgressBar
+   * @param a_Progresslabel
+   */
   public void WriteExcel(String outputFile, JProgressBar a_ProgressBar, JLabel a_Progresslabel) {
     m_ProgressBar = a_ProgressBar;
     m_Progresslabel = a_Progresslabel;

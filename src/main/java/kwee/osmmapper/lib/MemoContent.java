@@ -12,8 +12,8 @@ public class MemoContent {
   String projects = "";
   String country = "";
 
-  double longitude = 0.0;
-  double latitude = 0.0;
+  double longitude = -500.0;
+  double latitude = -500.0;
 
   public MemoContent() {
 

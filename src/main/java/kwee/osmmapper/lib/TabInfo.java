@@ -11,9 +11,9 @@ public class TabInfo {
   private final String id; // final maakt het immutable
   private String filePath;
   private String title;
-  private double latitude = 0.0;
-  private double longtitude = 0.0;
-  private int zoomfactor = 5;
+  private double latitude = -500.0;
+  private double longtitude = -500.0;
+  private int zoomfactor = -1;
 
   // Default constructor nodig voor Jackson
   public TabInfo() {

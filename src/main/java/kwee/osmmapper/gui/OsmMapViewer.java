@@ -15,6 +15,8 @@ import kwee.osmmapper.lib.CustomMarker;
 import kwee.osmmapper.lib.Mediaan;
 import kwee.osmmapper.lib.MemoContent;
 import kwee.osmmapper.lib.OSMMapExcel;
+import kwee.osmmapper.lib.TabInfo;
+import kwee.osmmapper.main.UserSetting;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -26,19 +28,21 @@ import javax.swing.JComponent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import java.util.ArrayList;
 //import java.util.logging.Logger;
+import java.util.List;
 
 /**
- * A demo class to start a Swing application which shows a map and has some pre-defined options set.
+ * Start a Swing application which shows a map and has some pre-defined options set.
  */
 public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
   // private static final Logger LOGGER = MyLogger.getLogger();
-
   private static final long serialVersionUID = 1L;
+  private UserSetting m_params = UserSetting.getInstance();
 
   private JMapViewerTree treeMap;
   private JLabel zoomLabel;
@@ -50,11 +54,20 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
   private ArrayList<Double> longarr = new ArrayList<Double>();
   private ArrayList<Double> latarr = new ArrayList<Double>();
 
-  private String inputFile = "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\Hoevelaken-warmtescan_met_coordinaten_new.xlsx";
+  private String inputFile = "";
+  private String title = "";
+  private double lat = -500.0;
+  private double lon = -500.0;
+  private int zoom = 15;
 
-  public OsmMapViewer(String inpFile, String subtitel) {
+  public OsmMapViewer(String inpFile, String subtitel, double a_lat, double a_lon, int a_zoom) {
     super("OSM Map Viewer " + subtitel);
+    title = subtitel;
     inputFile = inpFile;
+    lat = a_lat;
+    lon = a_lon;
+    zoom = a_zoom;
+
     OsmMapViewerInit();
   }
 
@@ -79,9 +92,20 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
     enableMarkerTooltips();
     addMarkers(inputFile);
 
-    double lat = Mediaan.mediaanList(latarr);
-    double lon = Mediaan.mediaanList(longarr);
-    map().setDisplayPosition(new Coordinate(lat, lon), 15);
+    if ((lat <= -400) || (lon <= -400) || zoom == -1) {
+      if (!((latarr.isEmpty() || longarr.isEmpty()))) {
+        lat = Mediaan.mediaanList(latarr);
+        lon = Mediaan.mediaanList(longarr);
+        zoom = 15;
+      } else {
+        // centreren NL
+        lat = 52.1326;
+        lon = 5.2913;
+        zoom = 7;
+      }
+    }
+
+    map().setDisplayPosition(new Coordinate(lat, lon), zoom);
     updateZoomParameters();
 
     treeMap.setTreeVisible(true);
@@ -134,6 +158,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
       mperpLabelValue.setText(String.format("%s", map().getMeterPerPixel()));
     if (zoomValue != null)
       zoomValue.setText(String.format("%s", map().getZoom()));
+    updatePreference();
   }
 
   @Override
@@ -379,5 +404,32 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
   public void setDefaultCloseOperation(int operation) {
     // Overschrijf om te voorkomen dat de JFrame sluit
     super.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+  }
+
+  private void updatePreference() {
+    List<TabInfo> tablist = new ArrayList<>();
+    tablist = m_params.get_TabState();
+    synchronized (tablist) {
+      List<TabInfo> l_tablist = new ArrayList<TabInfo>(tablist);
+      for (int i = 0; i < tablist.size(); i++) {
+        TabInfo tab = new TabInfo();
+        tab = l_tablist.get(i);
+        if (tab.getTitle().equalsIgnoreCase(title)) {
+          tab.setZoomfactor(map().getZoom());
+          // Via de huidige viewport (zichtbaar gebied)
+          JMapViewer l_map = new JMapViewer();
+          l_map = map();
+          Coordinate center = (Coordinate) l_map.getPosition(l_map.getWidth() / 2, l_map.getHeight() / 2);
+
+          double latitude = center.getLat();
+          double longitude = center.getLon();
+          tab.setLatitude(latitude);
+          tab.setLongtitude(longitude);
+
+          m_params.set_TabState(l_tablist);
+          m_params.save();
+        }
+      }
+    }
   }
 }
