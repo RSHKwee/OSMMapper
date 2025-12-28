@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JLabel;
+import javax.swing.JProgressBar;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -15,27 +18,30 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import kwee.library.Address;
+import kwee.library.ApplicationMessages;
 import kwee.library.NominatimAPI;
 import kwee.logger.MyLogger;
 
 public class OSMMapExcel {
   private static final Logger LOGGER = MyLogger.getLogger();
+  private ApplicationMessages bundle = ApplicationMessages.getInstance();
 
-  int postcodeidx = -1;
-  int huisnummeridx = -1;
-  int toevoegingidx = -1;
-  int straatidx = -1;
-  int plaatsidx = -1;
-  int voornaamidx = -1;
-  int achternaamidx = -1;
-  int telefoonidx = -1;
-  int mailadresidx = -1;
-  int projectidx = -1;
-  int longIndex = -1;
-  int latIndex = -1;
-  int maxCellCount = -1;
+  private int postcodeidx = -1;
+  private int huisnummeridx = -1;
+  private int toevoegingidx = -1;
+  private int straatidx = -1;
+  private int plaatsidx = -1;
+  private int voornaamidx = -1;
+  private int achternaamidx = -1;
+  private int telefoonidx = -1;
+  private int mailadresidx = -1;
+  private int projectidx = -1;
+  private int longIndex = -1;
+  private int latIndex = -1;
+  private int countryIndex = -1;
 
-  String m_ExcelFile = "";
+  private int maxCellCount = -1;
+  private String m_ExcelFile = "";
 
   public OSMMapExcel(String inputFile) {
     m_ExcelFile = inputFile;
@@ -79,6 +85,8 @@ public class OSMMapExcel {
                 longIndex = cellindex;
               } else if (str.toLowerCase().contains("lat")) {
                 latIndex = cellindex;
+              } else if (str.toLowerCase().contains("land")) {
+                countryIndex = cellindex;
               } else {
                 LOGGER.log(Level.FINE, "cellindex: " + cellindex);
               }
@@ -106,21 +114,37 @@ public class OSMMapExcel {
     return memocontarr;
   }
 
+  private JProgressBar m_ProgressBar;
+  private JLabel m_Progresslabel;
+  private int m_Processed = -1;
+  private int m_Number = 0;
+
   /**
    * Add Longitude and Latitude to Address.
    * 
    * @param outputFile Excel with Longtitude and Latitude
    */
-  public void WriteExcel(String outputFile) {
+  public void WriteExcel(String outputFile, JProgressBar a_ProgressBar, JLabel a_Progresslabel) {
+    m_ProgressBar = a_ProgressBar;
+    m_Progresslabel = a_Progresslabel;
+
+    m_Processed = -1;
+    m_Progresslabel.setVisible(true);
+    m_ProgressBar.setVisible(true);
+    verwerkProgress();
+
     try (FileInputStream file = new FileInputStream(m_ExcelFile); Workbook workbook = WorkbookFactory.create(file)) {
       Sheet sheet = workbook.getSheetAt(0);
       int totalRows = sheet.getLastRowNum() + 1;
       LOGGER.log(Level.INFO, "Totaal aantal rijen te verwerken: ~" + totalRows);
 
+      m_Number = totalRows;
+      m_ProgressBar.setMaximum(m_Number);
+
       int rowIndex = 0;
       for (Row row : sheet) {
         if (rowIndex == 0) {
-          if ((longIndex == -1) || (latIndex == -1)) {
+          if (longIndex == -1) {
             maxCellCount++;
             longIndex = maxCellCount;
             Cell longCell = row.getCell(longIndex);
@@ -128,7 +152,8 @@ public class OSMMapExcel {
               longCell = row.createCell(longIndex);
             }
             longCell.setCellValue("Longitude");
-
+          }
+          if (latIndex == -1) {
             maxCellCount++;
             latIndex = maxCellCount;
             Cell latCell = row.getCell(latIndex);
@@ -136,6 +161,15 @@ public class OSMMapExcel {
               latCell = row.createCell(latIndex);
             }
             latCell.setCellValue("Latitude");
+          }
+          if (countryIndex == -1) {
+            maxCellCount++;
+            countryIndex = maxCellCount;
+            Cell countryCell = row.getCell(countryIndex);
+            if (countryCell == null) {
+              countryCell = row.createCell(countryIndex);
+            }
+            countryCell.setCellValue("Land");
           }
         } else {
           MemoContent memocont = new MemoContent();
@@ -165,7 +199,11 @@ public class OSMMapExcel {
                 if (latCell == null) {
                   latCell = row.createCell(latIndex);
                 }
-                latCell.setCellValue(l_address.getLatitude());
+                Cell countryCell = row.getCell(countryIndex);
+                if (countryCell == null) {
+                  countryCell = row.createCell(countryIndex);
+                }
+                countryCell.setCellValue(l_address.getCountry());
               } catch (Exception e) {
                 // do nothing
               }
@@ -175,6 +213,7 @@ public class OSMMapExcel {
           }
         }
         rowIndex++;
+        verwerkProgress();
       }
 
       // 4. SLA OP NAAR EEN NIEUW BESTAND
@@ -267,10 +306,16 @@ public class OSMMapExcel {
           memocont.setLatitude(l_cell.getNumericCellValue());
         }
       }
+      if (countryIndex != -1) {
+        Cell l_cell = row.getCell(countryIndex);
+        if (l_cell != null) {
+          memocont.setCountry(getCelValue(l_cell));
+        }
+      }
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      LOGGER.log(Level.WARNING, e.getMessage());
     }
-    memocont.setCountry("Netherlands");
+
     return memocont;
   }
 
@@ -288,5 +333,25 @@ public class OSMMapExcel {
       str = Boolean.toString(bstat);
     }
     return str;
+  }
+
+  /**
+   * Display progress processed files.
+   */
+  private void verwerkProgress() {
+    m_Progresslabel.setVisible(true);
+    m_ProgressBar.setVisible(true);
+    m_Processed++;
+    try {
+      m_ProgressBar.setValue(m_Processed);
+      m_ProgressBar.paintImmediately(m_ProgressBar.getVisibleRect());
+      Double v_prog = ((double) m_Processed / (double) m_Number) * 100;
+      int v_iprog = v_prog.intValue();
+
+      m_Progresslabel.setText(bundle.getMessage("Progress", v_iprog, m_Processed, m_Number));
+      m_Progresslabel.paintImmediately(m_Progresslabel.getVisibleRect());
+    } catch (Exception e) {
+      // Do nothing
+    }
   }
 }

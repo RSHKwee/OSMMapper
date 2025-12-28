@@ -1,5 +1,6 @@
 package kwee.osmmapper.gui;
 
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -16,9 +17,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
+import kwee.library.ApplicationMessages;
 import kwee.osmmapper.lib.KaartController;
 import kwee.osmmapper.lib.MemoContent;
 import kwee.osmmapper.lib.OSMMapExcel;
@@ -26,8 +29,11 @@ import kwee.osmmapper.main.UserSetting;
 
 public class CreateUpperPanel {
   private UserSetting m_params;
+
   private String m_InpDirectory = "";
   private KaartController kaartController;
+  private JProgressBar m_ProgressBar = new JProgressBar();
+  private JLabel m_ProgressLabel = new JLabel(" ");;
 
   public CreateUpperPanel() {
     kaartController = KaartController.getInstance();
@@ -217,6 +223,7 @@ public class CreateUpperPanel {
           JFileChooser fileChooser = new JFileChooser();
           fileChooser.setDialogTitle("Selecteer XLSX invoerbestand");
           fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+          fileChooser.setSelectedFile(new File(m_InpDirectory));
 
           // Optioneel: CSV filter toevoegen
           fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
@@ -227,7 +234,7 @@ public class CreateUpperPanel {
 
             @Override
             public String getDescription() {
-              return "CSV Bestanden (*.csv)";
+              return "XLSX Bestanden (*.xlsx)";
             }
           });
 
@@ -289,7 +296,7 @@ public class CreateUpperPanel {
       });
 
       // Toon de dialoog
-      int dialogResult = JOptionPane.showConfirmDialog(null, filePanel, "Selecteer CSV bestanden voor geo-informatie",
+      int dialogResult = JOptionPane.showConfirmDialog(null, filePanel, "Selecteer XLSX bestanden voor geo-informatie",
           JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
       // Verwerk de selectie
@@ -344,12 +351,15 @@ public class CreateUpperPanel {
             ArrayList<MemoContent> memocontarr = new ArrayList<MemoContent>();
             OSMMapExcel mexcel = new OSMMapExcel(inputFile.getAbsolutePath());
             memocontarr = mexcel.ReadExcel();
-            mexcel.WriteExcel(outputFile.getAbsolutePath());
+            mexcel.WriteExcel(outputFile.getAbsolutePath(), m_ProgressBar, m_ProgressLabel);
             return null;
           }
 
           @Override
           protected void done() {
+            m_ProgressLabel.setVisible(false);
+            m_ProgressBar.setVisible(false);
+
             try {
               get(); // Check voor excepties
               JOptionPane.showMessageDialog(null, "Klaar!", "Succes", JOptionPane.INFORMATION_MESSAGE);
@@ -362,9 +372,21 @@ public class CreateUpperPanel {
       }
     });
 
+    // Progress bars
+    JPanel progrespanel = new JPanel();
+    m_ProgressLabel = new JLabel("Progress ");
+
+    m_ProgressLabel.setVisible(false);
+    m_ProgressBar.setVisible(false);
+
+    progrespanel.add(m_ProgressLabel, BorderLayout.SOUTH);
+    progrespanel.add(m_ProgressBar, BorderLayout.SOUTH);
+
     panel.add(addLongLatKnop);
     panel.add(nieuweKnop);
     panel.add(switchKnop);
+    panel.add(progrespanel, BorderLayout.SOUTH);
+
     return panel;
   }
 }

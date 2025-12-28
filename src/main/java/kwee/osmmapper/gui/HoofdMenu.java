@@ -35,7 +35,7 @@ public class HoofdMenu {
 
   private boolean m_DuplicateTabs = false; // NO duplicate tabs.
 
-  JMenuBar menuBar = new JMenuBar();
+  private JMenuBar menuBar = new JMenuBar();
 
   public void start() {
     this.m_params = UserSetting.getInstance();
@@ -64,7 +64,9 @@ public class HoofdMenu {
     hoofdFrame.add(kaartenContainer, BorderLayout.CENTER);
 
     // 3. Onderste paneel voor logging
-    hoofdFrame.add(createLogPaneel(), BorderLayout.SOUTH);
+    JPanel logpanel = createLogPaneel();
+    hoofdFrame.add(logpanel, BorderLayout.SOUTH);
+
     hoofdFrame.setVisible(true);
 
     LOGGER.log(Level.INFO, "" + apptxt);

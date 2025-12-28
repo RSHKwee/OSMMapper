@@ -44,6 +44,7 @@ public class UserSetting {
   private String c_InpExcelFile = "InputExcelFile";
   private String c_outpExcelFile = "OutputExcelFile";
   private String c_DuplicateTabs = "DuplicateTabs";
+  private String c_Country = "Country";
 
   private String m_Level = c_LevelValue;
   private String m_LookAndFeel;
@@ -59,6 +60,7 @@ public class UserSetting {
   private String m_InpExcelFile = "";
   private String m_outpExcelFile = "";
   private boolean m_DuplicateTabs = false; // NO duplicate tabs.
+  private String m_Country = "Netherlands";
 
   private Preferences pref;
   private Preferences userPrefs = Preferences.userRoot();
@@ -95,6 +97,7 @@ public class UserSetting {
     m_InpExcelFile = pref.get(c_InpExcelFile, "");
     m_outpExcelFile = pref.get(c_outpExcelFile, "");
     m_DuplicateTabs = pref.getBoolean(c_DuplicateTabs, false);
+    m_Country = pref.get(c_Country, "");
   }
 
   // Getters for all parameters
@@ -168,6 +171,10 @@ public class UserSetting {
     return m_outpExcelFile;
   }
 
+  public String get_Country() {
+    return m_Country;
+  }
+
   // == Setters ========
   public void set_LogDir(String m_LogDir) {
     this.m_LogDir = m_LogDir;
@@ -232,6 +239,11 @@ public class UserSetting {
     this.m_DuplicateTabs = DuplicateTabs;
   }
 
+  public void set_Country(String Country) {
+    pref.put(c_Country, Country);
+    this.m_Country = Country;
+  }
+
   /**
    * Save all settings
    */
@@ -251,6 +263,7 @@ public class UserSetting {
       pref.put(c_InpExcelFile, m_InpExcelFile);
       pref.put(c_outpExcelFile, m_outpExcelFile);
       pref.putBoolean(c_DuplicateTabs, m_DuplicateTabs);
+      pref.put(c_Country, m_Country);
 
       pref.flush();
     } catch (BackingStoreException e) {
@@ -278,6 +291,7 @@ public class UserSetting {
       freezeInstance.set_InpExcelFile(m_InpExcelFile);
       freezeInstance.set_OutpExcelFile(m_outpExcelFile);
       freezeInstance.set_DuplicateTabs(m_DuplicateTabs);
+      freezeInstance.set_Country(m_Country);
     } else {
       LOGGER.log(Level.INFO, "Nothing to freeze....");
     }
@@ -298,6 +312,7 @@ public class UserSetting {
       uniqueInstance.set_InpExcelFile(m_InpExcelFile);
       uniqueInstance.set_OutpExcelFile(m_outpExcelFile);
       uniqueInstance.set_DuplicateTabs(m_DuplicateTabs);
+      uniqueInstance.set_Country(m_Country);
 
       freezeInstance = null;
     } else {
@@ -325,6 +340,7 @@ public class UserSetting {
     l_line = l_line + c_InpExcelFile + ": " + m_InpExcelFile + "\n";
     l_line = l_line + c_outpExcelFile + ": " + m_outpExcelFile + "\n";
     l_line = l_line + c_DuplicateTabs + ": " + m_DuplicateTabs + "\n";
+    l_line = l_line + c_Country + ": " + m_Country + "\n";
 
     return l_line;
   }
