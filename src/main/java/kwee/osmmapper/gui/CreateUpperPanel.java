@@ -48,6 +48,50 @@ public class CreateUpperPanel {
     // Knop 1: Nieuwe kaart
     JButton nieuweKnop = new JButton("➕ Nieuwe Kaart");
     nieuweKnop.addActionListener(e -> {
+      // Keuze dialoog: bestand of lege kaart
+      Object[] keuzeOpties = { "XLSX Bestand selecteren", "Lege kaart maken", "Annuleren" };
+      int keuzeResultaat = JOptionPane.showOptionDialog(null, "Hoe wilt u een nieuwe kaart maken?", "Type kaart",
+          JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, keuzeOpties, keuzeOpties[0]);
+
+      // Annuleren gekozen
+      if (keuzeResultaat == 2 || keuzeResultaat == JOptionPane.CLOSED_OPTION) {
+        return;
+      }
+
+      // LEge kaart gekozen
+      if (keuzeResultaat == 1) {
+        String title = JOptionPane.showInputDialog(null, "Voer een titel in voor de lege kaart:", "Lege kaart titel",
+            JOptionPane.QUESTION_MESSAGE);
+
+        if (title != null && !title.trim().isEmpty()) {
+          // Default waarden voor lege kaart
+          // Utrecht centrum als default
+          double defaultX = 52.0907; // lon
+          double defaultY = 5.1214; // lat
+          int defaultZoom = 12;
+
+          // Bevestigingsdialoog voor lege kaart
+          int confirm = JOptionPane.showConfirmDialog(null,
+              "Bevestig aanmaken lege kaart:\n\n" + "Titel: " + title + "\n" + "Locatie: (" + defaultX + ", " + defaultY
+                  + ")\n" + "Zoomniveau: " + defaultZoom,
+              "Bevestiging lege kaart", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+          if (confirm == JOptionPane.YES_OPTION) {
+            // Roep aan met lege bestandspad
+            kaartController.voegKaartToe("", title, defaultX, defaultY, defaultZoom);
+            JOptionPane.showMessageDialog(null, "Lege kaart '" + title + "' is aangemaakt.", "Succes",
+                JOptionPane.INFORMATION_MESSAGE);
+          }
+        } else if (title != null) {
+          // Titel was leeg
+          JOptionPane.showMessageDialog(null, "Titel mag niet leeg zijn!", "Fout", JOptionPane.ERROR_MESSAGE);
+        }
+        return;
+      }
+
+      // XLSX Bestand gekozen (keuzeResultaat == 0)
+      // Oorspronkelijke code blijft hieronder
+
       // Maak een JPanel met GridBagLayout voor nette uitlijning
       JPanel panel2 = new JPanel(new GridBagLayout());
       GridBagConstraints gbc = new GridBagConstraints();
@@ -101,7 +145,7 @@ public class CreateUpperPanel {
 
             @Override
             public String getDescription() {
-              return "xlsxBestanden (*.xlsx)";
+              return "XLSLX Bestanden (*.xlsx)";
             }
           });
 
@@ -134,7 +178,27 @@ public class CreateUpperPanel {
 
         // Validatie
         if (filePath.isEmpty()) {
-          JOptionPane.showMessageDialog(null, "Selecteer eerst een xlsxbestand!", "Fout", JOptionPane.ERROR_MESSAGE);
+          // Gebruiker kan alsnog kiezen voor lege kaart
+          int keuzeGeenBestand = JOptionPane.showOptionDialog(null,
+              "Geen bestand geselecteerd. Wilt u:\n" + "1. Terug om een bestand te selecteren\n"
+                  + "2. Een lege kaart maken\n" + "3. Annuleren",
+              "Geen bestand", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+              new String[] { "Terug", "Lege kaart", "Annuleren" }, "Terug");
+
+          if (keuzeGeenBestand == 1) {
+            // Lege kaart maken
+            String legeTitel = title.isEmpty() ? JOptionPane.showInputDialog(null,
+                "Voer een titel in voor de lege kaart:", "Lege kaart titel", JOptionPane.QUESTION_MESSAGE) : title;
+
+            if (legeTitel != null && !legeTitel.trim().isEmpty()) {
+              kaartController.voegKaartToe("", legeTitel.trim(), 0.0, 0.0, 10);
+              JOptionPane.showMessageDialog(null, "Lege kaart '" + legeTitel + "' is aangemaakt.", "Succes",
+                  JOptionPane.INFORMATION_MESSAGE);
+            }
+          } else if (keuzeGeenBestand == 0) {
+            // Terug - herstart de dialoog
+            nieuweKnop.doClick();
+          }
           return;
         }
 

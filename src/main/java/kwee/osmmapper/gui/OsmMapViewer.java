@@ -78,6 +78,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
 
   private void OsmMapViewerInit() {
     treeMap = new JMapViewerTree("Locaties");
+
     setupJFrame();
     setupPanels();
 
@@ -108,7 +109,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
     map().setDisplayPosition(new Coordinate(lat, lon), zoom);
     updateZoomParameters();
 
-    treeMap.setTreeVisible(true);
+    treeMap.setTreeVisible(false);
     add(treeMap, BorderLayout.CENTER);
   }
 

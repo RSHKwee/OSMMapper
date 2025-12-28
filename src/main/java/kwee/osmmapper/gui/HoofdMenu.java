@@ -92,27 +92,12 @@ public class HoofdMenu {
     julLogger.addHandler(new CustomJULHandler());
 
     Logger rootLogger = Logger.getLogger("");
-    boolean btexthdlr = false;
     for (Handler handler : rootLogger.getHandlers()) {
       if (handler instanceof TextAreaHandler) {
         TextAreaHandler textAreaHandler = (TextAreaHandler) handler;
         logArea = textAreaHandler.getTextArea();
         logArea.setFont(customFont);
-        btexthdlr = true;
       }
-    }
-
-    if (!btexthdlr) {
-      // Voeg TextAreaHandler toe
-      TextAreaHandler textAreaHandler = new TextAreaHandler();
-      SimpleFormatter formatterConsTxt = new MyConsTxtFormatter();
-
-      textAreaHandler.setLevel(m_Level);
-      logArea = textAreaHandler.getTextArea();
-      logArea.setFont(customFont);
-      textAreaHandler.setFormatter(formatterConsTxt);
-
-      rootLogger.addHandler(textAreaHandler);
     }
 
     logArea.setEditable(false);
