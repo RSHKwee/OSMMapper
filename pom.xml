@@ -8,34 +8,23 @@
     <groupId>kwee</groupId>
     <artifactId>osmmapper</artifactId>
     <version>0.0.0.1</version>
-    <packaging>jar</packaging>
+    <name>osmmapper</name>
 
+  <parent>
+	<groupId>kwee</groupId>
+	<artifactId>aggregator</artifactId>
+	<version>1.1.0.3</version>
+	<relativePath>../pom.xml</relativePath>
+  </parent>
+ 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <repositories>
-        <!-- ONLY THIS REPOSITORY IS NEEDED -->
-        <!--
-        <repository>
-            <id>josm-public</id>
-            <name>josm public releases</name>
-            <url>https://josm.openstreetmap.de/nexus/content/groups/public</url>
-        </repository>
-        -->
-    </repositories>
-
     <dependencies>
-        <!-- JMapViewer dependency -->
-        <!--
-        <dependency>
-            <groupId>org.openstreetmap.jmapviewer</groupId>
-            <artifactId>jmapviewer</artifactId>
-            <version>2.16</version>
-        </dependency>
-        -->
+        <!-- Jouw bestaande dependencies blijven ongewijzigd -->
         <dependency>
           <groupId>org.apache.poi</groupId>
           <artifactId>poi</artifactId>
@@ -46,15 +35,15 @@
           <artifactId>poi-ooxml</artifactId>
           <version>5.2.5</version>
        </dependency>
-        <dependency>
-        	<groupId>kwee</groupId>
-        	<artifactId>library</artifactId>
-        	<version>1.1.0.3</version>
-        </dependency>
+    <dependency>
+	  <groupId>kwee</groupId>
+	  <artifactId>library</artifactId>
+	  <version>${kweeLibrary.version}</version>
+	</dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.17.2</version> <!-- Controleer altijd de nieuwste versie -->
+            <version>2.17.2</version>
         </dependency>      
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -67,4 +56,356 @@
            <version>1.7.32</version>
         </dependency>
     </dependencies>
+
+
+
+    <!-- NIEUW: Build-sectie met plugins -->
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>   
+
+	<plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>${maven-enforcer-plugin.version}</version> <!-- Gebruik een geschikte versie van de plugin -->
+        <executions>
+          <execution>
+            <id>enforce-maven-version</id>
+            <goals>
+             <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+               <requireMavenVersion>
+                 <version>${maven.min.version}</version> <!-- Minimale Maven-versie vereist -->
+                </requireMavenVersion>
+              </rules>
+              <fail>false</fail> <!-- Stop de build niet bij niet-naleving -->
+            </configuration>
+          </execution>
+        </executions>
+      </plugin> 
+<!--      
+	  <plugin>
+	    <groupId>org.codehaus.mojo</groupId>
+		<artifactId>jaxb2-maven-plugin</artifactId>
+		<version>${jaxb2-maven-plugin.version}</version>
+		<executions>
+		  <execution>
+			<id>xjc</id>
+			<goals>
+			  <goal>xjc</goal>
+			</goals>
+		  </execution>
+		</executions>
+	    <configuration>
+	-->	  <!-- The package of your generated sources -->
+<!--		  <packageName>kwee.ing2ofx.generated.camt053</packageName>
+		  <sources>
+			<source>src/main/resources/xsd/camt053</source>
+		  </sources>
+	    </configuration>
+	  </plugin>
+-->	
+      <plugin>
+		<artifactId>maven-assembly-plugin</artifactId>
+  		<version>${maven-assembly-plugin.version}</version>      
+		<executions>
+          <execution>
+			<phase>package</phase>
+			<goals>
+			  <goal>single</goal>
+			</goals>
+          </execution>
+        </executions>
+		<configuration>
+          <archive>
+            <manifest>
+		      <addClasspath>true</addClasspath>
+		      <mainClass>kwee.osmmapper.main.Main</mainClass>
+		    </manifest>
+          </archive>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <finalName>osmmapper</finalName>
+        </configuration>
+      </plugin>
+      
+      <!-- Distribute tools v -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>${maven-resources-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>CopyToolsIng</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.basedir}\BuildTools</outputDirectory>
+              <resources>                                        
+                <resource>
+                  <directory>..\BuildTools</directory>
+                  <includes>
+                    <include>HelpChm.cmd</include>
+                    <include>innosetup.cmd</include>
+                  </includes>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+              <encoding>${project.build.sourceEncoding}</encoding>
+            </configuration>
+          </execution>     
+          <execution>
+            <id>CopyToolsOsmmapper</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.basedir}</outputDirectory>
+              <resources>                                        
+                <resource>
+                  <directory>..\BuildTools</directory>
+                  <includes>
+                    <include>Library.iss</include>
+                  </includes>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+              <encoding>${project.build.sourceEncoding}</encoding>
+            </configuration>
+          </execution>     
+	      <!-- Distribute readme.md v -->
+          <execution>
+            <id>readme-md</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+              <resources>                                        
+                <resource>
+                  <directory>.</directory>
+                  <includes>
+                    <include>readme.md</include>
+                    <include>*.PNG</include>
+                  </includes>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+              <encoding>${project.build.sourceEncoding}</encoding>
+            </configuration>
+          </execution>
+          <execution>
+            <id>helpfile</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/help/en</outputDirectory>
+              <resources>                                        
+                <resource>
+                  <directory>${project.basedir}/help/en</directory>
+                  <includes>
+                    <include>osmmapper.chm</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution> 
+          <execution>
+            <id>helpfilenl</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/help/nl</outputDirectory>
+              <resources>                                        
+                <resource>
+                  <directory>${project.basedir}/help/nl</directory>
+                  <includes>
+                    <include>osmmapper.chm</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>         
+        </executions>
+      </plugin>		
+	  <!-- readme.md ^ -->
+	  <!-- LAUNCH4J create executable v -->      
+      <plugin>
+         <groupId>com.akathist.maven.plugins.launch4j</groupId>
+         <artifactId>launch4j-maven-plugin</artifactId>
+         <version>${launch4j-maven-plugin.version}</version>
+         <executions>
+           <execution>
+             <id>l4j-clui</id>
+             <phase>package</phase>
+             <goals>
+               <goal>launch4j</goal>
+             </goals>
+             <configuration>
+               <headerType>console</headerType>
+               <jar>${project.build.directory}/osmmapper-jar-with-dependencies.jar</jar>
+               <outfile>${project.build.directory}/../osmmapper.exe</outfile>
+               <downloadUrl>https://cdn.azul.com/zulu/bin/zulu22.32.21-ca-crac-jdk22.0.2-win_x64.zip</downloadUrl>
+               <classPath>
+                 <mainClass>kwee.osmmapper.main.Main</mainClass>
+              </classPath>
+              <jre>
+	            <path>%java_home%</path>
+              </jre>
+	  	  <!--    <icon>src/main/resources/ingSNSLogo.ico</icon> -->
+              <versionInfo>
+                <fileVersion>${project.version}</fileVersion>
+                <txtFileVersion>${project.version}</txtFileVersion>
+                <fileDescription>${project.name}</fileDescription>
+                <copyright>C</copyright>
+                <productVersion>${project.version}</productVersion>
+                <txtProductVersion>${project.version}</txtProductVersion>
+                <productName>${project.name}</productName>
+                <internalName>osmmapper</internalName>
+                <originalFilename>osmmapper.exe</originalFilename>
+              </versionInfo>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+	  <!-- LAUNCH4J ^ -->
+	  <!-- Sign executable v -->
+      <plugin>
+        <groupId>net.jsign</groupId>
+        <artifactId>jsign-maven-plugin</artifactId>
+        <version>${jsign-maven-plugin.version}</version>
+        <executions>
+          <execution>
+           <id>sign</id>
+           <phase>package</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+            <configuration>
+              <file>${project.build.directory}/../osmmapper.exe</file>
+              <name>OSM Mapper</name>
+              <url>https://github.com/RSHKwee/osmmapper</url>
+              <keystore>keystore.jks</keystore>
+              <alias>RSHK</alias>
+              <storepass>GW93ayi0j2CfeJx9VoSo</storepass>
+            </configuration>
+          </execution>
+<!--
+          <execution>
+            <id>signinst</id>
+            <phase>install</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+            <configuration>
+              <file>${project.build.directory}/osmmapper_v${project.version}_setup.exe</file>
+              <name>OSM Mapper</name>
+              <url>https://github.com/RSHKwee/osmmapper</url>
+              <keystore>keystore.jks</keystore>
+              <alias>RSHK</alias>
+              <storepass>GW93ayi0j2CfeJx9VoSo</storepass>
+            </configuration>
+          </execution>
+    -->      
+        </executions>
+      </plugin>
+	  <!-- Sign executable ^ -->
+      <!-- Windows installers v -->
+<!--      
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>${exec-maven-plugin.version}</version>
+        <executions>
+		  <execution>
+            <id>osmmapperHelpEn</id>
+            <phase>generate-resources</phase>
+           <goals>
+              <goal>exec</goal>
+            </goals>          
+            <configuration>
+              <executable>BuildTools\HelpChm.cmd</executable>
+              <workingDirectory>help/en</workingDirectory>
+              <arguments>
+                <argument>osmmapper.hhp</argument>
+              </arguments>
+            </configuration>          
+          </execution>
+		  <execution>
+            <id>osmmapperHelpNl</id>
+            <phase>generate-resources</phase>
+           <goals>
+              <goal>exec</goal>
+            </goals>          
+            <configuration>
+              <executable>BuildTools\HelpChm.cmd</executable>
+              <workingDirectory>help/nl</workingDirectory>
+              <arguments>
+                <argument>osmmapper.hhp</argument>
+              </arguments>
+            </configuration>          
+          </execution>	  
+          <execution>
+            <id>innoSetup</id>
+            <phase>post-integration-test</phase>
+           <goals>
+              <goal>exec</goal>
+            </goals>          
+            <configuration>
+              <executable>BuildTools\innosetup.cmd</executable>
+              <workingDirectory>...</workingDirectory>
+              <arguments>
+                <argument>osmmapper.iss</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>${maven-antrun-pluginversion}</version>
+        <executions>
+          <execution>
+            <phase>install</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+              <configuration>
+                <target>
+                  <delete dir="${project.basedir}\BuildTools"/>
+                  <delete file="${project.basedir}\Library.iss"/>   
+                </target>
+              </configuration>
+           </execution>
+        </executions>
+      </plugin>
+-->      
+    </plugins>
+<!--    </pluginManagement> -->
+  </build>
+  <distributionManagement>
+    <!-- Upload to Github v-->
+    <repository>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/RSHKwee/osmmapper</url>
+    </repository>
+    <!-- Upload to Github ^-->
+  </distributionManagement>
 </project>
