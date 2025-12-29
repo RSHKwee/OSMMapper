@@ -221,8 +221,8 @@ public class CreateUpperPanel {
         if (confirm == JOptionPane.YES_OPTION) {
           kaartController.voegKaartToe(inputFile.getAbsolutePath(), title, Const.c_LongLatUndefined,
               Const.c_LongLatUndefined, Const.c_ZoomUndefined);
-          JOptionPane.showMessageDialog(null, "Geo-info toegevoegd met titel:\n" + title, "Succes",
-              JOptionPane.INFORMATION_MESSAGE);
+          // JOptionPane.showMessageDialog(null, "Geo-info toegevoegd met titel:\n" + title, "Succes",
+          // JOptionPane.INFORMATION_MESSAGE);
         }
       }
     });
@@ -428,7 +428,7 @@ public class CreateUpperPanel {
 
             try {
               get(); // Check voor excepties
-              JOptionPane.showMessageDialog(null, "Klaar!", "Succes", JOptionPane.INFORMATION_MESSAGE);
+              // JOptionPane.showMessageDialog(null, "Klaar!", "Succes", JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception ex) {
               JOptionPane.showMessageDialog(null, "Fout: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }

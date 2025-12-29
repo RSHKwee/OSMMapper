@@ -17,10 +17,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
-//Correct imports for XLSX
-import org.apache.poi.xssf.usermodel.XSSFWorkbook; // For XLSX
-import org.apache.poi.ss.usermodel.Workbook; // Common interface
-
 import kwee.library.Address;
 import kwee.library.ApplicationMessages;
 import kwee.library.NominatimAPI;
@@ -219,6 +215,8 @@ public class OSMMapExcel {
                 if (latCell == null) {
                   latCell = row.createCell(latIndex);
                 }
+                latCell.setCellValue(l_address.getLatitude());
+
                 Cell countryCell = row.getCell(countryIndex);
                 if (countryCell == null) {
                   countryCell = row.createCell(countryIndex);
@@ -368,7 +366,12 @@ public class OSMMapExcel {
       Double v_prog = ((double) m_Processed / (double) m_Number) * 100;
       int v_iprog = v_prog.intValue();
 
-      m_Progresslabel.setText(bundle.getMessage("Progress", v_iprog, m_Processed, m_Number));
+      int remain = m_Number - m_Processed;
+      int iMin = remain / 60;
+      int iSec = remain - (iMin * 60);
+      String tijd = String.format("%02d:%02d", iMin, iSec);
+
+      m_Progresslabel.setText(bundle.getMessage("Progress", v_iprog, m_Processed, m_Number) + " " + tijd + " ");
       m_Progresslabel.paintImmediately(m_Progresslabel.getVisibleRect());
     } catch (Exception e) {
       // Do nothing

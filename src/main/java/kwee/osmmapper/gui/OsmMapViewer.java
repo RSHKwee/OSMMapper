@@ -110,10 +110,11 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
         lat = 52.1326;
         lon = 5.2913;
         zoom = 7;
+        LOGGER.log(Level.INFO, "Kaart NL, centrum Ut, wordt aangemaakt.");
       }
     }
     if (!inputFile.isEmpty() && (latarr.isEmpty() || longarr.isEmpty())) {
-      LOGGER.log(Level.INFO, "Geen geo info in XLSX : " + inputFile);
+      LOGGER.log(Level.INFO, "Geen geo info in XLSX: " + inputFile);
     }
 
     map().setDisplayPosition(new Coordinate(lat, lon), zoom);

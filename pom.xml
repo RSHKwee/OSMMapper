@@ -17,9 +17,7 @@
 	<relativePath>../pom.xml</relativePath>
   </parent>
  
-  <properties>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>   
+  <properties> 
     <com.fasterxml.jackson.core.version>2.17.2</com.fasterxml.jackson.core.version> 
   </properties>
 
@@ -88,28 +86,7 @@
           </execution>
         </executions>
       </plugin> 
-<!--      
-	  <plugin>
-	    <groupId>org.codehaus.mojo</groupId>
-		<artifactId>jaxb2-maven-plugin</artifactId>
-		<version>${jaxb2-maven-plugin.version}</version>
-		<executions>
-		  <execution>
-			<id>xjc</id>
-			<goals>
-			  <goal>xjc</goal>
-			</goals>
-		  </execution>
-		</executions>
-	    <configuration>
-	-->	  <!-- The package of your generated sources -->
-<!--		  <packageName>kwee.ing2ofx.generated.camt053</packageName>
-		  <sources>
-			<source>src/main/resources/xsd/camt053</source>
-		  </sources>
-	    </configuration>
-	  </plugin>
--->	
+
       <plugin>
 		<artifactId>maven-assembly-plugin</artifactId>
   		<version>${maven-assembly-plugin.version}</version>      
@@ -266,7 +243,7 @@
               <jre>
 	            <path>%java_home%</path>
               </jre>
-	  	  <!--    <icon>src/main/resources/ingSNSLogo.ico</icon> -->
+	  	      <icon>src/main/resources/OSMMapper.ico</icon>
               <versionInfo>
                 <fileVersion>${project.version}</fileVersion>
                 <txtFileVersion>${project.version}</txtFileVersion>
