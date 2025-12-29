@@ -47,6 +47,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
   private static final Logger LOGGER = MyLogger.getLogger();
   private static final long serialVersionUID = 1L;
   private UserSetting m_params = UserSetting.getInstance();
+  private double distanctTreshold = 0.005;
 
   private JMapViewerTree treeMap;
   private JLabel zoomLabel;
@@ -212,9 +213,19 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
       String city = memoinh.getCity();
 
       if (!street.isBlank()) {
-        String sNameDetail = memoinh.getSurname() + " " + memoinh.getFamilyname() + "\nTel: " + memoinh.getPhonenumber()
-            + "\nMail: " + memoinh.getMailaddress();
-
+        String sNameDetail = "";
+        if (!memoinh.getSurname().isBlank()) {
+          sNameDetail = sNameDetail + memoinh.getSurname();
+        }
+        if (!memoinh.getFamilyname().isBlank()) {
+          sNameDetail = sNameDetail + " " + memoinh.getFamilyname();
+        }
+        if (!memoinh.getPhonenumber().isBlank()) {
+          sNameDetail = sNameDetail + "\nTel: " + memoinh.getPhonenumber();
+        }
+        if (!memoinh.getMailaddress().isBlank()) {
+          sNameDetail = sNameDetail + "\nMail: " + memoinh.getMailaddress();
+        }
         // Maak titel en extra informatie
         String title = houseNumber;
         // String description = "Adres in " + city;
@@ -269,7 +280,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
             double markerLon = marker.getLon();
             double distance = Math.sqrt(Math.pow(lat - markerLat, 2) + Math.pow(lon - markerLon, 2));
 
-            if (distance < 0.005 && distance < minDistance) {
+            if (distance < distanctTreshold && distance < minDistance) {
               minDistance = distance;
               hoveredMarker = marker;
             }
@@ -304,7 +315,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
               double markerLon = marker.getLon();
               double distance = Math.sqrt(Math.pow(lat - markerLat, 2) + Math.pow(lon - markerLon, 2));
 
-              if (distance < 0.005 && distance < minDistance) {
+              if (distance < distanctTreshold && distance < minDistance) {
                 minDistance = distance;
                 clickedMarker = marker;
               }
@@ -369,14 +380,17 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
         if (coord != null) {
           double lat = coord.getLat();
           double lon = coord.getLon();
+          double minDistance = Double.MAX_VALUE;
 
           for (MapMarker marker : map().getMapMarkerList()) {
             double markerLat = marker.getLat();
             double markerLon = marker.getLon();
 
             double distance = Math.sqrt(Math.pow(lat - markerLat, 2) + Math.pow(lon - markerLon, 2));
+            // if (distance < distanctTreshold && distance < minDistance) {
+            if (distance < distanctTreshold) {
+              minDistance = distance;
 
-            if (distance < 0.0003) {
               // Set tooltip for the map
               if (marker instanceof CustomMarker) {
                 CustomMarker customMarker = (CustomMarker) marker;

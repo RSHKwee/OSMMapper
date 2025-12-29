@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+<title>Filename convention</title>
+<!--[if IE 6]><style type="text/css">html{overflow-y:scroll}</style><![endif]-->
+<link rel="stylesheet" type="text/css" href="styles.css" />
+<script type="text/javascript" src="topic.js"></script>
+</head>
+  <body>
+    <h1 class="topicheading">OFX Mapping</h1>
+    <div class="topicbody">
+      <p>The OFX fields are mapped on the following way:</p>    
+<pre>
+<code>
++------------------+------------------+------------------+-------------------+
+| OFX              | ING              | ING saving       | SNS CAMT.053      |
++------------------+------------------+------------------+-------------------+
+| Account          | Rekening         | Rekening         | IBAN              |
+| Trntype          | Af_Bij           | Af_Bij           | CdtDbtInd         |
+| Dtposted         | Datum            | Datum            | Dt                |
+| Trnamt           | Bedrag           | Bedrag           | Amt               |
+| Name             | Omschrijving     | Omschrijving     | Cdtr.Nm           |
+| Accountto        | Tegenrekening    | Tegenrekening    | CdtrAcct.tId.IBAN |
+| Memo             | Mededelingen     | Mededelingen     | RmtInf            |
+| Saldo_na_mutatie | Saldo_na_mutatie | Saldo_na_mutatie | -                 |
++------------------+------------------+------------------+-------------------+
+</code>
+</pre>
+
+      
+    </div>
+  </body>
+</html>
+

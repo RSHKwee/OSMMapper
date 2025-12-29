@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+<title>Inleiding</title>
+<!--[if IE 6]><style type="text/css">html{overflow-y:scroll}</style><![endif]-->
+<link rel="stylesheet" type="text/css" href="styles.css" />
+<script type="text/javascript" src="topic.js"></script>
+</head>
+<body>
+<h1 class="topicheading">Inleiding</h1>
+<div class="topicbody">
+<br>
+<p>Deze (java) applicatie converteert (<a href="https://github.com/RSHKwee/ing2ofx/releases">https://github.com/RSHKwee/ing2ofx/releases</a>):</p>
+<ol>
+<li>ING (<a href="https://www.ing.nl/particulier">ING site</a>) csv-bestand(en) (komma of puntkomma gescheiden).
+    <br>
+    De csv-bestand(en) kunnen transacties van meerdere rekeningen bevatten.
+</li>
+<li>SNS (<a href="https://www.snsbank.nl">SNS Bank site</a>) xml-bestanden (<a href="https://www.snsbank.nl/zakelijk/zzp/camt053-voor-boekhoudpakketten.html">CAMT.053 format</a>).
+    <br>
+    De xml-bestand(en) kunnen transacties van meerdere rekeningen bevatten.
+    </li>
+</ol>
+<p>de ofx bestanden kunnen worden gelezen door een programma als GnuCash (<a href="http://www.gnucash.org">GnuCash</a>).</p>
+
+<br>
+
+<p>De volgende stappen worden genomen:</p>
+<ol>
+<li>De invoer bestanden worden ingelezen en intern opgeslagen.</li>
+   <ol>
+     <li>De bestanden kunnen allemaal tegelijk worden ingelezen</li>
+     <li>Eén voor één</li>
+   </ol>
+   <li>De opgeslagen transacties worden geconverteerd naar het OFX format (<a href="https://financialdataexchange.org//ofx">OFX.NET</a>).
+     <br>
+     Om dubbeling te voorkomen, worden transactie gepaard.       .
+     <br>
+     De parings condities zijn:
+      <ol>
+      <li>De transctie hebben dezelfde transactie datum, hebben dezelfde rekningnrs. als 'van' en 'naar'.</li>
+      <li>De bedragen sommeren naar nul.</li>
+      </ol>
+      <p>Gepaarde transactie krijgen eenzelfde unieke identificatie (fit-id).</p>
+
+      </li>
+   <li>De OFX geformatteerde transacties worden in aparte bestanden bewaard (een per rekening).</li>
+</ol>
+</div>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>Opening menu</title>
+    <!--[if IE 6]><style type="text/css">html{overflow-y:scroll}</style><![endif]-->
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <script type="text/javascript" src="topic.js"></script>
+  </head>
+  <body>
+    <h1 class="topicheading">Opening menu</h1>
+    <div class="topicbody">
+    
+    <MAP NAME="test"> 
+    <AREA SHAPE=RECT COORDS="4,2,108,103"> 
+    <AREA SHAPE=RECT COORDS="117,6,212,104"> 
+    <AREA SHAPE=RECT COORDS="3,111,105,213"> 
+    <AREA SHAPE=RECT COORDS="114,113,211,210"> 
+    </MAP> 
+    <img src="MainMenu.JPG" usemap="#test" WIDTH=860 HEIGHT=330> 
+    
+    <p>Buttons:</p>
+    <ul>
+    <li><i>CSV/XML File</i>
+    <br>
+    <p>With this button, the input file(s) (csv or xml) is/are selected. Multiple files can be selected by holding down the ctrl key.</p>
+    <p>The application recognizes:</p>
+    <ul>
+    <li>a comma or semicolon separated ING input file.</li>
+    <li>a SNS XML input file.</li>
+    </ul>
+    <p>Checkbox <i>Clear transactions</i>:
+    If checked, then the cache is cleared before the file(s) are read. Otherwise the transactions are added to the previously stored transactions.</p>
+    <ul>
+    <li><i>Read transactions</i>
+    <br>
+    <p>The transactions are read and stored in the cache.</p>
+    </li>
+    </ul>
+    
+    <li><i>Output folder</i>
+    <br>
+    <p>Points to the directory where the generated OFX-file(s) are stored. A proposal for the "Output filename" is made, which can be changed.</p>
+    <p>See also <a href="Filenames.htm">Filename convention</a>.</p>
+    </li>
+    <ul>
+    <li><i>Convert to OFX</i>
+    <br>
+    The conversion to OFX format is started, and the progress is shown in the lower panel.</li>
+    </ul>
+    <li><i>Start GnuCash</i>: GnuCash is started.
+    </ul>
+    </div>
+  </body>
+</html>
