@@ -22,21 +22,22 @@ import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
 import kwee.library.ApplicationMessages;
-import kwee.osmmapper.lib.KaartController;
+import kwee.osmmapper.lib.GeoMapController;
 import kwee.osmmapper.lib.MemoContent;
 import kwee.osmmapper.lib.OSMMapExcel;
+import kwee.osmmapper.lib.Const;
 import kwee.osmmapper.main.UserSetting;
 
 public class CreateUpperPanel {
   private UserSetting m_params;
 
   private String m_InpDirectory = "";
-  private KaartController kaartController;
+  private GeoMapController kaartController;
   private JProgressBar m_ProgressBar = new JProgressBar();
   private JLabel m_ProgressLabel = new JLabel(" ");;
 
   public CreateUpperPanel() {
-    kaartController = KaartController.getInstance();
+    kaartController = GeoMapController.getInstance();
     m_params = UserSetting.getInstance();
     m_InpDirectory = m_params.get_InpDirectory();
   }
@@ -218,7 +219,8 @@ public class CreateUpperPanel {
             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
         if (confirm == JOptionPane.YES_OPTION) {
-          kaartController.voegKaartToe(inputFile.getAbsolutePath(), title, 0.0, 0.0, 10);
+          kaartController.voegKaartToe(inputFile.getAbsolutePath(), title, Const.c_LongLatUndefined,
+              Const.c_LongLatUndefined, Const.c_ZoomUndefined);
           JOptionPane.showMessageDialog(null, "Geo-info toegevoegd met titel:\n" + title, "Succes",
               JOptionPane.INFORMATION_MESSAGE);
         }

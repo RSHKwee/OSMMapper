@@ -17,6 +17,10 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
+//Correct imports for XLSX
+import org.apache.poi.xssf.usermodel.XSSFWorkbook; // For XLSX
+import org.apache.poi.ss.usermodel.Workbook; // Common interface
+
 import kwee.library.Address;
 import kwee.library.ApplicationMessages;
 import kwee.library.NominatimAPI;
@@ -49,6 +53,9 @@ public class OSMMapExcel {
 
   public ArrayList<MemoContent> ReadExcel() {
     ArrayList<MemoContent> memocontarr = new ArrayList<MemoContent>();
+    // Zet de FileMagic cache aan voor betere detectie
+    System.setProperty("org.apache.poi.util.POILogger", "org.apache.poi.util.NullLogger");
+
     // 1. Open het bestand
     try (FileInputStream file = new FileInputStream(m_ExcelFile); Workbook workbook = WorkbookFactory.create(file)) {
       Sheet sheet = workbook.getSheetAt(0);

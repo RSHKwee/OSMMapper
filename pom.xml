@@ -17,49 +17,46 @@
 	<relativePath>../pom.xml</relativePath>
   </parent>
  
-    <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+  <properties>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    
+  </properties>
 
-    <dependencies>
-        <!-- Jouw bestaande dependencies blijven ongewijzigd -->
-        <dependency>
-          <groupId>org.apache.poi</groupId>
-          <artifactId>poi</artifactId>
-          <version>5.2.5</version>
-        </dependency>
-        <dependency>
-          <groupId>org.apache.poi</groupId>
-          <artifactId>poi-ooxml</artifactId>
-          <version>5.2.5</version>
-       </dependency>
+  <dependencies>
     <dependency>
 	  <groupId>kwee</groupId>
 	  <artifactId>library</artifactId>
 	  <version>${kweeLibrary.version}</version>
-	</dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.17.2</version>
-        </dependency>      
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-to-slf4j</artifactId>
-            <version>2.17.1</version>
-        </dependency>
-        <dependency>
-           <groupId>org.slf4j</groupId>
-           <artifactId>slf4j-jdk14</artifactId>
-           <version>1.7.32</version>
-        </dependency>
-    </dependencies>
+	</dependency>    
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi</artifactId>
+      <version>${org-apache-poi-poi.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-ooxml</artifactId>
+      <version>${org-apache-poi-ooxml.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.17.2</version>
+    </dependency>      
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-to-slf4j</artifactId>
+      <version>${log4j-slf4j-impl.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+  </dependencies>
 
-
-
-    <!-- NIEUW: Build-sectie met plugins -->
   <build>
     <resources>
       <resource>
@@ -260,7 +257,7 @@
              <configuration>
                <headerType>console</headerType>
                <jar>${project.build.directory}/osmmapper-jar-with-dependencies.jar</jar>
-               <outfile>${project.build.directory}/../osmmapper.exe</outfile>
+               <outfile>${project.build.directory}/osmmapper-${project.version}.exe</outfile>
                <downloadUrl>https://cdn.azul.com/zulu/bin/zulu22.32.21-ca-crac-jdk22.0.2-win_x64.zip</downloadUrl>
                <classPath>
                  <mainClass>kwee.osmmapper.main.Main</mainClass>
@@ -278,7 +275,7 @@
                 <txtProductVersion>${project.version}</txtProductVersion>
                 <productName>${project.name}</productName>
                 <internalName>osmmapper</internalName>
-                <originalFilename>osmmapper.exe</originalFilename>
+                <originalFilename>osmmapper-${project.version}.exe</originalFilename>
               </versionInfo>
             </configuration>
           </execution>
@@ -298,7 +295,7 @@
               <goal>sign</goal>
             </goals>
             <configuration>
-              <file>${project.build.directory}/../osmmapper.exe</file>
+              <file>${project.build.directory}/osmmapper-${project.version}.exe</file>
               <name>OSM Mapper</name>
               <url>https://github.com/RSHKwee/osmmapper</url>
               <keystore>keystore.jks</keystore>

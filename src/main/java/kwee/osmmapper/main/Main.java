@@ -3,7 +3,7 @@ package kwee.osmmapper.main;
 import javax.swing.SwingUtilities;
 
 import kwee.library.JarInfo;
-import kwee.osmmapper.gui.HoofdMenu;
+import kwee.osmmapper.gui.MainMenu;
 
 public class Main {
   static public String m_creationtime;
@@ -13,6 +13,6 @@ public class Main {
     m_creationtime = JarInfo.getProjectVersion(Main.class);
     c_CopyrightYear = JarInfo.getYear(Main.class);
 
-    SwingUtilities.invokeLater(() -> new HoofdMenu().start());
+    SwingUtilities.invokeLater(() -> new MainMenu().start());
   }
 }

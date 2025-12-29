@@ -1,5 +1,9 @@
 package kwee.osmmapper.gui;
 
+/**
+ * OSM Map GUI
+ */
+
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import org.openstreetmap.gui.jmapviewer.JMapViewerTree;
@@ -10,7 +14,8 @@ import org.openstreetmap.gui.jmapviewer.interfaces.JMapViewerEventListener;
 import org.openstreetmap.gui.jmapviewer.interfaces.MapMarker;
 import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource;
 
-//import kwee.logger.MyLogger;
+import kwee.osmmapper.lib.Const;
+import kwee.logger.MyLogger;
 import kwee.osmmapper.lib.CustomMarker;
 import kwee.osmmapper.lib.Mediaan;
 import kwee.osmmapper.lib.MemoContent;
@@ -23,24 +28,23 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JOptionPane;
 import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import java.util.ArrayList;
-//import java.util.logging.Logger;
+import java.util.logging.Logger;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Start a Swing application which shows a map and has some pre-defined options set.
  */
 public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
-  // private static final Logger LOGGER = MyLogger.getLogger();
+  private static final Logger LOGGER = MyLogger.getLogger();
   private static final long serialVersionUID = 1L;
   private UserSetting m_params = UserSetting.getInstance();
 
@@ -56,9 +60,9 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
 
   private String inputFile = "";
   private String title = "";
-  private double lat = -500.0;
-  private double lon = -500.0;
-  private int zoom = 15;
+  private double lat = Const.c_LongLatUndefined;
+  private double lon = Const.c_LongLatUndefined;
+  private int zoom = Const.c_ZoomUndefined;
 
   public OsmMapViewer(String inpFile, String subtitel, double a_lat, double a_lon, int a_zoom) {
     super("OSM Map Viewer " + subtitel);
@@ -78,6 +82,8 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
 
   private void OsmMapViewerInit() {
     treeMap = new JMapViewerTree("Locaties");
+    longarr.clear();
+    latarr.clear();
 
     setupJFrame();
     setupPanels();
@@ -93,17 +99,21 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
     enableMarkerTooltips();
     addMarkers(inputFile);
 
-    if ((lat <= -400) || (lon <= -400) || zoom == -1) {
+    if (Const.compareDouble(lat, Const.c_LongLatUndefined) || Const.compareDouble(lon, Const.c_LongLatUndefined)
+        || (zoom == Const.c_ZoomUndefined)) {
       if (!((latarr.isEmpty() || longarr.isEmpty()))) {
         lat = Mediaan.mediaanList(latarr);
         lon = Mediaan.mediaanList(longarr);
         zoom = 15;
       } else {
-        // centreren NL
+        // centre NL Ut
         lat = 52.1326;
         lon = 5.2913;
         zoom = 7;
       }
+    }
+    if (!inputFile.isEmpty() && (latarr.isEmpty() || longarr.isEmpty())) {
+      LOGGER.log(Level.INFO, "Geen geo info in XLSX : " + inputFile);
     }
 
     map().setDisplayPosition(new Coordinate(lat, lon), zoom);
@@ -174,10 +184,12 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
    * Voegt een aangepaste marker toe
    */
   public void addCustomMarker(double lat, double lon, String title, String description, String extraInfo, Color color) {
-    CustomMarker marker = new CustomMarker(lat, lon, title, description, extraInfo, color);
-    map().addMapMarker(marker);
-    longarr.add(lon);
-    latarr.add(lat);
+    if (!Const.compareDouble(lat, Const.c_LongLatUndefined) && !Const.compareDouble(lon, Const.c_LongLatUndefined)) {
+      CustomMarker marker = new CustomMarker(lat, lon, title, description, extraInfo, color);
+      map().addMapMarker(marker);
+      longarr.add(lon);
+      latarr.add(lat);
+    }
   }
 
   /**
@@ -272,7 +284,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
       }
     });
 
-    // Mouse klik voor details
+    // Mouse click for details
     map().addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
@@ -344,10 +356,9 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
   }
 
   /**
-   * Voegt tooltip ondersteuning toe aan markers
+   * Add tooltip support for markers
    */
   private void enableMarkerTooltips() {
-    // Zorg dat de JMapViewer tooltips ondersteunt
     map().setToolTipText("");
 
     map().addMouseMotionListener(new MouseAdapter() {
@@ -365,7 +376,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
             double distance = Math.sqrt(Math.pow(lat - markerLat, 2) + Math.pow(lon - markerLon, 2));
 
             if (distance < 0.0003) {
-              // Set tooltip voor de kaart
+              // Set tooltip for the map
               if (marker instanceof CustomMarker) {
                 CustomMarker customMarker = (CustomMarker) marker;
                 map().setToolTipText(
@@ -382,31 +393,29 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
     });
   }
 
+  /**
+   * Center map in Window on coordinates lat, lon and zoom map.
+   * 
+   * @param lat  Latitude
+   * @param lon  Longitude
+   * @param zoom Zoom factor
+   */
   public void centerOnLocation(double lat, double lon, int zoom) {
     map().setDisplayPosition(new Coordinate(lat, lon), zoom);
   }
 
-  // OPTIONEEL: Maak een methode om alleen de kaart component te krijgen
-  public JComponent getKaartComponent() {
-    // Als je een JMapViewer instantie hebt:
-    // return mapViewer;
-
-    // Of retourneer het complete content pane:
-    return (JComponent) getContentPane();
-  }
-
-  // Methode om te controleren of kaart geladen is
-  public boolean isKaartGeladen() {
-    return getContentPane().getComponentCount() > 0;
-  }
-
-  // Zorg dat de JFrame niet sluit bij gebruik in tabblad
+  /**
+   * Prevent JFrame from closing when using the Tab page
+   */
   @Override
   public void setDefaultCloseOperation(int operation) {
-    // Overschrijf om te voorkomen dat de JFrame sluit
+    // Override to prevent closing the JFrame
     super.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
   }
 
+  /**
+   * Update method for Preference
+   */
   private void updatePreference() {
     List<TabInfo> tablist = new ArrayList<>();
     tablist = m_params.get_TabState();

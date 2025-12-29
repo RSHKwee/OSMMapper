@@ -23,9 +23,9 @@ import kwee.logger.MyLogger;
 import kwee.osmmapper.gui.OsmMapViewer;
 import kwee.osmmapper.main.UserSetting;
 
-public class KaartController {
+public class GeoMapController {
   private static final Logger LOGGER = MyLogger.getLogger();
-  private static KaartController uniqueInstance;
+  private static GeoMapController uniqueInstance;
   private UserSetting m_params;
   private ApplicationMessages bundle = ApplicationMessages.getInstance();
   private JTabbedPane kaartTabPane;
@@ -38,9 +38,9 @@ public class KaartController {
    * 
    * @return Instance
    */
-  public static KaartController getInstance() {
+  public static GeoMapController getInstance() {
     if (uniqueInstance == null) {
-      uniqueInstance = new KaartController();
+      uniqueInstance = new GeoMapController();
     }
     return uniqueInstance;
   }
@@ -48,7 +48,7 @@ public class KaartController {
   /**
    * Private constructor part of Singleton
    */
-  private KaartController() {
+  private GeoMapController() {
     this.kaarten = new HashMap<>();
     this.m_params = UserSetting.getInstance();
     this.tablist = new ArrayList<TabInfo>();

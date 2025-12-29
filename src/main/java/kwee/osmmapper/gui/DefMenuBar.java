@@ -86,7 +86,7 @@ public class DefMenuBar {
 
           bundle.changeLanguage(language);
           hoofdFrame.dispose(); // Dispose of the current GUI window or frame
-          SwingUtilities.invokeLater(() -> new HoofdMenu().start());
+          SwingUtilities.invokeLater(() -> new MainMenu().start());
         }
       }
     });
