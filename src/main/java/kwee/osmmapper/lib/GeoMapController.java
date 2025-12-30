@@ -282,11 +282,6 @@ public class GeoMapController {
 
     if (bevestiging == JOptionPane.YES_OPTION) {
       boolean succes = verwijderKaart(kaartNaam);
-
-      // if (succes) {
-      // JOptionPane.showMessageDialog(parent, "Kaart '" + kaartNaam + "' succesvol verwijderd.", "Succes",
-      // JOptionPane.INFORMATION_MESSAGE);
-      // }
       return succes;
     }
     return false;
@@ -317,5 +312,4 @@ public class GeoMapController {
       LOGGER.log(Level.INFO, "Kaart hernoemd: " + oudeNaam + " -> " + nieuweNaam);
     }
   }
-
 }

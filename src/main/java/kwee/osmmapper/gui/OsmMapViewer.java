@@ -81,6 +81,56 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
     OsmMapViewerInit();
   }
 
+  /**
+   * Add Custom marker
+   * 
+   * @param lat         Latitude
+   * @param lon         Longitude
+   * @param title       Title
+   * @param description Description
+   * @param extraInfo   Additional information
+   * @param color       Marker color
+   */
+  public void addCustomMarker(double lat, double lon, String title, String description, String extraInfo, Color color) {
+    if (!Const.compareDouble(lat, Const.c_LongLatUndefined) && !Const.compareDouble(lon, Const.c_LongLatUndefined)) {
+      CustomMarker marker = new CustomMarker(lat, lon, title, description, extraInfo, color);
+      map().addMapMarker(marker);
+      longarr.add(lon);
+      latarr.add(lat);
+    }
+  }
+
+  /**
+   * Center map in Window on coordinates lat, lon and zoom map.
+   * 
+   * @param lat  Latitude
+   * @param lon  Longitude
+   * @param zoom Zoom factor
+   */
+  public void centerOnLocation(double lat, double lon, int zoom) {
+    map().setDisplayPosition(new Coordinate(lat, lon), zoom);
+  }
+
+  /**
+   * Prevent JFrame from closing when using the Tab page. Override to prevent closing the JFrame
+   */
+  @Override
+  public void setDefaultCloseOperation(int operation) {
+    super.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+  }
+
+  @Override
+  public void processCommand(JMVCommandEvent command) {
+    if (command.getCommand().equals(JMVCommandEvent.COMMAND.ZOOM)
+        || command.getCommand().equals(JMVCommandEvent.COMMAND.MOVE)) {
+      updateZoomParameters();
+    }
+  }
+
+  // ======== Private functions ========
+  /**
+   * Initialization OsmMapViewr, setup frame, markers, tooltips, etc.
+   */
   private void OsmMapViewerInit() {
     treeMap = new JMapViewerTree("Locaties");
     longarr.clear();
@@ -174,28 +224,10 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
     updatePreference();
   }
 
-  @Override
-  public void processCommand(JMVCommandEvent command) {
-    if (command.getCommand().equals(JMVCommandEvent.COMMAND.ZOOM)
-        || command.getCommand().equals(JMVCommandEvent.COMMAND.MOVE)) {
-      updateZoomParameters();
-    }
-  }
-
   /**
-   * Voegt een aangepaste marker toe
-   */
-  public void addCustomMarker(double lat, double lon, String title, String description, String extraInfo, Color color) {
-    if (!Const.compareDouble(lat, Const.c_LongLatUndefined) && !Const.compareDouble(lon, Const.c_LongLatUndefined)) {
-      CustomMarker marker = new CustomMarker(lat, lon, title, description, extraInfo, color);
-      map().addMapMarker(marker);
-      longarr.add(lon);
-      latarr.add(lat);
-    }
-  }
-
-  /**
-   * Voegt markers toe vanuit Excel bestand
+   * Add markers
+   * 
+   * @param inputFile Excel file with marker info.
    */
   int rowIndex = 0;
 
@@ -227,9 +259,9 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
         if (!memoinh.getMailaddress().isBlank()) {
           sNameDetail = sNameDetail + "\nMail: " + memoinh.getMailaddress();
         }
+
         // Maak titel en extra informatie
         String title = houseNumber;
-        // String description = "Adres in " + city;
         String description = String.format("Adres: %s %s \nPostcode: %s \nPlaats: %s \nLand: %s", street, houseNumber,
             postcode, city, country);
         String extraInfo = String.format(" %s\nCoördinaten: %.6f, %.6f", sNameDetail, latitude, longitude);
@@ -260,7 +292,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
   }
 
   /**
-   * Stelt de marker interactie in
+   * Setup Marker interaction
    */
   private void setupMarkerInteraction() {
     // Mouse beweging voor hover effect
@@ -269,23 +301,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
       public void mouseMoved(MouseEvent e) {
         ICoordinate coord = map().getPosition(e.getPoint());
         if (coord != null) {
-          double lat = coord.getLat();
-          double lon = coord.getLon();
-
-          MapMarker hoveredMarker = null;
-          double minDistance = Double.MAX_VALUE;
-
-          // Zoek de dichtstbijzijnde marker
-          for (MapMarker marker : map().getMapMarkerList()) {
-            double markerLat = marker.getLat();
-            double markerLon = marker.getLon();
-            double distance = Math.sqrt(Math.pow(lat - markerLat, 2) + Math.pow(lon - markerLon, 2));
-
-            if (distance < distanctTreshold && distance < minDistance) {
-              minDistance = distance;
-              hoveredMarker = marker;
-            }
-          }
+          MapMarker hoveredMarker = getMousePosition4Marker(coord);
 
           if (hoveredMarker != null) {
             // Toon de titel in de statusbalk
@@ -305,23 +321,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
         if (e.getButton() == MouseEvent.BUTTON1) {
           ICoordinate coord = map().getPosition(e.getPoint());
           if (coord != null) {
-            double lat = coord.getLat();
-            double lon = coord.getLon();
-
-            MapMarker clickedMarker = null;
-            double minDistance = Double.MAX_VALUE;
-
-            // Zoek de dichtstbijzijnde marker
-            for (MapMarker marker : map().getMapMarkerList()) {
-              double markerLat = marker.getLat();
-              double markerLon = marker.getLon();
-              double distance = Math.sqrt(Math.pow(lat - markerLat, 2) + Math.pow(lon - markerLon, 2));
-
-              if (distance < distanctTreshold && distance < minDistance) {
-                minDistance = distance;
-                clickedMarker = marker;
-              }
-            }
+            MapMarker clickedMarker = getMousePosition4Marker(coord);
 
             if (clickedMarker != null) {
               // Toon gedetailleerde informatie
@@ -362,7 +362,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
           title != null ? title : "Marker", marker.getLat(), marker.getLon());
     }
 
-    // Maak een aangepaste JOptionPane met HTML formatting
+    // Make a special JOptionPane with HTML formatting
     JLabel messageLabel = new JLabel(details);
     messageLabel.setFont(new Font("Arial", Font.PLAIN, 12));
 
@@ -380,23 +380,8 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
       public void mouseMoved(MouseEvent e) {
         ICoordinate coord = map().getPosition(e.getPoint());
         if (coord != null) {
-          double lat = coord.getLat();
-          double lon = coord.getLon();
+          MapMarker hoveredMarker = getMousePosition4Marker(coord);
 
-          MapMarker hoveredMarker = null;
-          double minDistance = Double.MAX_VALUE;
-
-          // Zoek de dichtstbijzijnde marker
-          for (MapMarker marker : map().getMapMarkerList()) {
-            double markerLat = marker.getLat();
-            double markerLon = marker.getLon();
-            double distance = Math.sqrt(Math.pow(lat - markerLat, 2) + Math.pow(lon - markerLon, 2));
-
-            if (distance < distanctTreshold && distance < minDistance) {
-              minDistance = distance;
-              hoveredMarker = marker;
-            }
-          }
           // Set tooltip for the map
           if (hoveredMarker != null) {
             CustomMarker customMarker = (CustomMarker) hoveredMarker;
@@ -411,27 +396,34 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
   }
 
   /**
-   * Center map in Window on coordinates lat, lon and zoom map.
+   * Get Marker position according to Mouse position.
    * 
-   * @param lat  Latitude
-   * @param lon  Longitude
-   * @param zoom Zoom factor
+   * @param coord Mouse coordinates
+   * @return Found marker or null (if not found)
    */
-  public void centerOnLocation(double lat, double lon, int zoom) {
-    map().setDisplayPosition(new Coordinate(lat, lon), zoom);
+  private MapMarker getMousePosition4Marker(ICoordinate coord) {
+    double lat = coord.getLat();
+    double lon = coord.getLon();
+
+    MapMarker hoveredMarker = null;
+    double minDistance = Double.MAX_VALUE;
+
+    // Zoek de dichtstbijzijnde marker
+    for (MapMarker marker : map().getMapMarkerList()) {
+      double markerLat = marker.getLat();
+      double markerLon = marker.getLon();
+      double distance = Math.sqrt(Math.pow(lat - markerLat, 2) + Math.pow(lon - markerLon, 2));
+
+      if (distance < distanctTreshold && distance < minDistance) {
+        minDistance = distance;
+        hoveredMarker = marker;
+      }
+    }
+    return hoveredMarker;
   }
 
   /**
-   * Prevent JFrame from closing when using the Tab page
-   */
-  @Override
-  public void setDefaultCloseOperation(int operation) {
-    // Override to prevent closing the JFrame
-    super.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-  }
-
-  /**
-   * Update method for Preference
+   * Update Preference
    */
   private void updatePreference() {
     List<TabInfo> tablist = new ArrayList<>();

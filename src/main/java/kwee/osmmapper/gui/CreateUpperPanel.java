@@ -243,13 +243,12 @@ public class CreateUpperPanel {
     // Knop 3: Voeg Geo info toe
     JButton addLongLatKnop = new JButton("🔀 Voeg Geo info toe");
     addLongLatKnop.addActionListener(e -> {
-      // Maak een JPanel voor de bestandsselectie
       JPanel filePanel = new JPanel(new GridBagLayout());
       GridBagConstraints gbc = new GridBagConstraints();
       gbc.fill = GridBagConstraints.HORIZONTAL;
       gbc.insets = new Insets(5, 5, 5, 5);
 
-      // Input CSV bestand
+      // Input XLSX File
       gbc.gridx = 0;
       gbc.gridy = 0;
       filePanel.add(new JLabel("Input XLSX bestand:"), gbc);
@@ -266,7 +265,7 @@ public class CreateUpperPanel {
       gbc.weightx = 0.0;
       filePanel.add(inputBrowseButton, gbc);
 
-      // Output CSV bestand
+      // Output XLSX file
       gbc.gridx = 0;
       gbc.gridy = 1;
       filePanel.add(new JLabel("Output XLSX bestand:"), gbc);
@@ -326,7 +325,7 @@ public class CreateUpperPanel {
           fileChooser.setDialogTitle("Opslaan XLSX met geo-info");
           fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-          // CSV filter
+          // XLSX filter
           fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
             @Override
             public boolean accept(File f) {
@@ -339,7 +338,7 @@ public class CreateUpperPanel {
             }
           });
 
-          // Suggestie voor output naam
+          // Suggestion for Output filename
           if (!inputField.getText().isEmpty() && outputField.getText().isEmpty()) {
             File inputFile = new File(inputField.getText());
             String outputName = inputFile.getName().replaceFirst("[.][^.]+$", "") + "_met_geo.csv";
@@ -361,11 +360,11 @@ public class CreateUpperPanel {
         }
       });
 
-      // Toon de dialoog
+      // Show dialog
       int dialogResult = JOptionPane.showConfirmDialog(null, filePanel, "Selecteer XLSX bestanden voor geo-informatie",
           JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-      // Verwerk de selectie
+      // Process selection
       if (dialogResult == JOptionPane.OK_OPTION) {
         String inputPath = inputField.getText().trim();
         String outputPath = outputField.getText().trim();
@@ -394,7 +393,7 @@ public class CreateUpperPanel {
           }
         }
 
-        // Bestaat het output bestand al?
+        // Output file exists?
         File outputFile = new File(outputPath);
         if (outputFile.exists() && !inputPath.equals(outputPath)) {
           int overwrite = JOptionPane.showConfirmDialog(null,
@@ -418,6 +417,13 @@ public class CreateUpperPanel {
             OSMMapExcel mexcel = new OSMMapExcel(inputFile.getAbsolutePath());
             memocontarr = mexcel.ReadExcel();
             mexcel.WriteExcel(outputFile.getAbsolutePath(), m_ProgressBar, m_ProgressLabel);
+            m_ProgressLabel.setText("Klaar, Geo info toegevoegd.");
+            m_ProgressBar.setVisible(false);
+            try {
+              Thread.sleep(5000);
+            } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+            }
             return null;
           }
 

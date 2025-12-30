@@ -1,5 +1,8 @@
 package kwee.osmmapper.lib;
 
+/**
+ * OSM Map Excel, package for Reading and Writing Excel workbook
+ */
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -52,7 +55,7 @@ public class OSMMapExcel {
     // Zet de FileMagic cache aan voor betere detectie
     System.setProperty("org.apache.poi.util.POILogger", "org.apache.poi.util.NullLogger");
 
-    // 1. Open het bestand
+    // 1. Open the file
     try (FileInputStream file = new FileInputStream(m_ExcelFile); Workbook workbook = WorkbookFactory.create(file)) {
       Sheet sheet = workbook.getSheetAt(0);
       int rowIndex = 0;
@@ -117,6 +120,7 @@ public class OSMMapExcel {
     return memocontarr;
   }
 
+  // Declare dummy Graphics for use without GUI.
   private JProgressBar m_ProgressBar;
   private JLabel m_Progresslabel;
   private int m_Processed = -1;
@@ -125,7 +129,7 @@ public class OSMMapExcel {
   /**
    * Add Longitude and Latitude to Address.
    * 
-   * @param outputFile Excel with Longtitude and Latitude
+   * @param outputFile Excel with Longitude and Latitude
    */
   public void WriteExcel(String outputFile) {
     m_ProgressBar = new JProgressBar();
@@ -136,9 +140,9 @@ public class OSMMapExcel {
   /**
    * Add Longitude and Latitude to Address.
    * 
-   * @param outputFile      Excel with Longtitude and Latitude
-   * @param a_ProgressBar
-   * @param a_Progresslabel
+   * @param outputFile      Excel with Longitude and Latitude
+   * @param a_ProgressBar   Points to progress bar
+   * @param a_Progresslabel Points to progress label for additional information.
    */
   public void WriteExcel(String outputFile, JProgressBar a_ProgressBar, JLabel a_Progresslabel) {
     m_ProgressBar = a_ProgressBar;
@@ -371,7 +375,7 @@ public class OSMMapExcel {
       int iSec = remain - (iMin * 60);
       String tijd = String.format("%02d:%02d", iMin, iSec);
 
-      m_Progresslabel.setText(bundle.getMessage("Progress", v_iprog, m_Processed, m_Number) + " " + tijd + " ");
+      m_Progresslabel.setText(bundle.getMessage("Progress", v_iprog, m_Processed, m_Number, tijd));
       m_Progresslabel.paintImmediately(m_Progresslabel.getVisibleRect());
     } catch (Exception e) {
       // Do nothing
