@@ -211,6 +211,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
       String houseNumber = memoinh.getHousenumber();
       String postcode = memoinh.getPostcode();
       String city = memoinh.getCity();
+      String country = memoinh.getCountry();
 
       if (!street.isBlank()) {
         String sNameDetail = "";
@@ -229,8 +230,8 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
         // Maak titel en extra informatie
         String title = houseNumber;
         // String description = "Adres in " + city;
-        String description = String.format("Adres: %s %s\nPostcode: %s\nPlaats: %s", street, houseNumber, postcode,
-            city);
+        String description = String.format("Adres: %s %s \nPostcode: %s \nPlaats: %s \nLand: %s", street, houseNumber,
+            postcode, city, country);
         String extraInfo = String.format(" %s\nCoördinaten: %.6f, %.6f", sNameDetail, latitude, longitude);
 
         // Bepaal kleur op basis van rij index (voor variatie)
@@ -288,7 +289,8 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
 
           if (hoveredMarker != null) {
             // Toon de titel in de statusbalk
-            statusLabel.setText("Marker: " + hoveredMarker.getName());
+            CustomMarker customMarker = (CustomMarker) hoveredMarker;
+            statusLabel.setText("Marker: " + customMarker.getName() + " " + customMarker.getDescription());
           } else {
             statusLabel.setText("Beweeg over een marker voor titel, klik voor details");
           }
@@ -380,29 +382,29 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
         if (coord != null) {
           double lat = coord.getLat();
           double lon = coord.getLon();
+
+          MapMarker hoveredMarker = null;
           double minDistance = Double.MAX_VALUE;
 
+          // Zoek de dichtstbijzijnde marker
           for (MapMarker marker : map().getMapMarkerList()) {
             double markerLat = marker.getLat();
             double markerLon = marker.getLon();
-
             double distance = Math.sqrt(Math.pow(lat - markerLat, 2) + Math.pow(lon - markerLon, 2));
-            // if (distance < distanctTreshold && distance < minDistance) {
-            if (distance < distanctTreshold) {
-              minDistance = distance;
 
-              // Set tooltip for the map
-              if (marker instanceof CustomMarker) {
-                CustomMarker customMarker = (CustomMarker) marker;
-                map().setToolTipText(
-                    "<html><b>" + customMarker.getTitle() + "</b><br/>" + customMarker.getDescription() + "</html>");
-              } else {
-                map().setToolTipText(marker.getName());
-              }
-              return;
+            if (distance < distanctTreshold && distance < minDistance) {
+              minDistance = distance;
+              hoveredMarker = marker;
             }
           }
-          map().setToolTipText(null);
+          // Set tooltip for the map
+          if (hoveredMarker != null) {
+            CustomMarker customMarker = (CustomMarker) hoveredMarker;
+            map().setToolTipText(
+                "<html><b>" + customMarker.getTitle() + "</b><br/>" + customMarker.getDescription() + "</html>");
+          } else {
+            map().setToolTipText("");
+          }
         }
       }
     });
