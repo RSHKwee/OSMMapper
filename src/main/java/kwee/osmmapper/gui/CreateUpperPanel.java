@@ -59,7 +59,7 @@ public class CreateUpperPanel {
         return;
       }
 
-      // LEge kaart gekozen
+      // Lege kaart gekozen
       if (keuzeResultaat == 1) {
         String title = JOptionPane.showInputDialog(null, "Voer een titel in voor de lege kaart:", "Lege kaart titel",
             JOptionPane.QUESTION_MESSAGE);
@@ -79,7 +79,7 @@ public class CreateUpperPanel {
 
           if (confirm == JOptionPane.YES_OPTION) {
             // Roep aan met lege bestandspad
-            kaartController.voegKaartToe("", title, defaultX, defaultY, defaultZoom);
+            kaartController.voegKaartToe("", title, defaultX, defaultY, defaultZoom, "");
             JOptionPane.showMessageDialog(null, "Lege kaart '" + title + "' is aangemaakt.", "Succes",
                 JOptionPane.INFORMATION_MESSAGE);
           }
@@ -89,9 +89,6 @@ public class CreateUpperPanel {
         }
         return;
       }
-
-      // XLSX Bestand gekozen (keuzeResultaat == 0)
-      // Oorspronkelijke code blijft hieronder
 
       // Maak een JPanel met GridBagLayout voor nette uitlijning
       JPanel panel2 = new JPanel(new GridBagLayout());
@@ -127,6 +124,18 @@ public class CreateUpperPanel {
       gbc.gridwidth = 2; // Span over 2 kolommen
       gbc.weightx = 1.0;
       panel2.add(titleField, gbc);
+
+      // 3. Project input
+      gbc.gridx = 0;
+      gbc.gridy = 2;
+      panel2.add(new JLabel("Projecten:"), gbc);
+
+      JTextField projectsField = new JTextField(25);
+      gbc.gridx = 1;
+      gbc.gridy = 2;
+      gbc.gridwidth = 2; // Span over 2 kolommen
+      gbc.weightx = 1.0;
+      panel2.add(projectsField, gbc);
 
       // Browse button functionaliteit
       browseButton.addActionListener(new ActionListener() {
@@ -176,6 +185,7 @@ public class CreateUpperPanel {
       if (result == JOptionPane.OK_OPTION) {
         String filePath = fileField.getText().trim();
         String title = titleField.getText().trim();
+        String projects = projectsField.getText().trim();
 
         // Validatie
         if (filePath.isEmpty()) {
@@ -192,7 +202,7 @@ public class CreateUpperPanel {
                 "Voer een titel in voor de lege kaart:", "Lege kaart titel", JOptionPane.QUESTION_MESSAGE) : title;
 
             if (legeTitel != null && !legeTitel.trim().isEmpty()) {
-              kaartController.voegKaartToe("", legeTitel.trim(), 0.0, 0.0, 10);
+              kaartController.voegKaartToe("", legeTitel.trim(), 0.0, 0.0, 10, "");
               JOptionPane.showMessageDialog(null, "Lege kaart '" + legeTitel + "' is aangemaakt.", "Succes",
                   JOptionPane.INFORMATION_MESSAGE);
             }
@@ -217,10 +227,10 @@ public class CreateUpperPanel {
         int confirm = JOptionPane.showConfirmDialog(null,
             "Bevestig verwerking:\n\n" + "Bestand: " + inputFile.getName() + "\n" + "Titel: " + title, "Bevestiging",
             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-
+// TODO
         if (confirm == JOptionPane.YES_OPTION) {
           kaartController.voegKaartToe(inputFile.getAbsolutePath(), title, Const.c_LongLatUndefined,
-              Const.c_LongLatUndefined, Const.c_ZoomUndefined);
+              Const.c_LongLatUndefined, Const.c_ZoomUndefined, projects);
           // JOptionPane.showMessageDialog(null, "Geo-info toegevoegd met titel:\n" + title, "Succes",
           // JOptionPane.INFORMATION_MESSAGE);
         }

@@ -1,15 +1,14 @@
 Introduction
 
-The intent of this (java) application  is to convert ING (www.ing.nl) csv- or SNS (www.snsbank.nl) xml-files to ofx files that can be read by a program like GnuCash (www.gnucash.org).
+The intent of this (java) application  is to place markers on a (OSM-)map.
+The marker information is defined in an Excel-sheet.
 
-What is new
+The first sheet in an Excel workbook is read.
+The first row contains collomn headings.
 
-- Java upgrade to version 22.
-- ING has changed CSV input format (on ~2 mar 2023), which is now supported.
-- SNS has changed the content of the XML file, which is now supported.
-- Tests are added.
-- OFX4J Library is used for OFX-file creation.
-- Some refactors are done.
-- Installation troubles are fixed.
-- Internationalisation, laguages Dutch and English are supported.
-- Dependencies are updated.
+The following headings are recognized:
+"postcode" , "huisnummer", "toevoeg", "straat", "plaats", "voornaam", "achternaam", "telefoon", "e-mail", "project", "long", "lat", "land"
+
+The program can generate Geo information, it uses "straat", "huisnummer", "toevoeg", "plaats" and optional "land" for determine the Latitude and longitude.
+It creates or overwrites the colomns: "long", "lat" and "land".
+

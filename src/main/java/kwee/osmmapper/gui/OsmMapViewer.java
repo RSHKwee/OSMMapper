@@ -61,23 +61,26 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
 
   private String inputFile = "";
   private String title = "";
+  private String m_projects = "";
   private double lat = Const.c_LongLatUndefined;
   private double lon = Const.c_LongLatUndefined;
   private int zoom = Const.c_ZoomUndefined;
+  private int rowIndex = 0;
 
-  public OsmMapViewer(String inpFile, String subtitel, double a_lat, double a_lon, int a_zoom) {
+  public OsmMapViewer(String inpFile, String subtitel, double a_lat, double a_lon, int a_zoom, String a_projects) {
     super("OSM Map Viewer " + subtitel);
     title = subtitel;
     inputFile = inpFile;
     lat = a_lat;
     lon = a_lon;
     zoom = a_zoom;
-
+    m_projects = a_projects;
     OsmMapViewerInit();
   }
 
   public OsmMapViewer() {
     super("OSM Map Viewer");
+    m_projects = "";
     OsmMapViewerInit();
   }
 
@@ -229,8 +232,6 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
    * 
    * @param inputFile Excel file with marker info.
    */
-  int rowIndex = 0;
-
   private void addMarkers(String inputFile) {
     ArrayList<MemoContent> memocontarr = new ArrayList<MemoContent>();
     OSMMapExcel mExcel = new OSMMapExcel(inputFile);
@@ -244,51 +245,57 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
       String postcode = memoinh.getPostcode();
       String city = memoinh.getCity();
       String country = memoinh.getCountry();
+      String projects = memoinh.getProjects();
+      if (projects.toLowerCase().contains(m_projects) || m_projects.isBlank()) {
+        if (!street.isBlank()) {
+          String sNameDetail = "";
+          if (!memoinh.getSurname().isBlank()) {
+            sNameDetail = sNameDetail + memoinh.getSurname();
+          }
+          if (!memoinh.getFamilyname().isBlank()) {
+            sNameDetail = sNameDetail + " " + memoinh.getFamilyname();
+          }
+          if (!memoinh.getPhonenumber().isBlank()) {
+            sNameDetail = sNameDetail + "\nTel: " + memoinh.getPhonenumber();
+          }
+          if (!memoinh.getMailaddress().isBlank()) {
+            sNameDetail = sNameDetail + "\nMail: " + memoinh.getMailaddress();
+          }
+          if (!memoinh.getProjects().isBlank()) {
+            sNameDetail = sNameDetail + "\nProjecten: " + memoinh.getProjects();
+          }
 
-      if (!street.isBlank()) {
-        String sNameDetail = "";
-        if (!memoinh.getSurname().isBlank()) {
-          sNameDetail = sNameDetail + memoinh.getSurname();
-        }
-        if (!memoinh.getFamilyname().isBlank()) {
-          sNameDetail = sNameDetail + " " + memoinh.getFamilyname();
-        }
-        if (!memoinh.getPhonenumber().isBlank()) {
-          sNameDetail = sNameDetail + "\nTel: " + memoinh.getPhonenumber();
-        }
-        if (!memoinh.getMailaddress().isBlank()) {
-          sNameDetail = sNameDetail + "\nMail: " + memoinh.getMailaddress();
-        }
+          // Maak titel en extra informatie
+          String title = houseNumber;
+          String description = String.format("Adres: %s %s \nPostcode: %s \nPlaats: %s \nLand: %s", street, houseNumber,
+              postcode, city, country);
+          String extraInfo = String.format(" %s\nCoördinaten: %.6f, %.6f", sNameDetail, latitude, longitude);
 
-        // Maak titel en extra informatie
-        String title = houseNumber;
-        String description = String.format("Adres: %s %s \nPostcode: %s \nPlaats: %s \nLand: %s", street, houseNumber,
-            postcode, city, country);
-        String extraInfo = String.format(" %s\nCoördinaten: %.6f, %.6f", sNameDetail, latitude, longitude);
-
-        // Bepaal kleur op basis van rij index (voor variatie)
-        Color color;
-        switch (rowIndex % 5) {
-        case 0:
-          color = Color.RED;
-          break;
-        case 1:
-          color = Color.BLUE;
-          break;
-        case 2:
-          color = Color.GREEN;
-          break;
-        case 3:
-          color = Color.ORANGE;
-          break;
-        default:
-          color = Color.MAGENTA;
-          break;
-        }
-        addCustomMarker(latitude, longitude, title, description, extraInfo, color);
+          // Bepaal kleur op basis van rij index (voor variatie)
+          Color color;
+          switch (rowIndex % 5) {
+          case 0:
+            color = Color.RED;
+            break;
+          case 1:
+            color = Color.BLUE;
+            break;
+          case 2:
+            color = Color.GREEN;
+            break;
+          case 3:
+            color = Color.ORANGE;
+            break;
+          default:
+            color = Color.MAGENTA;
+            break;
+          }
+          addCustomMarker(latitude, longitude, title, description, extraInfo, color);
+        } // Projects
         rowIndex++;
       }
     });
+    LOGGER.log(Level.INFO, "Aantal markers: " + rowIndex);
   }
 
   /**

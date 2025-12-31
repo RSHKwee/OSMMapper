@@ -3,12 +3,12 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <groupId>kwee</groupId>
-    <artifactId>osmmapper</artifactId>
-    <version>0.0.0.1</version>
-    <name>osmmapper</name>
+  <groupId>kwee</groupId>
+  <artifactId>osmmapper</artifactId>
+  <version>0.1.0.0</version>
+  <name>osmmapper</name>
 
   <parent>
 	<groupId>kwee</groupId>
@@ -112,6 +112,34 @@
         </configuration>
       </plugin>
       
+              <!-- 2. JPackage Plugin voor zelfstandige app op USB -->
+        <plugin>
+            <groupId>org.panteleyev</groupId>
+            <artifactId>jpackage-maven-plugin</artifactId>
+            <version>1.7.1</version>
+            <executions>
+                <execution>
+                    <!-- Voer uit na de "package" fase -->
+                    <phase>verify</phase>
+                    <goals>
+                        <goal>jpackage</goal>
+                    </goals>
+                </execution>
+            </executions>
+            <configuration>
+                <!-- Naam van je applicatie -->
+                <name>OSMMapper</name>
+                <!-- Het type output: "app-image" voor draagbare map -->
+                <type>APP_IMAGE</type>
+                <!-- Hier staat de fat JAR die in stap 1 is gemaakt -->
+                <input>${project.build.directory}</input>
+                <mainJar>${project.artifactId}-jar-with-dependencies.jar</mainJar>
+                <!-- Zorgt ervoor dat een runtime wordt meegeleverd -->
+                <runtimeImage>${java.home}</runtimeImage>
+                <!-- Output map: past perfect bij je "Programs" structuur -->
+                <destination>${project.build.directory}/Programs</destination>
+            </configuration>
+        </plugin>
       <!-- Distribute tools v -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -235,7 +263,7 @@
              <configuration>
                <headerType>console</headerType>
                <jar>${project.build.directory}/osmmapper-jar-with-dependencies.jar</jar>
-               <outfile>${project.build.directory}/osmmapper-${project.version}.exe</outfile>
+               <outfile>${project.build.directory}/osmmapper.exe</outfile>
                <downloadUrl>https://cdn.azul.com/zulu/bin/zulu22.32.21-ca-crac-jdk22.0.2-win_x64.zip</downloadUrl>
                <classPath>
                  <mainClass>kwee.osmmapper.main.Main</mainClass>
@@ -253,7 +281,7 @@
                 <txtProductVersion>${project.version}</txtProductVersion>
                 <productName>${project.name}</productName>
                 <internalName>osmmapper</internalName>
-                <originalFilename>osmmapper-${project.version}.exe</originalFilename>
+                <originalFilename>osmmapper.exe</originalFilename>
               </versionInfo>
             </configuration>
           </execution>
@@ -273,15 +301,16 @@
               <goal>sign</goal>
             </goals>
             <configuration>
-              <file>${project.build.directory}/osmmapper-${project.version}.exe</file>
-              <name>OSM Mapper</name>
+           <!--   <file>${project.build.directory}/osmmapper-${project.version}.exe</file> -->
+              <file>${project.build.directory}/osmmapper.exe</file>
+             <name>OSM Mapper</name>
               <url>https://github.com/RSHKwee/osmmapper</url>
               <keystore>keystore.jks</keystore>
               <alias>RSHK</alias>
               <storepass>GW93ayi0j2CfeJx9VoSo</storepass>
             </configuration>
           </execution>
-<!--
+
           <execution>
             <id>signinst</id>
             <phase>install</phase>
@@ -297,12 +326,12 @@
               <storepass>GW93ayi0j2CfeJx9VoSo</storepass>
             </configuration>
           </execution>
-    -->      
+    
         </executions>
       </plugin>
 	  <!-- Sign executable ^ -->
       <!-- Windows installers v -->
-<!--      
+     
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -370,7 +399,7 @@
            </execution>
         </executions>
       </plugin>
--->      
+
     </plugins>
 <!--    </pluginManagement> -->
   </build>

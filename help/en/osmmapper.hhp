@@ -1,6 +1,6 @@
 [OPTIONS]
 Compatibility=1.1 or later
-Compiled file=ing2ofx.chm
+Compiled file=osmmapper.chm
 Contents file=Table of Contents.hhc
 Default topic=Introduction.htm
 Display compile progress=No

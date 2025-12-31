@@ -9,11 +9,12 @@ import java.util.UUID;
 
 public class TabInfo {
   private final String id; // final maakt het immutable
-  private String filePath;
-  private String title;
+  private String filePath = "";
+  private String title = "";
   private double latitude = Const.c_LongLatUndefined;
   private double longtitude = Const.c_LongLatUndefined;
   private int zoomfactor = Const.c_ZoomUndefined;
+  private String projects = "";
 
   // Default constructor nodig voor Jackson
   public TabInfo() {
@@ -51,6 +52,10 @@ public class TabInfo {
     return zoomfactor;
   }
 
+  public String getProjects() {
+    return projects;
+  }
+
   // Setters
   public void setFilePath(String filePath) {
     this.filePath = filePath;
@@ -72,6 +77,10 @@ public class TabInfo {
     this.zoomfactor = zoomfactor;
   }
 
+  public void setProjects(String projects) {
+    this.projects = projects;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o)
@@ -82,6 +91,7 @@ public class TabInfo {
     boolean bstat = false;
     bstat = tabInfo.getFilePath() == this.getFilePath();
     bstat = bstat && tabInfo.getTitle() == this.getTitle();
+    bstat = bstat && tabInfo.getProjects() == this.getProjects();
     return bstat;
   }
 
@@ -102,7 +112,7 @@ public class TabInfo {
 
     Map<String, TabInfo> uniekeMap = new LinkedHashMap<>();
     for (TabInfo tab : tabList) {
-      uniekeMap.putIfAbsent(tab.getFilePath(), tab); // of een ander uniek veld
+      uniekeMap.putIfAbsent(tab.title, tab); // of een ander uniek veld
     }
     return new ArrayList<>(uniekeMap.values());
   }
@@ -110,6 +120,6 @@ public class TabInfo {
   @Override
   public String toString() {
     return "TabInfo{filePath='" + filePath + "', title='" + title + "', latitude='" + latitude + "', longtitude='"
-        + longtitude + "', zoomfactor='" + zoomfactor + "'}";
+        + longtitude + "', zoomfactor='" + zoomfactor + "', projects='" + projects + "'}";
   }
 }

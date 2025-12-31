@@ -1,11 +1,11 @@
-; -- ing2ofx.iss --
+; -- osmmapper.iss --
 
 #include "Library.iss"
 
 #define MyAppName "osmmapper"
 #define MyAppVersion GetVersionNumbersString('target\osmmapper.exe')
 #define MyAppExeName "osmmapper.exe"
-#define MyIconFile "src\main\resources\ingSNSLogo.ico"
+#define MyIconFile "src\main\resources\osmmapper.ico"
 #define MyJavaMinVersion = 22
 
 [Setup]
@@ -49,12 +49,9 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; \
 Source: ".\target\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\target\{#MyAppName}-{#MyAppVersion}.jar"; DestDir: "{app}"; Flags: ignoreversion
 Source: "readme.md"; DestDir: "{app}"; Flags: ignoreversion
-Source: "Synoniem.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "ing2ofxSettings.PNG"; DestDir: "{app}"; Flags: ignoreversion
-Source: "ing2ofxMain.PNG"; DestDir: "{app}"; Flags: ignoreversion
 Source: "readme.txt"; DestDir: "{app}"; Flags: isreadme
-Source: ".\help\en\ing2ofx.chm"; DestDir: "{app}\help\en"; Flags: ignoreversion
-Source: ".\help\nl\ing2ofx.chm"; DestDir: "{app}\help\nl"; Flags: ignoreversion
+Source: ".\help\en\osmmapper.chm"; DestDir: "{app}\help\en"; Flags: ignoreversion
+Source: ".\help\nl\osmmapper.chm"; DestDir: "{app}\help\nl"; Flags: ignoreversion
 DestDir: {app}\jre; Source: ..\jre\*;   Flags: recursesubdirs ; Check: JreNotPresent
 
 [Icons]

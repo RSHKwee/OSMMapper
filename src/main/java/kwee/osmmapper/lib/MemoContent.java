@@ -12,11 +12,10 @@ public class MemoContent {
   String projects = "";
   String country = "";
 
-  double longitude = -500.0;
-  double latitude = -500.0;
+  double longitude = Const.c_LongLatUndefined;
+  double latitude = Const.c_LongLatUndefined;
 
   public MemoContent() {
-
   }
 
   public String getPostcode() {

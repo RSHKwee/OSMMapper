@@ -87,7 +87,8 @@ public class GeoMapController {
         double lat = tab.getLatitude();
         double lon = tab.getLongtitude();
         int zoom = tab.getZoomfactor();
-        voegKaartToe(inputFile, subtottitel, lat, lon, zoom, false);
+        String projects = tab.getProjects();
+        voegKaartToe(inputFile, subtottitel, lat, lon, zoom, projects, false);
       }
     }
   }
@@ -101,14 +102,15 @@ public class GeoMapController {
    * @param lon      Longitude center
    * @param zoom     Zoom factor
    */
-  public void voegKaartToe(String fileNaam, String naam, double lat, double lon, int zoom) {
-    voegKaartToe(fileNaam, naam, lat, lon, zoom, true);
+  public void voegKaartToe(String fileNaam, String naam, double lat, double lon, int zoom, String projects) {
+    voegKaartToe(fileNaam, naam, lat, lon, zoom, projects, true);
   }
 
-  public void voegKaartToe(String fileNaam, String naam, double lat, double lon, int zoom, boolean administrate) {
+  public void voegKaartToe(String fileNaam, String naam, double lat, double lon, int zoom, String projects,
+      boolean administrate) {
     try {
       // Maak nieuwe kaart
-      OsmMapViewer kaart = new OsmMapViewer(fileNaam, naam, lat, lon, zoom);
+      OsmMapViewer kaart = new OsmMapViewer(fileNaam, naam, lat, lon, zoom, projects);
       kaart.setVisible(false);
 
       // Maak container panel
@@ -123,6 +125,7 @@ public class GeoMapController {
           TabInfo tab = new TabInfo();
           tab.setFilePath(fileNaam);
           tab.setTitle(naam);
+          tab.setProjects(projects);
           tablist.add(tab);
           m_params.set_TabState(tablist);
           m_params.save();
