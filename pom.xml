@@ -353,25 +353,7 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>${maven-antrun-pluginversion}</version>
-        <executions>
-          <execution>
-            <phase>install</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-              <configuration>
-                <target>
-                  <delete dir="${project.basedir}\BuildTools"/>
-                  <delete file="${project.basedir}\Library.iss"/>   
-                </target>
-              </configuration>
-           </execution>
-        </executions>
-      </plugin>
-      <!-- 2. JPackage Plugin voor zelfstandige app op USB -->
+         <!-- 2. JPackage Plugin voor zelfstandige app op USB -->
       <plugin>
         <groupId>org.panteleyev</groupId>
         <artifactId>jpackage-maven-plugin</artifactId>
@@ -399,11 +381,37 @@
           
           <!-- Optionele metadata -->
           <appVersion>${project.version}</appVersion>
-          <vendor>Kwee</vendor>
-          <copyright>Copyright © 2025 RSH Kwee. Alle rechten voorbehouden.</copyright>
+          <vendor>RSH Kwee</vendor>
+          <copyright>Copyright © 2026 RSH Kwee. Alle rechten voorbehouden.</copyright>
           <description>Excel Markers in OSM</description>                          
         </configuration>
+      </plugin>   
+      
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>${maven-antrun-pluginversion}</version>
+        <executions>
+          <execution>
+            <id>cleaninstall</id>
+            <phase>install</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+              <configuration>
+                <target>
+                  <delete dir="${project.basedir}\BuildTools"/>
+                  <delete file="${project.basedir}\Library.iss"/>   
+                  <delete file="${project.build.directory}\osmmapper-${project.version}.jar"/>
+                  <delete file="${project.build.directory}\USB\Programs\OSMMapper\app\osmmapper.exe"/>
+                  <delete file="${project.build.directory}\USB\Programs\OSMMapper\app\osmmapper_v${project.version}_setup.exe"/>
+                  <delete file="${project.build.directory}\USB\Programs\OSMMapper\app\osmmapper-${project.version}.jar"/>
+                  <delete dir="${project.build.directory}\USB\Programs\OSMMapper\app\USB"/>
+                </target>
+              </configuration>
+          </execution>
+        </executions>
       </plugin>
+
     </plugins>
     <!--    </pluginManagement> -->
   </build>

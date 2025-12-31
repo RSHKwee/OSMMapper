@@ -6,14 +6,14 @@ Default topic=Introduction.htm
 Display compile progress=No
 Index file=Index.hhk
 Language=0x413 Nederlands (Nederland)
-Title=ING to OFX Convertor
+Title=OSM Mapper
 
 
 [FILES]
 Introduction.htm
 OpeningMenu.htm
 SettingsMenu.htm
-Synonyms.htm
+
 
 [INFOTYPES]
 
