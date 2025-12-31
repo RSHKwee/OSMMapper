@@ -112,34 +112,6 @@
         </configuration>
       </plugin>
       
-              <!-- 2. JPackage Plugin voor zelfstandige app op USB -->
-        <plugin>
-            <groupId>org.panteleyev</groupId>
-            <artifactId>jpackage-maven-plugin</artifactId>
-            <version>1.7.1</version>
-            <executions>
-                <execution>
-                    <!-- Voer uit na de "package" fase -->
-                    <phase>verify</phase>
-                    <goals>
-                        <goal>jpackage</goal>
-                    </goals>
-                </execution>
-            </executions>
-            <configuration>
-                <!-- Naam van je applicatie -->
-                <name>OSMMapper</name>
-                <!-- Het type output: "app-image" voor draagbare map -->
-                <type>APP_IMAGE</type>
-                <!-- Hier staat de fat JAR die in stap 1 is gemaakt -->
-                <input>${project.build.directory}</input>
-                <mainJar>${project.artifactId}-jar-with-dependencies.jar</mainJar>
-                <!-- Zorgt ervoor dat een runtime wordt meegeleverd -->
-                <runtimeImage>${java.home}</runtimeImage>
-                <!-- Output map: past perfect bij je "Programs" structuur -->
-                <destination>${project.build.directory}/Programs</destination>
-            </configuration>
-        </plugin>
       <!-- Distribute tools v -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -399,9 +371,41 @@
            </execution>
         </executions>
       </plugin>
-
+      <!-- 2. JPackage Plugin voor zelfstandige app op USB -->
+      <plugin>
+        <groupId>org.panteleyev</groupId>
+        <artifactId>jpackage-maven-plugin</artifactId>
+        <version>1.7.1</version>
+        <executions>
+          <execution>
+            <!-- Voer uit na de "package" fase -->
+            <phase>verify</phase>
+            <goals>
+                <goal>jpackage</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <name>OSMMapper</name>
+          <type>APP_IMAGE</type>
+          <icon>src/main/resources/OSMMapper.ico</icon>
+          <input>${project.build.directory}</input>
+          <mainJar>${project.artifactId}-jar-with-dependencies.jar</mainJar>
+          <runtimeImage>${java.home}</runtimeImage>
+          <destination>${project.build.directory}/USB/Programs</destination>
+         
+          <!-- BELANGRIJK: Verwijzen naar je custom runtime -->
+          <!--       <runtimeImage>${project.basedir}/../jre</runtimeImage> -->
+          
+          <!-- Optionele metadata -->
+          <appVersion>${project.version}</appVersion>
+          <vendor>Kwee</vendor>
+          <copyright>Copyright © 2025 RSH Kwee. Alle rechten voorbehouden.</copyright>
+          <description>Excel Markers in OSM</description>                          
+        </configuration>
+      </plugin>
     </plugins>
-<!--    </pluginManagement> -->
+    <!--    </pluginManagement> -->
   </build>
   <distributionManagement>
     <!-- Upload to Github v-->

@@ -130,6 +130,10 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
     }
   }
 
+  public int getNumberOfMarkersOnMap() {
+    return rowIndex;
+  }
+
   // ======== Private functions ========
   /**
    * Initialization OsmMapViewr, setup frame, markers, tooltips, etc.
@@ -199,7 +203,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
     add(helpPanel, BorderLayout.SOUTH);
     panel.add(panelTop, BorderLayout.NORTH);
 
-    JLabel helpLabel = new JLabel("Beweeg over een marker voor titel, klik voor details");
+    JLabel helpLabel = new JLabel("Beweeg over een marker voor titel, klik voor details.");
     helpPanel.add(helpLabel);
 
     panelTop.add(zoomLabel);
@@ -209,7 +213,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
 
     // Statusbalk
     JPanel statusPanel = new JPanel(new BorderLayout());
-    statusLabel = new JLabel("Klik op een marker voor gedetailleerde informatie");
+    statusLabel = new JLabel("Klik op een marker voor gedetailleerde informatie.");
     statusLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
     statusPanel.add(statusLabel, BorderLayout.WEST);
     add(statusPanel, BorderLayout.SOUTH);
