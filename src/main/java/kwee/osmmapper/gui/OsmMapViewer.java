@@ -319,7 +319,8 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
             CustomMarker customMarker = (CustomMarker) hoveredMarker;
             statusLabel.setText("Marker: " + customMarker.getName() + " " + customMarker.getDescription());
           } else {
-            statusLabel.setText("Beweeg over een marker voor titel, klik voor details");
+            statusLabel
+                .setText("Aantal markers: " + rowIndex + ", beweeg over een marker voor titel, klik voor details.");
           }
         }
       }
