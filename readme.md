@@ -11,9 +11,7 @@ De kit heeft een JRE beschikbaar.
 # Opening menu
 When running the application (Windows excutable or Java jar-file) the following menu is shown:
 
-![Main screen ing2ofx](./osmmappingMain.PNG)
-
-
+![Main screen OSM Mapper](./osmmappingMain.PNG)
 
 # Setting menu
 
@@ -24,32 +22,23 @@ In the "settings" menu the following options are available:
 - _Look and Feel_ of the GUI can be adjusted.
 - _Create logfiles_ in the choosen directory a HTML- and a textfile with logging is created.
 
-
-
 # Excel bestand
 
 In het Excel bestand bevat in de eerste rij de kolom kop namen.
 
+In de koppen wordt gezocht naar de volgende deel teksten:
+- "postcode"
+- "huisnummer"
+- "toevoeg"
+- "straat"
+- "plaats"
+- "voornaam"
+- "achternaam"
+- "telefoon"
+- "e-mail"
+- "project"
 
-
-      Seq; AccountNr        ; Prefix
-       1 ; NLIyyINGBxxxxxxx ; Home
-       2 ; NLzzSNSBnnnnnnn  ; Business
-       ......
-
-
-
-"postcode"
-"huisnummer"
-"toevoeg"
-"straat"
-"plaats"
-"voornaam"
-"achternaam"
-"telefoon"
-"e-mail"
-"project"
-
-"long"
-"lat"
-"land"
+Indien niet aanwezig dan worden de volgende kolommen aangemaakt en van inhoud voorzien bij genereren Geo info:
+- "long"
+- "lat"
+- "land"

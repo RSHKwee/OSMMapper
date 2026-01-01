@@ -18,6 +18,8 @@
   </parent>
  
   <properties> 
+    <project.description>OSM Makers mapper</project.description>
+
     <com.fasterxml.jackson.core.version>2.17.2</com.fasterxml.jackson.core.version> 
   </properties>
 
@@ -267,22 +269,21 @@
         <version>${jsign-maven-plugin.version}</version>
         <executions>
           <execution>
-           <id>sign</id>
-           <phase>package</phase>
+            <id>sign</id>
+            <phase>package</phase>
             <goals>
               <goal>sign</goal>
             </goals>
             <configuration>
-           <!--   <file>${project.build.directory}/osmmapper-${project.version}.exe</file> -->
+            <!--   <file>${project.build.directory}/osmmapper-${project.version}.exe</file> -->
               <file>${project.build.directory}/osmmapper.exe</file>
-             <name>OSM Mapper</name>
+              <name>OSM Mapper</name>
               <url>https://github.com/RSHKwee/osmmapper</url>
               <keystore>keystore.jks</keystore>
               <alias>RSHK</alias>
               <storepass>GW93ayi0j2CfeJx9VoSo</storepass>
             </configuration>
           </execution>
-
           <execution>
             <id>signinst</id>
             <phase>install</phase>
@@ -298,12 +299,10 @@
               <storepass>GW93ayi0j2CfeJx9VoSo</storepass>
             </configuration>
           </execution>
-    
         </executions>
       </plugin>
 	  <!-- Sign executable ^ -->
-      <!-- Windows installers v -->
-     
+      <!-- Windows installers v -->    
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -353,11 +352,11 @@
           </execution>
         </executions>
       </plugin>
-         <!-- 2. JPackage Plugin voor zelfstandige app op USB -->
+      <!-- 2. JPackage Plugin voor zelfstandige app op USB -->
       <plugin>
         <groupId>org.panteleyev</groupId>
         <artifactId>jpackage-maven-plugin</artifactId>
-        <version>1.7.1</version>
+        <version>${jpackage-maven-plugin.version}</version>
         <executions>
           <execution>
             <!-- Voer uit na de "package" fase -->
