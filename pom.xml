@@ -7,8 +7,9 @@
 
   <groupId>kwee</groupId>
   <artifactId>osmmapper</artifactId>
-  <version>0.1.0.0</version>
+  <packaging>pom</packaging>
   <name>osmmapper</name>
+  <version>0.1.0.0</version>
 
   <parent>
 	<groupId>kwee</groupId>
@@ -284,6 +285,7 @@
               <storepass>GW93ayi0j2CfeJx9VoSo</storepass>
             </configuration>
           </execution>
+          <!--
           <execution>
             <id>signinst</id>
             <phase>install</phase>
@@ -299,8 +301,10 @@
               <storepass>GW93ayi0j2CfeJx9VoSo</storepass>
             </configuration>
           </execution>
+          -->
         </executions>
       </plugin>
+
 	  <!-- Sign executable ^ -->
       <!-- Windows installers v -->    
       <plugin>
