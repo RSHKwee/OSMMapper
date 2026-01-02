@@ -1,19 +1,22 @@
 package kwee.osmmapper.lib;
 
-public class MemoContent {
-  String postcode = "";
-  String housenumber = "";
-  String street = "";
-  String city = "";
-  String surname = "";
-  String familyname = "";
-  String phonenumber = "";
-  String mailaddress = "";
-  String projects = "";
-  String country = "";
+import java.awt.Color;
 
-  double longitude = Const.c_LongLatUndefined;
-  double latitude = Const.c_LongLatUndefined;
+public class MemoContent {
+  private String postcode = "";
+  private String housenumber = "";
+  private String street = "";
+  private String city = "";
+  private String surname = "";
+  private String familyname = "";
+  private String phonenumber = "";
+  private String mailaddress = "";
+  private String projects = "";
+  private String country = "";
+
+  private Color color = null;
+  private double longitude = Const.c_LongLatUndefined;
+  private double latitude = Const.c_LongLatUndefined;
 
   public MemoContent() {
   }
@@ -66,6 +69,11 @@ public class MemoContent {
     return latitude;
   }
 
+  public Color getColor() {
+    return color;
+  }
+
+  // ======= Setters ===========
   public void setPostcode(String postcode) {
     this.postcode = postcode;
   }
@@ -112,6 +120,14 @@ public class MemoContent {
 
   public void setLatitude(double latitude) {
     this.latitude = latitude;
+  }
+
+  public void setClor(Color color) {
+    this.color = color;
+  }
+
+  public void setColor(String scolor) {
+    this.color = ColorConverter.getColor(scolor);
   }
 
   public boolean isEmpty() {

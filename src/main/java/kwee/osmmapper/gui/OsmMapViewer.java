@@ -58,13 +58,13 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
 
   private ArrayList<Double> longarr = new ArrayList<Double>();
   private ArrayList<Double> latarr = new ArrayList<Double>();
+  private double lat = Const.c_LongLatUndefined;
+  private double lon = Const.c_LongLatUndefined;
+  private int zoom = Const.c_ZoomUndefined;
 
   private String inputFile = "";
   private String title = "";
   private String m_projects = "";
-  private double lat = Const.c_LongLatUndefined;
-  private double lon = Const.c_LongLatUndefined;
-  private int zoom = Const.c_ZoomUndefined;
   private int rowIndex = 0;
 
   public OsmMapViewer(String inpFile, String subtitel, double a_lat, double a_lon, int a_zoom, String a_projects) {
@@ -276,23 +276,30 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
           String extraInfo = String.format(" %s\nCoördinaten: %.6f, %.6f", sNameDetail, latitude, longitude);
 
           // Bepaal kleur op basis van rij index (voor variatie)
-          Color color;
-          switch (rowIndex % 5) {
-          case 0:
-            color = Color.RED;
-            break;
-          case 1:
-            color = Color.BLUE;
-            break;
-          case 2:
-            color = Color.GREEN;
-            break;
-          case 3:
-            color = Color.ORANGE;
-            break;
-          default:
-            color = Color.MAGENTA;
-            break;
+          Color color = null;
+          try {
+            color = memoinh.getColor();
+          } catch (Exception e) {
+            // Do nothing
+          }
+          if (color == null) {
+            switch (rowIndex % 5) {
+            case 0:
+              color = Color.RED;
+              break;
+            case 1:
+              color = Color.BLUE;
+              break;
+            case 2:
+              color = Color.GREEN;
+              break;
+            case 3:
+              color = Color.ORANGE;
+              break;
+            default:
+              color = Color.MAGENTA;
+              break;
+            }
           }
           addCustomMarker(latitude, longitude, title, description, extraInfo, color);
         } // Projects

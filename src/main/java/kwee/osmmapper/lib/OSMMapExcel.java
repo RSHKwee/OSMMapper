@@ -42,6 +42,7 @@ public class OSMMapExcel {
   private int longIndex = -1;
   private int latIndex = -1;
   private int countryIndex = -1;
+  private int colorIndex = -1;
 
   private int maxCellCount = -1;
   private String m_ExcelFile = "";
@@ -93,6 +94,8 @@ public class OSMMapExcel {
                 latIndex = cellindex;
               } else if (str.toLowerCase().contains("land")) {
                 countryIndex = cellindex;
+              } else if (str.toLowerCase().contains("kleur")) {
+                colorIndex = cellindex;
               } else {
                 LOGGER.log(Level.FINE, "cellindex: " + cellindex);
               }
@@ -332,6 +335,12 @@ public class OSMMapExcel {
         Cell l_cell = row.getCell(countryIndex);
         if (l_cell != null) {
           memocont.setCountry(getCelValue(l_cell));
+        }
+      }
+      if (colorIndex != -1) {
+        Cell l_cell = row.getCell(colorIndex);
+        if (l_cell != null) {
+          memocont.setColor(getCelValue(l_cell));
         }
       }
     } catch (Exception e) {
