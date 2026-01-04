@@ -9,19 +9,23 @@
     <script type="text/javascript" src="topic.js"></script>
   </head>
   <body>
-    <h1 class="topicheading">Nieuwe kaart menu</h1>
+    <h1 class="topicheading">Excel informatie</h1>
     <div class="topicbody">
-    <ul>
-    
-    <li><i>+ Nieuwe kaart</i>
-    <br>
-    <p>Verwijst naar de directory waar de gegenereerd OFX-bestand(en) worden bewaard. Voor de "Uitvoerbestandnaam" wordt een voorstel gedaan, die kan worden gewijzigd.</p>
-    <p>Zie ook <a href="Filenames.htm">Bestandsnaam conventie</a>.</p>
-    </li>
-    <ul>
-    <li><i>Wissel kaart</i></li>
-    <br>Wissel tussen de tabs met behulp van een dropdown menu.
-    </ul>
-     </div>
+	Van het opgeven Excel bestand wordt het eerste werkblad ingelezen.
+	<p>
+	<p>
+	De eerste rij moet kolomkop namen bevatten:
+	<br>
+    "postcode" , "huisnummer", "toevoeg", "straat", "plaats", "land",
+	<br>
+	"voornaam", "achternaam", "telefoon", "e-mail",
+    <br>	
+	"project", "kleur", "long", "lat"
+    <p>
+	<p>
+    Met behulp van de velden: "straat", "huisnummer", "toevoeg", "plaats" en optioneel "land" wordt de Geo informatie (Latitude en longitude) bepaald.
+    <p><p>
+	In de uitvoer Excel worden de kolommen: "long", "lat" and "land" gecreeerd / overschreven.
+    </div>
   </body>
 </html>   

@@ -382,8 +382,9 @@ public class OSMMapExcel {
     if (type == CellType.STRING) {
       str = a_cell.getStringCellValue();
     } else if (type == CellType.NUMERIC) {
-      Double huisnr = a_cell.getNumericCellValue();
-      str = Double.toString(huisnr);
+      double huisnr = a_cell.getNumericCellValue();
+      long ihuisnr = Math.round(huisnr);
+      str = Long.toString(ihuisnr);
     } else if (type == CellType.BOOLEAN) {
       boolean bstat = a_cell.getBooleanCellValue();
       str = Boolean.toString(bstat);
@@ -396,7 +397,8 @@ public class OSMMapExcel {
         switch (cellValue.getCellType()) {
         case NUMERIC:
           Double huisnr = a_cell.getNumericCellValue();
-          str = Double.toString(huisnr);
+          long ihuisnr = Math.round(huisnr);
+          str = Long.toString(ihuisnr);
           break;
         case STRING:
           str = cellValue.getStringValue();

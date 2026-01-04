@@ -122,7 +122,7 @@
         <version>${maven-resources-plugin.version}</version>
         <executions>
           <execution>
-            <id>CopyToolsIng</id>
+            <id>CopyToolsOsmMapper</id>
             <phase>initialize</phase>
             <goals>
               <goal>copy-resources</goal>
@@ -389,7 +389,27 @@
           <description>Excel Markers in OSM</description>                          
         </configuration>
       </plugin>   
-      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.6.0</version>
+        <executions>
+          <execution>
+            <id>create-distribution</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <finalName>extra-resources</finalName>
+              <appendAssemblyId>true</appendAssemblyId>
+              <descriptors>
+                <descriptor>src/assembly/distribution.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>     
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <version>${maven-antrun-pluginversion}</version>

@@ -13,28 +13,20 @@
 		<param name="Local" value="Introduction.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Achtergrond">
-		<param name="Local" value="Background.htm">
-		</OBJECT>
-	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Hoofdmenu">
 		<param name="Local" value="OpeningMenu.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Kaart">
+		<param name="Local" value="Kaart.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Instellingen menu">
 		<param name="Local" value="SettingsMenu.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Synonymen">
-		<param name="Local" value="Synonyms.htm">
-		</OBJECT>
-	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Bestandsnaam conventie">
-		<param name="Local" value="Filenames.htm">
-		</OBJECT>
-	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="OFX Mapping">
-		<param name="Local" value="OFX-Mapping.htm">
+		<param name="Name" value="Excel informatie">
+		<param name="Local" value="ExcelInfo.htm">
 		</OBJECT>
 </UL>
 
