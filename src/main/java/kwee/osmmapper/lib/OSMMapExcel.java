@@ -13,12 +13,7 @@ import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.*;
 
 import kwee.library.Address;
 import kwee.library.ApplicationMessages;
@@ -46,11 +41,22 @@ public class OSMMapExcel {
 
   private int maxCellCount = -1;
   private String m_ExcelFile = "";
+  private FormulaEvaluator evaluator;
 
+  /**
+   * Constructor
+   * 
+   * @param inputFile Excel file
+   */
   public OSMMapExcel(String inputFile) {
     m_ExcelFile = inputFile;
   }
 
+  /**
+   * Read Excel file
+   * 
+   * @return List of Memoo content
+   */
   public ArrayList<MemoContent> ReadExcel() {
     ArrayList<MemoContent> memocontarr = new ArrayList<MemoContent>();
     // Zet de FileMagic cache aan voor betere detectie
@@ -59,6 +65,10 @@ public class OSMMapExcel {
     // 1. Open the file
     try (FileInputStream file = new FileInputStream(m_ExcelFile); Workbook workbook = WorkbookFactory.create(file)) {
       Sheet sheet = workbook.getSheetAt(0);
+
+      // 2. Maak een formule-evaluator aan
+      evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+
       int rowIndex = 0;
       for (Row row : sheet) {
         if (rowIndex == 0) {
@@ -158,6 +168,10 @@ public class OSMMapExcel {
 
     try (FileInputStream file = new FileInputStream(m_ExcelFile); Workbook workbook = WorkbookFactory.create(file)) {
       Sheet sheet = workbook.getSheetAt(0);
+
+      // 2. Maak een formule-evaluator aan
+      evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+
       int totalRows = sheet.getLastRowNum() + 1;
       LOGGER.log(Level.INFO, "Totaal aantal rijen te verwerken: ~" + totalRows);
 
@@ -255,6 +269,12 @@ public class OSMMapExcel {
     }
   }
 
+  /**
+   * Fill structure Memo content.
+   * 
+   * @param row Excel row to convert to Memo content.
+   * @return Memo content
+   */
   private MemoContent getMemoContFromRow(Row row) {
     MemoContent memocont = new MemoContent();
     try {
@@ -350,6 +370,12 @@ public class OSMMapExcel {
     return memocont;
   }
 
+  /**
+   * Handle cell
+   * 
+   * @param a_cell Cell info
+   * @return Result as String
+   */
   private String getCelValue(Cell a_cell) {
     String str = "";
     CellType type = a_cell.getCellType();
@@ -357,11 +383,38 @@ public class OSMMapExcel {
       str = a_cell.getStringCellValue();
     } else if (type == CellType.NUMERIC) {
       Double huisnr = a_cell.getNumericCellValue();
-      int iHuisnr = huisnr.intValue();
-      str = Integer.toString(iHuisnr);
+      str = Double.toString(huisnr);
     } else if (type == CellType.BOOLEAN) {
       boolean bstat = a_cell.getBooleanCellValue();
       str = Boolean.toString(bstat);
+    } else if (type == CellType.FORMULA) {
+
+      // Handle formula
+      LOGGER.log(Level.FINE, "Formule: " + a_cell.getCellFormula());
+      try {
+        CellValue cellValue = evaluator.evaluate(a_cell);
+        switch (cellValue.getCellType()) {
+        case NUMERIC:
+          Double huisnr = a_cell.getNumericCellValue();
+          str = Double.toString(huisnr);
+          break;
+        case STRING:
+          str = cellValue.getStringValue();
+          break;
+        case BOOLEAN:
+          boolean bstat = a_cell.getBooleanCellValue();
+          str = Boolean.toString(bstat);
+          break;
+        case ERROR:
+          byte bstr = cellValue.getErrorValue();
+          str = Byte.toString(bstr);
+          break;
+        default:
+          str = "";
+        }
+      } catch (Exception e) {
+        str = "";
+      }
     }
     return str;
   }

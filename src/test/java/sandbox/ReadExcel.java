@@ -7,7 +7,7 @@ public class ReadExcel {
   public static void main(String[] args) throws Exception {
     // 1. Open het bestand
     FileInputStream file = new FileInputStream(
-        "F:\\dev\\Tools\\OSMMapper\\src\\test\\resources\\Hoevelaken-adressenlijst.xlsx");
+        "D:\\Data\\Hoevelaken\\Hoevelaken-flyerlijst_met_geo.xlsx");
     Workbook workbook = WorkbookFactory.create(file);
 
     // 2. Kies het eerste werkblad
