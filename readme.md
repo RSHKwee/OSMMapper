@@ -26,7 +26,7 @@ In the "settings" menu the following options are available:
 
 In het Excel bestand bevat in de eerste rij de kolom kop namen.
 
-In de koppen wordt gezocht naar de volgende deel teksten:
+In de koppen wordt gezocht naar de volgende (deel)teksten (niet case-sensitive):
 - "postcode"
 - "huisnummer"
 - "toevoeg"
@@ -37,6 +37,7 @@ In de koppen wordt gezocht naar de volgende deel teksten:
 - "telefoon"
 - "e-mail"
 - "project"
+- "kleur"
 
 Indien niet aanwezig dan worden de volgende kolommen aangemaakt en van inhoud voorzien bij genereren Geo info:
 - "long"
