@@ -68,6 +68,7 @@ public class OSMMapExcel {
 
       // 2. Maak een formule-evaluator aan
       evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+      evaluator.evaluateAll(); // Eén keer alles berekenen
 
       int rowIndex = 0;
       for (Row row : sheet) {
@@ -169,8 +170,9 @@ public class OSMMapExcel {
     try (FileInputStream file = new FileInputStream(m_ExcelFile); Workbook workbook = WorkbookFactory.create(file)) {
       Sheet sheet = workbook.getSheetAt(0);
 
-      // 2. Maak een formule-evaluator aan
+      // Create a formula-evaluator
       evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+      evaluator.evaluateAll(); // Calculate all at once
 
       int totalRows = sheet.getLastRowNum() + 1;
       LOGGER.log(Level.INFO, "Totaal aantal rijen te verwerken: ~" + totalRows);
@@ -225,7 +227,7 @@ public class OSMMapExcel {
               try {
                 l_address = l_api.geocode(l_address);
 
-                // Maak of overschrijf de cellen voor coordinaten
+                // Create or overwrite cells with coordinates
                 Cell longCell = row.getCell(longIndex);
                 if (longCell == null) {
                   longCell = row.createCell(longIndex);
@@ -255,13 +257,13 @@ public class OSMMapExcel {
         verwerkProgress();
       }
 
-      // 4. SLA OP NAAR EEN NIEUW BESTAND
+      // Store in file
       try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
         workbook.write(outputStream);
         LOGGER.log(Level.INFO, "Bestand opgeslagen als: " + outputFile);
       }
 
-      // 5. Sluit de werkmap en input stream
+      // Close file and input stream
       workbook.close();
       file.close();
     } catch (IOException e) {
