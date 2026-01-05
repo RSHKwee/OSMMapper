@@ -91,49 +91,28 @@
       </plugin> 
 
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>${maven-assembly-plugin.version}</version> <!-- Gebruik één versie -->
-        
-        <executions>
-          <!-- Execution 1: Maak uber-jar in package fase -->
+		<artifactId>maven-assembly-plugin</artifactId>
+  		<version>${maven-assembly-plugin.version}</version>      
+		<executions>
           <execution>
-            <id>create-uber-jar</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <archive>
-                <manifest>
-                  <addClasspath>true</addClasspath>
-                  <mainClass>kwee.osmmapper.main.Main</mainClass>
-                </manifest>
-              </archive>
-              <descriptorRefs>
-                <descriptorRef>jar-with-dependencies</descriptorRef>
-              </descriptorRefs>
-              <finalName>osmmapper</finalName>
-              <appendAssemblyId>true</appendAssemblyId> <!-- Voegt -jar-with-dependencies toe -->
-            </configuration>
-          </execution>
-          
-          <!-- Execution 2: Maak distributie in install fase -->
-          <execution>
-            <id>create-distribution</id>
-            <phase>install</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <finalName>USB</finalName>
-              <appendAssemblyId>false</appendAssemblyId>
-              <descriptors>
-                <descriptor>src/assembly/distribution.xml</descriptor>
-              </descriptors>
-            </configuration>
+			<phase>package</phase>
+			<goals>
+			  <goal>single</goal>
+			</goals>
           </execution>
         </executions>
+		<configuration>
+          <archive>
+            <manifest>
+		      <addClasspath>true</addClasspath>
+		      <mainClass>kwee.osmmapper.main.Main</mainClass>
+		    </manifest>
+          </archive>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <finalName>osmmapper</finalName>
+        </configuration>
       </plugin>
       
       <!-- Distribute tools v -->
@@ -433,7 +412,28 @@
               </configuration>
           </execution>
         </executions>
-      </plugin>   
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.6.0</version>
+        <executions>
+          <execution>
+            <id>create-distribution</id>
+            <phase>install</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <finalName>USB</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+              <descriptors>
+                <descriptor>src/assembly/distribution.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>    
     </plugins>
     <!--    </pluginManagement> -->
   </build>
