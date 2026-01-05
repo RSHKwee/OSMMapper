@@ -11,21 +11,57 @@
   <body>
     <h1 class="topicheading">Excel informatie</h1>
     <div class="topicbody">
+    <MAP NAME="test"> 
+    <AREA SHAPE=RECT COORDS="4,2,108,103"> 
+    <AREA SHAPE=RECT COORDS="117,6,212,104"> 
+    <AREA SHAPE=RECT COORDS="3,111,105,213"> 
+    <AREA SHAPE=RECT COORDS="114,113,211,210"> 
+    </MAP> 
+	
 	Van het opgeven Excel bestand wordt het eerste werkblad ingelezen.
 	<p>
 	<p>
 	De eerste rij moet kolomkop namen bevatten:
-	<br>
-    "postcode" , "huisnummer", "toevoeg", "straat", "plaats", "land",
-	<br>
-	"voornaam", "achternaam", "telefoon", "e-mail",
-    <br>	
-	"project", "kleur", "long", "lat"
-    <p>
-	<p>
+	<ul>
+    <li>"postcode" , "huisnummer", "toevoeg", "straat", "plaats", "land",
+	<li>"voornaam", "achternaam", "telefoon", "e-mail",	
+	<li>"project", "kleur", "long", "lat"
+	</ul>
     Met behulp van de velden: "straat", "huisnummer", "toevoeg", "plaats" en optioneel "land" wordt de Geo informatie (Latitude en longitude) bepaald.
-    <p><p>
+    <br>
 	In de uitvoer Excel worden de kolommen: "long", "lat" and "land" gecreeerd / overschreven.
+	<p><p><p>
+	<img src="MarkerDetail.jpg" usemap="#test" WIDTH=250 HEIGHT=125>
+	<p><p>
+	Marker detail Window:
+	<ul>
+	<li><i>Titel</i>
+	<br>
+	Het huisnummer van de marker wordt als titel gebruikt.
+	<li><i>Beschrijving</i>
+	<br>
+	De adresgegevens ("postcode" , "huisnummer", "toevoeg", "straat", "plaats", "land") worden getoond.
+	<li><i>Details</i>
+	<br>
+	De contactgegevens ("voornaam", "achternaam", "telefoon", "e-mail") worden getoond, indien aanwezig.
+	<br>
+	Het project ("project") wordt getoond, indien aanwezig.
+	<br>
+	De coordinaten van de marker ("lat", "long") wordt getoond.
+	
+	</ul>
+	Voorbeelden Excel koppen invoer bestanden:
+	<p>
+	<img src="ExcelKopIn.jpg" usemap="#test" WIDTH=500 HEIGHT=50>
+	<p><p>
+	<img src="ExcelKopIn2.jpg" usemap="#test" WIDTH=600 HEIGHT=40>
+	<p><p>
+	Voorbeelden Excel koppen uitvoer bestanden:
+	<p>
+	<img src="ExcelKopUit.jpg" usemap="#test" WIDTH=500 HEIGHT=50>
+	<p>
+	<img src="ExcelKopUit2.jpg" usemap="#test" WIDTH=600 HEIGHT=40>
+	
     </div>
   </body>
 </html>   

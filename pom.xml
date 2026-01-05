@@ -119,6 +119,7 @@
           </execution>
           
           <!-- Execution 2: Maak distributie in install fase -->
+		  <!--
           <execution>
             <id>create-distribution</id>
             <phase>install</phase>
@@ -133,6 +134,7 @@
               </descriptors>
             </configuration>
           </execution>
+		  -->
         </executions>
       </plugin>
       

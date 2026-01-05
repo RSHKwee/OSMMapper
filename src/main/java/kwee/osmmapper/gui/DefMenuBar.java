@@ -226,6 +226,11 @@ public class DefMenuBar {
       public void actionPerformed(ActionEvent e) {
         File helpFile = new File("help\\" + m_Language + "\\" + m_HelpFile);
 
+        // Locate helpfile
+        if (!helpFile.exists()) {
+          helpFile = new File("app\\help\\" + m_Language + "\\" + m_HelpFile);
+        }
+
         if (helpFile.exists()) {
           try {
             // Open the help file with the default viewer
