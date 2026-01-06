@@ -41,7 +41,8 @@ import java.util.List;
 import java.util.logging.Level;
 
 /**
- * Start a Swing application which shows a map and has some pre-defined options set.
+ * Start a Swing application which shows a map and has some pre-defined options
+ * set.
  */
 public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
   private static final Logger LOGGER = MyLogger.getLogger();
@@ -66,6 +67,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
   private String title = "";
   private String m_projects = "";
   private int rowIndex = 0;
+  private int notComplete = 0;
 
   public OsmMapViewer(String inpFile, String subtitel, double a_lat, double a_lon, int a_zoom, String a_projects) {
     super("OSM Map Viewer " + subtitel);
@@ -100,6 +102,8 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
       map().addMapMarker(marker);
       longarr.add(lon);
       latarr.add(lat);
+    } else {
+      notComplete++;
     }
   }
 
@@ -115,7 +119,8 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
   }
 
   /**
-   * Prevent JFrame from closing when using the Tab page. Override to prevent closing the JFrame
+   * Prevent JFrame from closing when using the Tab page. Override to prevent
+   * closing the JFrame
    */
   @Override
   public void setDefaultCloseOperation(int operation) {
@@ -240,6 +245,8 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
     ArrayList<MemoContent> memocontarr = new ArrayList<MemoContent>();
     OSMMapExcel mExcel = new OSMMapExcel(inputFile);
     memocontarr = mExcel.ReadExcel();
+    rowIndex = 0;
+    notComplete = 0;
 
     memocontarr.forEach(memoinh -> {
       Double longitude = memoinh.getLongitude();
@@ -302,11 +309,13 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
             }
           }
           addCustomMarker(latitude, longitude, title, description, extraInfo, color);
-        } // Projects
+        } else {
+          notComplete++;
+        }
         rowIndex++;
-      }
+      } // Projects
     });
-    LOGGER.log(Level.INFO, "Aantal markers: " + rowIndex);
+    LOGGER.log(Level.INFO, "Aantal markers: " + rowIndex + ", niet compleet: " + notComplete);
   }
 
   /**
