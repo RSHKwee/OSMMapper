@@ -15,7 +15,7 @@ When running the application (Windows excutable or Java jar-file) the following 
 
 # Setting menu
 
-![Settings menu](./osmmapperSettings.PNG)
+![Settings menu](./Instellingen.jpg)
 
 In the "settings" menu the following options are available:
 - For debugging a _loglevel_ can be defined, default is level _INFO_.
@@ -25,7 +25,6 @@ In the "settings" menu the following options are available:
 # Excel bestand
 
 In het Excel bestand bevat in de eerste rij de kolom kop namen.
-
 In de koppen wordt gezocht naar de volgende (deel)teksten (niet case-sensitive):
 - "postcode"
 - "huisnummer"
