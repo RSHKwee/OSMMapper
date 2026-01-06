@@ -214,6 +214,17 @@ public class DefMenuBar {
     });
     mnSettings.add(mntmPreferences);
 
+    JMenuItem mntmAllPreferences = new JMenuItem(bundle.getMessage("AllPreferences"));
+    mntmAllPreferences.setName("AllPreferences");
+    mntmAllPreferences.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        ShowPreferences showpref = new ShowPreferences();
+        showpref.showAllPreferences();
+      }
+    });
+    mnSettings.add(mntmAllPreferences);
+
     // ? item
     JMenu mnHelpAbout = new JMenu("?");
     mnHelpAbout.setHorizontalAlignment(SwingConstants.RIGHT);
