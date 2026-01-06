@@ -102,8 +102,6 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
       map().addMapMarker(marker);
       longarr.add(lon);
       latarr.add(lat);
-    } else {
-      notComplete++;
     }
   }
 
@@ -315,7 +313,12 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
         rowIndex++;
       } // Projects
     });
-    LOGGER.log(Level.INFO, "Aantal markers: " + rowIndex + ", niet compleet: " + notComplete);
+
+    if (notComplete > 0) {
+      LOGGER.log(Level.INFO, "Aantal markers: " + rowIndex + ", niet compleet: " + notComplete);
+    } else {
+      LOGGER.log(Level.INFO, "Aantal markers: " + rowIndex);
+    }
   }
 
   /**
