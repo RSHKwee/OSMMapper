@@ -67,6 +67,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
   private String title = "";
   private String m_projects = "";
   private int rowIndex = 0;
+  private int numberMarkers = 0;
   private int notComplete = 0;
 
   public OsmMapViewer(String inpFile, String subtitel, double a_lat, double a_lon, int a_zoom, String a_projects) {
@@ -102,6 +103,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
       map().addMapMarker(marker);
       longarr.add(lon);
       latarr.add(lat);
+      numberMarkers++;
     }
   }
 
@@ -315,9 +317,9 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
     });
 
     if (notComplete > 0) {
-      LOGGER.log(Level.INFO, "Aantal markers: " + rowIndex + ", niet compleet: " + notComplete);
+      LOGGER.log(Level.INFO, "Aantal markers: " + numberMarkers + ", niet compleet: " + notComplete);
     } else {
-      LOGGER.log(Level.INFO, "Aantal markers: " + rowIndex);
+      LOGGER.log(Level.INFO, "Aantal markers: " + numberMarkers);
     }
   }
 
