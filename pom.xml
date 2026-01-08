@@ -119,10 +119,10 @@
           </execution>
           
           <!-- Execution 2: Maak distributie in install fase -->
-		  <!--
+		  
           <execution>
             <id>create-distribution</id>
-            <phase>install</phase>
+            <phase>deploy</phase>
             <goals>
               <goal>single</goal>
             </goals>
@@ -134,7 +134,7 @@
               </descriptors>
             </configuration>
           </execution>
-		  -->
+		  
         </executions>
       </plugin>
       
