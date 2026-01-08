@@ -23,6 +23,9 @@ import kwee.logger.MyLogger;
 import kwee.osmmapper.gui.OsmMapViewer;
 import kwee.osmmapper.main.UserSetting;
 
+/**
+ * 
+ */
 public class GeoMapController {
   private static final Logger LOGGER = MyLogger.getLogger();
   private static GeoMapController uniqueInstance;

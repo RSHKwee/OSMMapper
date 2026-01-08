@@ -1,13 +1,19 @@
 package sandbox;
 
 import org.apache.poi.ss.usermodel.*;
+
+import kwee.logger.MyLogger;
+
 import java.io.FileInputStream;
+import java.util.logging.Logger;
 
 public class ReadExcel {
+  private static final Logger LOGGER = MyLogger.getLogger();
+
   public static void main(String[] args) throws Exception {
+
     // 1. Open het bestand
-    FileInputStream file = new FileInputStream(
-        "D:\\Data\\Hoevelaken\\Hoevelaken-flyerlijst_met_geo.xlsx");
+    FileInputStream file = new FileInputStream("D:\\Data\\Hoevelaken\\Hoevelaken-flyerlijst_met_geo.xlsx");
     Workbook workbook = WorkbookFactory.create(file);
 
     // 2. Kies het eerste werkblad
@@ -37,5 +43,7 @@ public class ReadExcel {
     // 5. Sluit de werkmap
     workbook.close();
     file.close();
+
+    kwee.osmmapper.lib.ColorConverter.printAllColors();
   }
 }

@@ -9,7 +9,7 @@
   <artifactId>osmmapper</artifactId>
   <packaging>jar</packaging>
   <name>osmmapper</name>
-  <version>0.1.0.1</version>
+  <version>0.1.0.2</version>
 
   <parent>
 	<groupId>kwee</groupId>
@@ -19,7 +19,7 @@
   </parent>
  
   <properties> 
-    <project.description>OSM Makers mapper</project.description>
+    <project.description>OSM Markers mapper</project.description>
 
     <com.fasterxml.jackson.core.version>2.17.2</com.fasterxml.jackson.core.version> 
   </properties>
@@ -127,7 +127,7 @@
               <goal>single</goal>
             </goals>
             <configuration>
-              <finalName>USB</finalName>
+              <finalName>OSMMAPPER</finalName>
               <appendAssemblyId>false</appendAssemblyId>
               <descriptors>
                 <descriptor>src/assembly/distribution.xml</descriptor>
@@ -200,6 +200,7 @@
                   <includes>
                     <include>readme.md</include>
                     <include>*.PNG</include>
+                    <include>*.jpg</include>
                   </includes>
                   <filtering>true</filtering>
                 </resource>
@@ -207,6 +208,28 @@
               <encoding>${project.build.sourceEncoding}</encoding>
             </configuration>
           </execution>
+          <execution>
+            <id>readme-md-usb</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}\usb</outputDirectory>
+              <resources>                                        
+                <resource>
+                  <directory>.</directory>
+                  <includes>
+                    <include>readme.md</include>
+                    <include>*.PNG</include>
+                    <include>*.jpg</include>
+                  </includes>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+              <encoding>${project.build.sourceEncoding}</encoding>
+            </configuration>
+          </execution>		  
           <execution>
             <id>helpfile</id>
             <phase>package</phase>
@@ -308,7 +331,7 @@
               <storepass>GW93ayi0j2CfeJx9VoSo</storepass>
             </configuration>
           </execution>
-          <!--
+          
           <execution>
             <id>signinst</id>
             <phase>install</phase>
@@ -324,7 +347,7 @@
               <storepass>GW93ayi0j2CfeJx9VoSo</storepass>
             </configuration>
           </execution>
-          -->
+          
         </executions>
       </plugin>
 

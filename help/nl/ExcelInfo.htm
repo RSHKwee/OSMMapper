@@ -23,17 +23,28 @@
 	<p>
 	De eerste rij moet kolomkop namen bevatten:
 	<ul>
-    <li>"postcode" , "huisnummer", "toevoeg", "straat", "plaats", "land",
-	<li>"voornaam", "achternaam", "telefoon", "e-mail",	
+    <li>"postcode" , "huisnummer", "toevoeg", "straat", "plaats", "land"
+	<br>
+    Met behulp van deze velden, "land" is optioneel, wordt de Geo informatie (Latitude en longitude) bepaald.
+	
+	<li>"voornaam", "achternaam", "telefoon", "e-mail"
+	<br>
+	Deze informatie wordt in een marker detail window getoond (indien aanwezig).
+	
 	<li>"project", "kleur", "long", "lat"
+	<br>
+	De te tonen markers kunnen worden gefilterd op "project".
+	<br>
+	De coordinaten "long" en "lat" kunnen worden toegevoegd/opgezocht.  
+	<br>
+	Met "kleur"kan de markerkleur worden gedefinieerd.
 	</ul>
-    Met behulp van de velden: "straat", "huisnummer", "toevoeg", "plaats" en optioneel "land" wordt de Geo informatie (Latitude en longitude) bepaald.
     <br>
 	In de uitvoer Excel worden de kolommen: "long", "lat" and "land" gecreeerd / overschreven.
 	<p><p><p>
 	<img src="MarkerDetail.jpg" usemap="#test" WIDTH=250 HEIGHT=125>
 	<p><p>
-	Marker detail Window:
+	<b><i>Marker detail Window:</i></b>
 	<ul>
 	<li><i>Titel</i>
 	<br>
@@ -48,8 +59,18 @@
 	Het project ("project") wordt getoond, indien aanwezig.
 	<br>
 	De coordinaten van de marker ("lat", "long") wordt getoond.
-	
+	<li><i>Kleur</i>
+	<br>
+	De kleur van de marker kan worden ingesteld. 
+	Indien niet opgegeven, wordt er random een kleur gekozen ("RED", "BLUE", "GREEN", "ORANGE", "MAGENTA").
+	<p><p>
+	De volgende kleuren kunnen worden opgegeven (in Engels):
+	<br>
+    "AQUA", "BLACK", "BLUE", "CYAN", "DARKGRAY", "DARKGREY", "DARK_GRAY", "FUCHSIA", "GRAY", "GREEN", "GREY", 
+	"LIGHTGRAY", "LIGHTGREY", "LIGHT_GRAY", "LIME", "MAGENTA", "MAROON", "NAVY", "OLIVE", "ORANGE", "PINK", 
+	"PURPLE", "RED", "SLATEGREY", "TEAL", "WHITE", "YELLOW"	
 	</ul>
+	<p>
 	Voorbeelden Excel koppen invoer bestanden:
 	<p>
 	<img src="ExcelKopIn.jpg" usemap="#test" WIDTH=500 HEIGHT=50>
