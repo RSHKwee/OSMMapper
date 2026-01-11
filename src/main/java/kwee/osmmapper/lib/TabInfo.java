@@ -15,16 +15,18 @@ public class TabInfo {
   private double longtitude = Const.c_LongLatUndefined;
   private int zoomfactor = Const.c_ZoomUndefined;
   private String projects = "";
+  private String fotodirectory = "";
 
   // Default constructor nodig voor Jackson
   public TabInfo() {
     this.id = UUID.randomUUID().toString();
   }
 
-  public TabInfo(String filePath, String title) {
+  public TabInfo(String filePath, String title, String fotodirectory) {
     this.id = UUID.randomUUID().toString();
     this.filePath = filePath;
     this.title = title;
+    this.fotodirectory = fotodirectory;
   }
 
   // Getters en setters
@@ -56,6 +58,10 @@ public class TabInfo {
     return projects;
   }
 
+  public String getFotodirectory() {
+    return fotodirectory;
+  }
+
   // Setters
   public void setFilePath(String filePath) {
     this.filePath = filePath;
@@ -79,6 +85,10 @@ public class TabInfo {
 
   public void setProjects(String projects) {
     this.projects = projects;
+  }
+
+  public void setFotodirectory(String fotodirectory) {
+    this.fotodirectory = fotodirectory;
   }
 
   @Override
@@ -120,6 +130,7 @@ public class TabInfo {
   @Override
   public String toString() {
     return "TabInfo{filePath='" + filePath + "', title='" + title + "', latitude='" + latitude + "', longtitude='"
-        + longtitude + "', zoomfactor='" + zoomfactor + "', projects='" + projects + "'}";
+        + longtitude + "', zoomfactor='" + zoomfactor + "', projects='" + projects + "' , fotodirectory='"
+        + fotodirectory + "'}";
   }
 }

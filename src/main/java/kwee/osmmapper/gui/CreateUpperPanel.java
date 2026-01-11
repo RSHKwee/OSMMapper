@@ -30,8 +30,9 @@ import kwee.osmmapper.main.UserSetting;
 
 public class CreateUpperPanel {
   private UserSetting m_params;
-
   private String m_InpDirectory = "";
+  private String m_PictureDirectory = "";
+
   private GeoMapController kaartController;
   private JProgressBar m_ProgressBar = new JProgressBar();
   private JLabel m_ProgressLabel = new JLabel(" ");;
@@ -40,6 +41,7 @@ public class CreateUpperPanel {
     kaartController = GeoMapController.getInstance();
     m_params = UserSetting.getInstance();
     m_InpDirectory = m_params.get_InpDirectory();
+    m_PictureDirectory = m_params.get_PictureDirectory();
   }
 
   public JPanel createBovenPaneel(JFrame hoofdFrame) {
@@ -79,7 +81,7 @@ public class CreateUpperPanel {
 
           if (confirm == JOptionPane.YES_OPTION) {
             // Roep aan met lege bestandspad
-            kaartController.voegKaartToe("", title, defaultX, defaultY, defaultZoom, "");
+            kaartController.voegKaartToe("", title, defaultX, defaultY, defaultZoom, "", "");
             JOptionPane.showMessageDialog(null, "Lege kaart '" + title + "' is aangemaakt.", "Succes",
                 JOptionPane.INFORMATION_MESSAGE);
           }
@@ -137,6 +139,24 @@ public class CreateUpperPanel {
       gbc.weightx = 1.0;
       panel2.add(projectsField, gbc);
 
+      // 4. Foto directory
+      gbc.gridx = 0;
+      gbc.gridy = 3;
+      panel2.add(new JLabel("Fotomap:"), gbc);
+
+      JTextField pictureDirField = new JTextField(25);
+      gbc.gridx = 1;
+      gbc.gridy = 3;
+      gbc.gridwidth = 1;
+      gbc.weightx = 1.0;
+      panel2.add(pictureDirField, gbc);
+
+      JButton browsepictureButton = new JButton("📁 Selecteer");
+      gbc.gridx = 2;
+      gbc.gridy = 3;
+      gbc.weightx = 0.0;
+      panel2.add(browsepictureButton, gbc);
+
       // Browse button functionaliteit
       browseButton.addActionListener(new ActionListener() {
         @Override
@@ -145,6 +165,9 @@ public class CreateUpperPanel {
           fileChooser.setDialogTitle("Selecteer XLSX bestand");
           fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
           fileChooser.setSelectedFile(new File(m_InpDirectory));
+          fileField.setText(m_InpDirectory);
+          fileField.repaint();
+          fileField.setVisible(true);
 
           // xlsxfilter
           fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
@@ -166,6 +189,9 @@ public class CreateUpperPanel {
             m_InpDirectory = selectedFile.getAbsolutePath();
             m_params.set_InpDirectory(m_InpDirectory);
 
+            pictureDirField.setText(m_PictureDirectory);
+            pictureDirField.repaint();
+
             // Optioneel: Auto-vul titel op basis van bestandsnaam
             if (titleField.getText().isEmpty()) {
               String fileName = selectedFile.getName().replaceFirst("[.][^.]+$", "") // Verwijder extensie
@@ -173,6 +199,28 @@ public class CreateUpperPanel {
                   .replace("-", " "); // Vervang koppeltekens
               titleField.setText(fileName);
             }
+          }
+        }
+      });
+
+      // ==== Picture dir
+      browsepictureButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent evt) {
+          JFileChooser fileChooserpic = new JFileChooser();
+          fileChooserpic.setDialogTitle("Selecteer Fotodirectory");
+          fileChooserpic.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+          fileChooserpic.setSelectedFile(new File(m_PictureDirectory));
+          pictureDirField.setText(m_PictureDirectory);
+          pictureDirField.repaint();
+          pictureDirField.setVisible(true);
+
+          int result = fileChooserpic.showOpenDialog(panel2);
+          if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooserpic.getSelectedFile();
+            pictureDirField.setText(selectedFile.getAbsolutePath());
+            m_PictureDirectory = selectedFile.getAbsolutePath();
+            m_params.set_PictureDirectory(m_PictureDirectory);
           }
         }
       });
@@ -186,6 +234,7 @@ public class CreateUpperPanel {
         String filePath = fileField.getText().trim();
         String title = titleField.getText().trim();
         String projects = projectsField.getText().trim();
+        String pictureDir = pictureDirField.getText().trim();
 
         // Validatie
         if (filePath.isEmpty()) {
@@ -202,7 +251,7 @@ public class CreateUpperPanel {
                 "Voer een titel in voor de lege kaart:", "Lege kaart titel", JOptionPane.QUESTION_MESSAGE) : title;
 
             if (legeTitel != null && !legeTitel.trim().isEmpty()) {
-              kaartController.voegKaartToe("", legeTitel.trim(), 0.0, 0.0, 10, "");
+              kaartController.voegKaartToe("", legeTitel.trim(), 0.0, 0.0, 10, "", "");
               JOptionPane.showMessageDialog(null, "Lege kaart '" + legeTitel + "' is aangemaakt.", "Succes",
                   JOptionPane.INFORMATION_MESSAGE);
             }
@@ -227,11 +276,12 @@ public class CreateUpperPanel {
         int confirm = JOptionPane.showConfirmDialog(null,
             "Bevestig verwerking:\n\n" + "Bestand: " + inputFile.getName() + "\n" + "Titel: " + title, "Bevestiging",
             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-// TODO
+
         if (confirm == JOptionPane.YES_OPTION) {
           kaartController.voegKaartToe(inputFile.getAbsolutePath(), title, Const.c_LongLatUndefined,
-              Const.c_LongLatUndefined, Const.c_ZoomUndefined, projects);
-          // JOptionPane.showMessageDialog(null, "Geo-info toegevoegd met titel:\n" + title, "Succes",
+              Const.c_LongLatUndefined, Const.c_ZoomUndefined, projects, pictureDir);
+          // JOptionPane.showMessageDialog(null, "Geo-info toegevoegd met titel:\n" +
+          // title, "Succes",
           // JOptionPane.INFORMATION_MESSAGE);
         }
       }
@@ -444,7 +494,8 @@ public class CreateUpperPanel {
 
             try {
               get(); // Check voor excepties
-              // JOptionPane.showMessageDialog(null, "Klaar!", "Succes", JOptionPane.INFORMATION_MESSAGE);
+              // JOptionPane.showMessageDialog(null, "Klaar!", "Succes",
+              // JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception ex) {
               JOptionPane.showMessageDialog(null, "Fout: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }

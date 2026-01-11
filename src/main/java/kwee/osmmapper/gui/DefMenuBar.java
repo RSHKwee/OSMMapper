@@ -39,6 +39,7 @@ public class DefMenuBar {
   private boolean m_toDisk = false;
   private Level m_Level = Level.INFO;
   private String m_LogDir = "c:/";
+  @SuppressWarnings("unused")
   private boolean m_DuplicateTabs = false; // NO duplicate tabs.
 
   private ApplicationMessages bundle = ApplicationMessages.getInstance();

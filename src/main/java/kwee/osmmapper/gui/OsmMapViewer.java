@@ -15,29 +15,29 @@ import org.openstreetmap.gui.jmapviewer.interfaces.MapMarker;
 import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource;
 
 import kwee.osmmapper.lib.Const;
-import kwee.logger.MyLogger;
 import kwee.osmmapper.lib.CustomMarker;
 import kwee.osmmapper.lib.Mediaan;
 import kwee.osmmapper.lib.MemoContent;
 import kwee.osmmapper.lib.OSMMapExcel;
+import kwee.osmmapper.lib.FotoIntegration;
 import kwee.osmmapper.lib.TabInfo;
 import kwee.osmmapper.main.UserSetting;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JOptionPane;
 import javax.swing.BorderFactory;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import java.util.ArrayList;
-import java.util.logging.Logger;
 import java.util.List;
+
+import kwee.logger.MyLogger;
+import java.util.logging.Logger;
 import java.util.logging.Level;
 
 /**
@@ -70,14 +70,21 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
   private int numberMarkers = 0;
   private int notComplete = 0;
 
-  public OsmMapViewer(String inpFile, String subtitel, double a_lat, double a_lon, int a_zoom, String a_projects) {
+  private ArrayList<MemoContent> memocontarr = new ArrayList<MemoContent>();
+  private FotoIntegration fotoIntegration = new FotoIntegration();
+  private String fotoDirectory = "";
+
+  public OsmMapViewer(String inpFile, String subtitel, double a_lat, double a_lon, int a_zoom, String a_projects,
+      String a_fotoDirectory) {
     super("OSM Map Viewer " + subtitel);
-    title = subtitel;
     inputFile = inpFile;
+    title = subtitel;
     lat = a_lat;
     lon = a_lon;
     zoom = a_zoom;
     m_projects = a_projects;
+    fotoDirectory = a_fotoDirectory;
+
     OsmMapViewerInit();
   }
 
@@ -161,6 +168,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
     setupMarkerInteraction();
     enableMarkerTooltips();
     addMarkers(inputFile);
+    fotoIntegration = new FotoIntegration(fotoDirectory);
 
     if (Const.compareDouble(lat, Const.c_LongLatUndefined) || Const.compareDouble(lon, Const.c_LongLatUndefined)
         || (zoom == Const.c_ZoomUndefined)) {
@@ -242,7 +250,6 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
    * @param inputFile Excel file with marker info.
    */
   private void addMarkers(String inputFile) {
-    ArrayList<MemoContent> memocontarr = new ArrayList<MemoContent>();
     OSMMapExcel mExcel = new OSMMapExcel(inputFile);
     memocontarr = mExcel.ReadExcel();
     rowIndex = 0;
@@ -358,7 +365,9 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
 
             if (clickedMarker != null) {
               // Toon gedetailleerde informatie
-              showMarkerDetails(clickedMarker);
+              ShowMarkerDetail markerdetail = new ShowMarkerDetail(OsmMapViewer.this, fotoIntegration);
+              markerdetail.showMarkerDetails(clickedMarker);
+              // TODO showMarkerDetails(clickedMarker);
             } else {
               statusLabel.setText("Klik op een marker voor gedetailleerde informatie");
             }
@@ -366,40 +375,6 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
         }
       }
     });
-  }
-
-  /**
-   * Toont gedetailleerde informatie over een marker
-   */
-  private void showMarkerDetails(MapMarker marker) {
-    String title = marker.getName();
-    String details;
-
-    if (marker instanceof CustomMarker) {
-      // Gebruik de extra informatie van CustomMarker
-      CustomMarker customMarker = (CustomMarker) marker;
-      String description = customMarker.getDescription();
-      String extraInfo = customMarker.getExtraInfo();
-
-      details = String.format(
-          "<html><div style='width: 300px;'>" + "<h3>%s</h3>" + "<b>Beschrijving:</b><br/>%s<br/><br/>"
-              + "<b>Details:</b><br/>%s" + "</div></html>",
-          title != null ? title : "Onbekende marker",
-          description != null ? description.replace("\n", "<br/>") : "Geen beschrijving",
-          extraInfo != null ? extraInfo.replace("\n", "<br/>") : "Geen extra informatie");
-    } else {
-      // Standaard marker
-      details = String.format(
-          "<html><div style='width: 300px;'>" + "<h3>%s</h3>" + "<b>Locatie:</b><br/>%.6f, %.6f<br/><br/>"
-              + "<i>Geen extra informatie beschikbaar</i>" + "</div></html>",
-          title != null ? title : "Marker", marker.getLat(), marker.getLon());
-    }
-
-    // Make a special JOptionPane with HTML formatting
-    JLabel messageLabel = new JLabel(details);
-    messageLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-
-    JOptionPane.showMessageDialog(this, messageLabel, "Marker Details", JOptionPane.INFORMATION_MESSAGE);
   }
 
   /**

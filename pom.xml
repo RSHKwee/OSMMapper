@@ -9,7 +9,7 @@
   <artifactId>osmmapper</artifactId>
   <packaging>jar</packaging>
   <name>osmmapper</name>
-  <version>0.1.0.2</version>
+  <version>0.1.0.3</version>
 
   <parent>
 	<groupId>kwee</groupId>
@@ -210,12 +210,12 @@
           </execution>
           <execution>
             <id>readme-md-usb</id>
-            <phase>process-resources</phase>
+            <phase>verify</phase>
             <goals>
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.directory}\usb</outputDirectory>
+              <outputDirectory>${project.build.directory}\usb\Programs</outputDirectory>
               <resources>                                        
                 <resource>
                   <directory>.</directory>
@@ -416,7 +416,8 @@
             </goals>
           </execution>
         </executions>
-        <configuration>
+		<configuration>
+          <overwrite>true</overwrite>
           <name>OSMMapper</name>
           <type>APP_IMAGE</type>
           <icon>src/main/resources/OSMMapper.ico</icon>

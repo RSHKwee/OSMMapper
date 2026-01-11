@@ -129,6 +129,17 @@ public class MemoContent {
   public void setColor(String scolor) {
     this.color = ColorConverter.getColor(scolor);
   }
+  // =============================
+
+  public Address getAddress() {
+    Address laddress = new Address();
+    laddress.setStreet(street);
+    laddress.setHousenumber(housenumber);
+    laddress.setPostalcode(postcode);
+    laddress.setCity(city);
+    laddress.setCountry(country);
+    return laddress;
+  }
 
   public boolean isEmpty() {
     boolean bstat = true;

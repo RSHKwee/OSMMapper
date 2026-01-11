@@ -45,6 +45,7 @@ public class UserSetting {
   private String c_outpExcelFile = "OutputExcelFile";
   private String c_DuplicateTabs = "DuplicateTabs";
   private String c_Country = "Country";
+  private String c_PictureDirectory = "PictureDirectory";
 
   private String m_Level = c_LevelValue;
   private String m_LookAndFeel;
@@ -61,6 +62,7 @@ public class UserSetting {
   private String m_outpExcelFile = "";
   private boolean m_DuplicateTabs = false; // NO duplicate tabs.
   private String m_Country = "Netherlands";
+  private String m_PictureDirectory = "";
 
   private Preferences pref;
   private Preferences userPrefs = Preferences.userRoot();
@@ -98,6 +100,7 @@ public class UserSetting {
     m_outpExcelFile = pref.get(c_outpExcelFile, "");
     m_DuplicateTabs = pref.getBoolean(c_DuplicateTabs, false);
     m_Country = pref.get(c_Country, "");
+    m_PictureDirectory = pref.get(c_PictureDirectory, "");
   }
 
   // Getters for all parameters
@@ -175,6 +178,10 @@ public class UserSetting {
     return m_Country;
   }
 
+  public String get_PictureDirectory() {
+    return m_PictureDirectory;
+  }
+
   // == Setters ========
   public void set_LogDir(String m_LogDir) {
     this.m_LogDir = m_LogDir;
@@ -244,13 +251,16 @@ public class UserSetting {
     this.m_Country = Country;
   }
 
+  public void set_PictureDirectory(String m_PictureDirectory) {
+    this.m_PictureDirectory = m_PictureDirectory;
+  }
+
   /**
    * Save all settings
    */
   public void save() {
     try {
       pref.putBoolean(c_toDisk, m_toDisk);
-
       pref.putBoolean(c_ConfirmOnExit, m_ConfirmOnExit);
 
       pref.put(c_Language, m_Language);
@@ -264,6 +274,7 @@ public class UserSetting {
       pref.put(c_outpExcelFile, m_outpExcelFile);
       pref.putBoolean(c_DuplicateTabs, m_DuplicateTabs);
       pref.put(c_Country, m_Country);
+      pref.put(c_PictureDirectory, m_PictureDirectory);
 
       pref.flush();
     } catch (BackingStoreException e) {
@@ -292,6 +303,7 @@ public class UserSetting {
       freezeInstance.set_OutpExcelFile(m_outpExcelFile);
       freezeInstance.set_DuplicateTabs(m_DuplicateTabs);
       freezeInstance.set_Country(m_Country);
+      freezeInstance.set_PictureDirectory(m_PictureDirectory);
     } else {
       LOGGER.log(Level.INFO, "Nothing to freeze....");
     }
@@ -307,12 +319,13 @@ public class UserSetting {
       uniqueInstance.set_Level(freezeInstance.get_Level());
       uniqueInstance.set_LogDir(freezeInstance.get_LogDir());
 
-      uniqueInstance.set_TabState(m_KeyTabData);
-      uniqueInstance.set_InpDirectory(m_InpDirectory);
-      uniqueInstance.set_InpExcelFile(m_InpExcelFile);
-      uniqueInstance.set_OutpExcelFile(m_outpExcelFile);
-      uniqueInstance.set_DuplicateTabs(m_DuplicateTabs);
-      uniqueInstance.set_Country(m_Country);
+      uniqueInstance.set_TabState(freezeInstance.get_TabState());
+      uniqueInstance.set_InpDirectory(freezeInstance.get_InpDirectory());
+      uniqueInstance.set_InpExcelFile(freezeInstance.get_InpExcelFile());
+      uniqueInstance.set_OutpExcelFile(freezeInstance.get_OutpExcelFile());
+      uniqueInstance.set_DuplicateTabs(freezeInstance.is_DuplicateTabs());
+      uniqueInstance.set_Country(freezeInstance.get_Country());
+      uniqueInstance.set_PictureDirectory(freezeInstance.get_PictureDirectory());
 
       freezeInstance = null;
     } else {
@@ -341,6 +354,7 @@ public class UserSetting {
     l_line = l_line + c_outpExcelFile + ": " + m_outpExcelFile + "\n";
     l_line = l_line + c_DuplicateTabs + ": " + m_DuplicateTabs + "\n";
     l_line = l_line + c_Country + ": " + m_Country + "\n";
+    l_line = l_line + c_PictureDirectory + ": " + m_PictureDirectory + "\n";
 
     return l_line;
   }
