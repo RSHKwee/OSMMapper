@@ -1,14 +1,26 @@
-Introduction
+Introductie
 
-The intent of this (java) application  is to place markers on a (OSM-)map.
-The marker information is defined in an Excel-sheet.
+Het doel van deze (java) application is om markers op een (OSM-) kaart te tonen.
+De marker informatie is afkomstig uit een Excel-sheet.
 
-The first sheet in an Excel workbook is read.
-The first row contains collomn headings.
+De eerste tab van een Excel Werkboek wordt ingelezen.
+De eerste rij bevat kolom koppen.
 
-The following headings are recognized:
+De volgende kop (deel) teksten worden herkend:
 "postcode" , "huisnummer", "toevoeg", "straat", "plaats", "voornaam", "achternaam", "telefoon", "e-mail", "project", "long", "lat", "land"
 
-The program can generate Geo information, it uses "straat", "huisnummer", "toevoeg", "plaats" and optional "land" for determine the Latitude and longitude.
-It creates or overwrites the colomns: "long", "lat" and "land".
+Het programma genereerd Geo information aan de hand van: "straat", "huisnummer", "toevoeg", "plaats" and optioneel "land" om de Latitude en longitude te bepalen.
+De kolommen: "long", "lat" en "land" worden gecreëerd of overschreven.
+
+Per adres kunnen foto's worden toegevoegd.
+De foto's dienen te worden opgeslagen in de volgende structuur:
+
+Fotomap
+|- 1234AA78
+|      |- Foto1.jpg
+|      |- ...
+|
+|- 5678BB91
+|      |- Foto1.jpg
+|      |- ...
 

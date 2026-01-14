@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>Nieuwe kaart</title>
+    <!--[if IE 6]><style type="text/css">html{overflow-y:scroll}</style><![endif]-->
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <script type="text/javascript" src="topic.js"></script>
+  </head>
+  <body>
+    <h1 class="topicheading">Marker fotoinformatie</h1>
+    <div class="topicbody">
+    <MAP NAME="test"> 
+    <AREA SHAPE=RECT COORDS="4,2,108,103"> 
+    <AREA SHAPE=RECT COORDS="117,6,212,104"> 
+    <AREA SHAPE=RECT COORDS="3,111,105,213"> 
+    <AREA SHAPE=RECT COORDS="114,113,211,210"> 
+    </MAP> 
+	
+	Aan een marker kunen één of meerdere foto's worden gekoppeld.
+	<br>
+	De foto's worden opgeslagen in een "Fotomap" die wordt opgegevn bij het creëeren van een Kaarttab.
+	<br>
+	De foto's worden of per adres (Postcode, Huisnummer) in een submap opgeslagen:
+	<br>
+<pre>
+<code>
+Fotomap
+|- 1234AA78
+|      |- Foto1.jpg
+|      |- ...
+|
+|- 5678BB91
+|      |- Foto1.jpg
+|      |- ...
+</code>
+</pre>
+	De foto's in de submap kunnen willekeurige namen hebben.
+	<p>
+	<p>
+	Of foto's kunnen in de hoofdmap worden opgeslagen, maar moet voldoen aan de volgende naamgeving:
+	<br>
+	De naam begint met Postcode gevolgd door huisnummer, gevolgd door een underscore en een achtervoegsel om naam uniek te maken.
+    <br><br>
+	Zie voorbeeld:
+	<p>
+	<img src="Fotomap.jpg" usemap="#test" WIDTH=500 HEIGHT=250>
+    <br><br>
+    In voorbeeld is een bestand "019.jpg" aanwezig die nergens aan gekoppeld kan worden, dat wordt gemeld.
+	
+    </div>
+  </body>
+</html>   

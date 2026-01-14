@@ -28,6 +28,9 @@
 		<param name="Name" value="Excel informatie">
 		<param name="Local" value="ExcelInfo.htm">
 		</OBJECT>
-</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Marker foto informatie">
+		<param name="Local" value="FotoInfo.htm">
+		</OBJECT></UL>
 
 </BODY></HTML>

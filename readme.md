@@ -45,3 +45,18 @@ Indien niet aanwezig dan worden de volgende kolommen aangemaakt en van inhoud vo
 - "long"
 - "lat"
 - "land"
+
+# Marker foto's
+
+In een fotomap kunnen foto's per adres worden opgenomen.
+De foto's dienen te worden opgeslagen in de volgende structuur:
+~~~~~~~~~~~~~~~~~~~~~
+Fotomap
+|- 1234AA78
+|      |- Foto1.jpg
+|      |- ...
+|
+|- 5678BB91
+|      |- Foto1.jpg
+|      |- ...
+~~~~~~~~~~~~~~~~~~~~~
