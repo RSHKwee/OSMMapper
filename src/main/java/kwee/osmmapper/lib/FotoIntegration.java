@@ -1,14 +1,18 @@
 package kwee.osmmapper.lib;
 
 import java.io.File;
-import java.nio.file.Path;
+import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import kwee.library.FileUtils;
 import kwee.logger.MyLogger;
 
 public class FotoIntegration {
@@ -16,33 +20,79 @@ public class FotoIntegration {
 
   // Bewaar de koppeling tussen adres en foto's
   private Map<String, List<File>> adresFotoMap = new HashMap<>();
-  List<String> adressen;
-  List<File> fotoBestanden;
+  private Set<String> adressen = new HashSet<String>();
+  private List<File> fotoBestanden = new ArrayList<File>();
 
   public FotoIntegration() {
-    // TODO Nothing ???
+    // Do Nothing
   }
 
-  public FotoIntegration(String pictureDirectory) {
-    LOGGER.log(Level.INFO, "");
-//TODO Initialiseren map
-  }
+  public FotoIntegration(String pictureSource, ArrayList<MemoContent> memocontarr) {
+    LOGGER.log(Level.INFO, "Picture source: " + pictureSource);
+    laadFotoKoppelingen(memocontarr);
 
-  public void laadFotoKoppelingen(ArrayList<MemoContent> memocontarr) {
-    // TODO
+    File testFile = new File(pictureSource);
+    if (testFile.isDirectory()) {
+      // Directory
+      try {
+        List<File> fotolist = FileUtils.getAllFiles(pictureSource);
+        fotolist.forEach(f -> {
+          String subdir = FileUtils.getSubdirectory(f, new File(pictureSource));
+          if (!subdir.isBlank()) {
+            fotoBestanden = adresFotoMap.get(subdir);
+            if (fotoBestanden == null) {
+              fotoBestanden = new ArrayList<File>();
+            }
+            fotoBestanden.add(f);
+            adresFotoMap.put(subdir, fotoBestanden);
+          } else {
+            String fname = f.getName();
+            String[] fidx = fname.split("_");
+            if (fidx.length > 0) {
+              subdir = fidx[0];
+              if (adressen.contains(subdir)) {
+                fotoBestanden = adresFotoMap.get(subdir);
+                if (fotoBestanden == null) {
+                  fotoBestanden = new ArrayList<File>();
+                }
+                fotoBestanden.add(f);
+                adresFotoMap.put(subdir, fotoBestanden);
+              } else {
+                LOGGER.log(Level.INFO, "Voor foto " + fname + " geen adres gevonden.");
+              }
+            }
+          }
+        });
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
 
-    // Eenvoudige koppeling op volgnummer
-    for (int i = 0; i < Math.min(adressen.size(), fotoBestanden.size()); i++) {
-      String adres = adressen.get(i);
-      File foto = fotoBestanden.get(i);
-      adresFotoMap.computeIfAbsent(adres, k -> new ArrayList<>()).add(foto);
+    } else if (testFile.isFile()) {
+      // File
     }
   }
 
+  private void laadFotoKoppelingen(ArrayList<MemoContent> memocontarr) {
+    adressen.clear();
+    memocontarr.forEach(memoc -> {
+      Address laddress = memoc.getAddress();
+      String postcode = laddress.getPostalcode();
+      String houseNumber = laddress.getHousenumber();
+      String pictureIdx = String.format("%s%s", postcode.strip().replace(" ", "").toUpperCase(),
+          houseNumber.strip().replace(" ", "").toUpperCase());
+      adressen.add(pictureIdx);
+    });
+  }
+
   public List<File> getFotosVoorAdres(String adres) {
-    File lpatsh = new File("D:\\Data\\Hoevelaken\\Fotos\\034.jpg");
-    List<File> larr = new ArrayList<File>();
-    larr.add(lpatsh);
+    LOGGER.log(Level.INFO, "getFotosVoorAdres: " + adres);
+    // File lpatsh = new File("D:\\Data\\Hoevelaken\\Fotos\\034.jpg");
+    List<File> larr = adresFotoMap.get(adres);
+    if (larr == null) {
+      larr = new ArrayList<File>();
+    }
+    // larr.add(lpatsh);
     return larr;
     // return adresFotoMap.getOrDefault(adres, new ArrayList<>());
   }

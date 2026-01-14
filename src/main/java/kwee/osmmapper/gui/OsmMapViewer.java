@@ -104,9 +104,10 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
    * @param extraInfo   Additional information
    * @param color       Marker color
    */
-  public void addCustomMarker(double lat, double lon, String title, String description, String extraInfo, Color color) {
+  public void addCustomMarker(double lat, double lon, String title, String description, String extraInfo, Color color,
+      String pictureIdx) {
     if (!Const.compareDouble(lat, Const.c_LongLatUndefined) && !Const.compareDouble(lon, Const.c_LongLatUndefined)) {
-      CustomMarker marker = new CustomMarker(lat, lon, title, description, extraInfo, color);
+      CustomMarker marker = new CustomMarker(lat, lon, title, description, extraInfo, color, pictureIdx);
       map().addMapMarker(marker);
       longarr.add(lon);
       latarr.add(lat);
@@ -168,7 +169,9 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
     setupMarkerInteraction();
     enableMarkerTooltips();
     addMarkers(inputFile);
-    fotoIntegration = new FotoIntegration(fotoDirectory);
+
+    fotoIntegration = new FotoIntegration(fotoDirectory, memocontarr);
+    // fotoIntegration.laadFotoKoppelingen(memocontarr);
 
     if (Const.compareDouble(lat, Const.c_LongLatUndefined) || Const.compareDouble(lon, Const.c_LongLatUndefined)
         || (zoom == Const.c_ZoomUndefined)) {
@@ -288,6 +291,8 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
           String description = String.format("Adres: %s %s \nPostcode: %s \nPlaats: %s \nLand: %s", street, houseNumber,
               postcode, city, country);
           String extraInfo = String.format(" %s\nCoördinaten: %.6f, %.6f", sNameDetail, latitude, longitude);
+          String pictureIdx = String.format("%s%s", postcode.strip().replace(" ", "").toUpperCase(),
+              houseNumber.strip().replace(" ", "").toUpperCase());
 
           // Bepaal kleur op basis van rij index (voor variatie)
           Color color = null;
@@ -315,7 +320,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
               break;
             }
           }
-          addCustomMarker(latitude, longitude, title, description, extraInfo, color);
+          addCustomMarker(latitude, longitude, title, description, extraInfo, color, pictureIdx);
         } else {
           notComplete++;
         }

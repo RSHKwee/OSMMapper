@@ -165,32 +165,35 @@ public class GeoMapController {
       if (kaart != null) {
         kaart.dispose(); // Belangrijk voor JFrame cleanup
       }
-
-      // Verwijder tabblad
-      for (int i = 0; i < kaartTabPane.getTabCount(); i++) {
-        if (kaartTabPane.getTitleAt(i).equals(kaartNaam)) {
-          kaartTabPane.removeTabAt(i);
-          LOGGER.log(Level.FINE, "Kaart verwijderd: " + kaartNaam);
-          bstat = true;
-        }
-      }
-
-      // Verwijder uit preference
-      if (bstat) {
-        i = -1;
-        synchronized (tablist) {
-          List<TabInfo> l_tablist = new ArrayList<TabInfo>(tablist);
-          for (int i = 0; i < tablist.size(); i++) {
-            TabInfo tab = new TabInfo();
-            tab = l_tablist.get(i);
-            if (tab.getTitle().equalsIgnoreCase(kaartNaam)) {
-              l_tablist.remove(i);
-              m_params.set_TabState(l_tablist);
-              m_params.save();
-            }
+      try {
+        // Verwijder tabblad
+        for (int i = 0; i < kaartTabPane.getTabCount(); i++) {
+          if (kaartTabPane.getTitleAt(i).equals(kaartNaam)) {
+            kaartTabPane.removeTabAt(i);
+            LOGGER.log(Level.FINE, "Kaart verwijderd: " + kaartNaam);
+            bstat = true;
           }
-          tablist = l_tablist;
         }
+
+        // Verwijder uit preference
+        if (bstat) {
+          i = -1;
+          synchronized (tablist) {
+            List<TabInfo> l_tablist = new ArrayList<TabInfo>(tablist);
+            for (int i = 0; i < tablist.size(); i++) {
+              TabInfo tab = new TabInfo();
+              tab = l_tablist.get(i);
+              if (tab.getTitle().equalsIgnoreCase(kaartNaam)) {
+                l_tablist.remove(i);
+                m_params.set_TabState(l_tablist);
+                m_params.save();
+              }
+            }
+            tablist = l_tablist;
+          }
+        }
+      } catch (Exception e) {
+        // Do nothing
       }
     }
     return bstat;

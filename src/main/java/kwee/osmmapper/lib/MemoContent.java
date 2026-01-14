@@ -13,6 +13,7 @@ public class MemoContent {
   private String mailaddress = "";
   private String projects = "";
   private String country = "";
+  private String pictureIdx = "";
 
   private Color color = null;
   private double longitude = Const.c_LongLatUndefined;
@@ -73,6 +74,13 @@ public class MemoContent {
     return color;
   }
 
+  public String getPicturIdx() {
+    if (pictureIdx.isBlank()) {
+
+    }
+    return pictureIdx;
+  }
+
   // ======= Setters ===========
   public void setPostcode(String postcode) {
     this.postcode = postcode;
@@ -129,6 +137,11 @@ public class MemoContent {
   public void setColor(String scolor) {
     this.color = ColorConverter.getColor(scolor);
   }
+
+  public void setPictureIdx(String pictureIdx) {
+    this.pictureIdx = pictureIdx;
+  }
+
   // =============================
 
   public Address getAddress() {

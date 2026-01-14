@@ -15,8 +15,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import java.awt.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +41,8 @@ public class ShowMarkerDetail {
   /**
    * Toont gedetailleerde informatie over een marker
    */
-  String markerAdres = ""; // We slaan het adres op voor foto lookup
+  String pictureLink = ""; // We slaan het adres op voor foto lookup
+  int aantalFotos = 0;
 
   public void showMarkerDetails(MapMarker marker, List<File> fotos) {
     String title = marker.getName();
@@ -53,7 +53,7 @@ public class ShowMarkerDetail {
       CustomMarker customMarker = (CustomMarker) marker;
       String description = customMarker.getDescription();
       String extraInfo = customMarker.getExtraInfo();
-      markerAdres = customMarker.getDescription();
+      pictureLink = customMarker.getPictureIndex();
 
       details = String.format(
           "<html><div style='width: 300px;'>" + "<h3>%s</h3>" + "<b>Beschrijving:</b><br/>%s<br/><br/>"
@@ -80,19 +80,23 @@ public class ShowMarkerDetail {
     // Voeg een foto knop toe als er een adres is
     // if (markerAdres != null && !markerAdres.isEmpty()) {
     // Haal foto's op voor dit adres
-    List<File> fotos1 = m_fotoIntegration.getFotosVoorAdres(markerAdres);
-    int aantalFotos = fotos1.size();
+    List<File> fotos1 = m_fotoIntegration.getFotosVoorAdres(pictureLink);
+    aantalFotos = 0;
+    if (fotos1 != null) {
+      aantalFotos = fotos1.size();
+    }
 
     // Maak een knop met het aantal foto's
     JButton fotoKnop = new JButton(
         aantalFotos > 0 ? String.format("📸 Toon Foto's (%d)", aantalFotos) : "📷 Geen foto's beschikbaar");
 
     fotoKnop.setEnabled(aantalFotos > 0);
+    fotoKnop.setVisible(aantalFotos > 0);
 
     fotoKnop.addActionListener(e -> {
       if (aantalFotos > 0) {
         // Open de foto viewer
-        openFotoViewer(fotos1, markerAdres);
+        openFotoViewer(fotos1, pictureLink);
       }
     });
 
@@ -102,7 +106,7 @@ public class ShowMarkerDetail {
     panel.add(buttonPanel, BorderLayout.SOUTH);
 
     // Pas panel grootte aan voor de knop
-    panel.setPreferredSize(new Dimension(350, 200));
+    panel.setPreferredSize(new Dimension(350, 300));
     // }
 
     // Toon het aangepaste JOptionPane

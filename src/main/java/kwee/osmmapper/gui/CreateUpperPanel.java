@@ -208,8 +208,8 @@ public class CreateUpperPanel {
         @Override
         public void actionPerformed(ActionEvent evt) {
           JFileChooser fileChooserpic = new JFileChooser();
-          fileChooserpic.setDialogTitle("Selecteer Fotodirectory");
-          fileChooserpic.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+          fileChooserpic.setDialogTitle("Selecteer Foto");
+          fileChooserpic.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
           fileChooserpic.setSelectedFile(new File(m_PictureDirectory));
           pictureDirField.setText(m_PictureDirectory);
           pictureDirField.repaint();
@@ -269,7 +269,7 @@ public class CreateUpperPanel {
         }
 
         if (title.isEmpty()) {
-          title = "Adressen"; // Default waarde
+          title = "Adressen"; // Default value
         }
 
         // Bevestigingsdialoog
@@ -280,9 +280,6 @@ public class CreateUpperPanel {
         if (confirm == JOptionPane.YES_OPTION) {
           kaartController.voegKaartToe(inputFile.getAbsolutePath(), title, Const.c_LongLatUndefined,
               Const.c_LongLatUndefined, Const.c_ZoomUndefined, projects, pictureDir);
-          // JOptionPane.showMessageDialog(null, "Geo-info toegevoegd met titel:\n" +
-          // title, "Succes",
-          // JOptionPane.INFORMATION_MESSAGE);
         }
       }
     });
