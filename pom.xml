@@ -9,7 +9,7 @@
   <artifactId>osmmapper</artifactId>
   <packaging>jar</packaging>
   <name>osmmapper</name>
-  <version>0.1.0.3</version>
+  <version>0.1.0.4</version>
 
   <parent>
 	<groupId>kwee</groupId>
