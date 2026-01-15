@@ -24,20 +24,38 @@ public class EmailSender {
     this.useTLS = useTLS;
   }
 
-  public void sendBulkEmails(List<EmailData> emailList, String standardText) throws Exception {
-    for (EmailData emailData : emailList) {
+  public void sendBulkEmails(List<EmailData> emailList, String standardText) {
+    int successCount = 0;
+    int failCount = 0;
+
+    for (int i = 0; i < emailList.size(); i++) {
+      EmailData emailData = emailList.get(i);
+      System.out.printf("\n[%d/%d] Verzenden naar: %s... ", i + 1, emailList.size(), emailData.getEmail());
+
       try {
-        sendEmailWithAttachment(emailData, standardText);
-        System.out.println("✓ E-mail verzonden naar: " + emailData.getEmail());
+        sendSingleEmail(emailData, standardText);
+        System.out.println("SUCCESS");
+        successCount++;
+
+        // Kleine pauze tussen e-mails
+        if (i < emailList.size() - 1) {
+          Thread.sleep(1000);
+        }
+
       } catch (Exception e) {
-        System.err.println("✗ Fout bij verzenden naar " + emailData.getEmail() + ": " + e.getMessage());
-        // Optioneel: log de fout en ga door met volgende
+        System.out.println("FAILED: " + e.getMessage());
+        failCount++;
+        e.printStackTrace();
       }
     }
+
+    System.out.printf("\n\nResultaat: %d succesvol, %d gefaald\n", successCount, failCount);
   }
 
-  private void sendEmailWithAttachment(EmailData emailData, String standardText) throws Exception {
-    // Configureer properties
+  private void sendSingleEmail(EmailData emailData, String standardText)
+      throws MessagingException, jakarta.mail.internet.AddressException {
+
+    // 1. Configureer properties
     Properties props = new Properties();
     props.put("mail.smtp.auth", "true");
     props.put("mail.smtp.starttls.enable", String.valueOf(useTLS));
@@ -45,79 +63,108 @@ public class EmailSender {
     props.put("mail.smtp.host", smtpHost);
     props.put("mail.smtp.port", String.valueOf(smtpPort));
 
-    // Extra properties voor betrouwbaarheid
-    props.put("mail.smtp.connectiontimeout", "5000");
-    props.put("mail.smtp.timeout", "5000");
-    props.put("mail.smtp.writetimeout", "5000");
+    // Timeout instellingen
+    props.put("mail.smtp.connectiontimeout", "15000");
+    props.put("mail.smtp.timeout", "15000");
+    props.put("mail.smtp.writetimeout", "15000");
 
-    // Maak sessie
-    Session session = Session.getInstance(props, new Authenticator() {
+    // Debug (zet op true voor problemen oplossen)
+    props.put("mail.debug", "false");
+
+    // 2. Maak sessie - LET OP: jakarta.mail.Authenticator
+    Session session = Session.getInstance(props, new jakarta.mail.Authenticator() {
       @Override
       protected PasswordAuthentication getPasswordAuthentication() {
         return new PasswordAuthentication(username, password);
       }
     });
 
-    // Debug modus (optioneel)
     session.setDebug(false);
 
-    // Maak bericht
-    Message message = new MimeMessage(session);
-    message.setFrom(new InternetAddress(username, "Uw Organisatie")); // Met weergavenaam
+    // 3. Maak bericht
+    MimeMessage message = new MimeMessage(session);
 
-    // Voeg ontvanger toe
+    // Afzender
+    message.setFrom(new InternetAddress(username));
+
+    // Ontvanger(s)
     message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailData.getEmail()));
 
-    message.setSubject("Uw bestanden - " + emailData.getName());
-    message.setSentDate(new Date());
+    // Onderwerp
+    message.setSubject("Uw bestanden - " + emailData.getName(), "UTF-8");
 
-    // Personaliseer tekst
+    // 4. Personaliseer tekst
     String personalizedText = standardText.replace("{naam}", emailData.getName());
 
-    // Maak multipart
-    Multipart multipart = new MimeMultipart();
+    // 5. Maak multipart (tekst + attachments)
+    MimeMultipart multipart = new MimeMultipart();
 
     // Tekst deel
     MimeBodyPart textPart = new MimeBodyPart();
     textPart.setText(personalizedText, "UTF-8");
     multipart.addBodyPart(textPart);
 
-    // Voeg attachments toe
-    for (File file : emailData.getFiles()) {
+    // 6. Voeg attachments toe
+    List<File> attachments = emailData.getFiles();
+    for (File file : attachments) {
       if (file.exists() && file.canRead()) {
-        MimeBodyPart attachmentPart = new MimeBodyPart();
-
-        // Gebruik FileDataSource voor betere ondersteuning
-        FileDataSource source = new FileDataSource(file);
-        attachmentPart.setDataHandler(new DataHandler(source));
-        attachmentPart.setFileName(file.getName());
-
-        // Voeg content type header toe voor betere compatibiliteit
-        String contentType = getContentType(file.getName());
-        if (contentType != null) {
-          attachmentPart.setHeader("Content-Type", contentType);
-        }
-
-        multipart.addBodyPart(attachmentPart);
+        addAttachment(multipart, file);
       } else {
-        System.err.println("Bestand niet gevonden of niet leesbaar: " + file.getPath());
+        System.err.println("Waarschuwing: Bestand niet gevonden of niet leesbaar: " + file.getAbsolutePath());
       }
     }
 
-    // Stel content in
+    // 7. Stel content in
     message.setContent(multipart);
 
-    // Verstuur e-mail
+    // 8. Verstuur
     Transport.send(message);
   }
 
-  private String getContentType(String filename) {
-    String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+  private void addAttachment(MimeMultipart multipart, File file) throws MessagingException {
 
-    Map<String, String> contentTypes = Map.of("pdf", "application/pdf", "doc", "application/msword", "docx",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "xls", "application/vnd.ms-excel",
-        "xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "jpg", "image/jpeg", "jpeg",
-        "image/jpeg", "png", "image/png", "txt", "text/plain");
+    MimeBodyPart attachmentPart = new MimeBodyPart();
+
+    // Gebruik FileDataSource
+    FileDataSource source = new FileDataSource(file);
+    attachmentPart.setDataHandler(new DataHandler(source));
+    attachmentPart.setFileName(file.getName());
+
+    // Set content type
+    String contentType = getContentType(file.getName());
+    attachmentPart.setHeader("Content-Type", contentType);
+    attachmentPart.setHeader("Content-Transfer-Encoding", "base64");
+
+    multipart.addBodyPart(attachmentPart);
+  }
+
+  private String getContentType(String filename) {
+    if (filename == null) {
+      return "application/octet-stream";
+    }
+
+    String extension = "";
+    int dotIndex = filename.lastIndexOf('.');
+    if (dotIndex > 0) {
+      extension = filename.substring(dotIndex + 1).toLowerCase();
+    }
+
+    // Content type mapping
+    Map<String, String> contentTypes = new HashMap<>();
+    contentTypes.put("pdf", "application/pdf");
+    contentTypes.put("doc", "application/msword");
+    contentTypes.put("docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+    contentTypes.put("xls", "application/vnd.ms-excel");
+    contentTypes.put("xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    contentTypes.put("ppt", "application/vnd.ms-powerpoint");
+    contentTypes.put("pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation");
+    contentTypes.put("jpg", "image/jpeg");
+    contentTypes.put("jpeg", "image/jpeg");
+    contentTypes.put("png", "image/png");
+    contentTypes.put("gif", "image/gif");
+    contentTypes.put("txt", "text/plain");
+    contentTypes.put("zip", "application/zip");
+    contentTypes.put("rar", "application/x-rar-compressed");
 
     return contentTypes.getOrDefault(extension, "application/octet-stream");
   }

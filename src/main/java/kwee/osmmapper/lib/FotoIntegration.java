@@ -23,17 +23,26 @@ public class FotoIntegration {
   private Set<String> adressen = new HashSet<String>();
   private List<File> fotoBestanden = new ArrayList<File>();
 
+  /*
+   * Default Constructor
+   */
   public FotoIntegration() {
     // Do Nothing
   }
 
+  /**
+   * Constructor, setting up environment.
+   * 
+   * @param pictureSource Root directory or Index file
+   * @param memocontarr   List of Memo content per address
+   */
   public FotoIntegration(String pictureSource, ArrayList<MemoContent> memocontarr) {
     LOGGER.log(Level.INFO, "Picture source: " + pictureSource);
     laadFotoKoppelingen(memocontarr);
 
     File testFile = new File(pictureSource);
     if (testFile.isDirectory()) {
-      // Directory
+      // Directory support
       try {
         List<File> fotolist = FileUtils.getAllFiles(pictureSource);
         fotolist.forEach(f -> {
@@ -57,6 +66,7 @@ public class FotoIntegration {
                 }
                 fotoBestanden.add(f);
                 adresFotoMap.put(subdir, fotoBestanden);
+                LOGGER.log(Level.INFO, "Foto " + fname + " toegevoegd voor " + subdir);
               } else {
                 LOGGER.log(Level.INFO, "Voor foto " + fname + " geen adres gevonden.");
               }
@@ -64,15 +74,35 @@ public class FotoIntegration {
           }
         });
       } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        LOGGER.log(Level.WARNING, "FotoIntegration constructor: " + e.getMessage());
       }
-
     } else if (testFile.isFile()) {
-      // File
+      // TODO
+      // File support denk aan XLS of tekstbestand met link tussen adres en
+      // fotobestanden.
     }
   }
 
+  /**
+   * Get pictures for Address
+   * 
+   * @param address Address
+   * @return List of pictures
+   */
+  public List<File> getFotosVoorAdres(String address) {
+    LOGGER.log(Level.INFO, "Haal foto's op voor adres: " + address);
+    List<File> larr = adresFotoMap.get(address);
+    if (larr == null) {
+      larr = new ArrayList<File>(); // return empty list, if nothing found.
+    }
+    return larr;
+  }
+
+  // ========== Private functions =====================
+  /**
+   * 
+   * @param memocontarr
+   */
   private void laadFotoKoppelingen(ArrayList<MemoContent> memocontarr) {
     adressen.clear();
     memocontarr.forEach(memoc -> {
@@ -83,17 +113,5 @@ public class FotoIntegration {
           houseNumber.strip().replace(" ", "").toUpperCase());
       adressen.add(pictureIdx);
     });
-  }
-
-  public List<File> getFotosVoorAdres(String adres) {
-    LOGGER.log(Level.INFO, "getFotosVoorAdres: " + adres);
-    // File lpatsh = new File("D:\\Data\\Hoevelaken\\Fotos\\034.jpg");
-    List<File> larr = adresFotoMap.get(adres);
-    if (larr == null) {
-      larr = new ArrayList<File>();
-    }
-    // larr.add(lpatsh);
-    return larr;
-    // return adresFotoMap.getOrDefault(adres, new ArrayList<>());
   }
 }
