@@ -1,7 +1,8 @@
-package kwee.osmmapper.mailsupport;
+package sandbox;
 
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
+import kwee.osmmapper.mailsupport.EmailData;
 import jakarta.activation.*;
 import java.util.*;
 import java.io.File;

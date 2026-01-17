@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.*;
 
 import kwee.osmmapper.mailsupport.EmailData;
-import kwee.osmmapper.mailsupport.EmailSender;
 
 import java.io.InputStream;
 import java.nio.file.*;

@@ -6,7 +6,14 @@ import jakarta.activation.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.util.*;
+
+import com.microsoft.aad.msal4j.ClientCredentialFactory;
+import com.microsoft.aad.msal4j.ConfidentialClientApplication;
+import com.microsoft.aad.msal4j.IAuthenticationResult;
+import com.microsoft.aad.msal4j.IClientSecret;
+import com.microsoft.aad.msal4j.SilentParameters;
 
 public class SimpleMailTestApp {
 
@@ -18,7 +25,47 @@ public class SimpleMailTestApp {
     // user@gmail.com pass recipient@email.com");
     // return;
     // }
+    ConfidentialClientApplication app;
+    try {
+      app = ConfidentialClientApplication
+          .builder("your-application-id", ClientCredentialFactory.createFromSecret("your-client-secret"))
+          .authority("https://login.microsoftonline.com/your-tenant-id").build();
 
+      IClientSecret credential = ClientCredentialFactory.createFromSecret("your-client-secret");
+      SilentParameters silentParameters = SilentParameters.builder(Collections.singleton("Mail.Send")).build();
+      IAuthenticationResult result = app.acquireTokenSilently(silentParameters).join();
+      String accessToken = result.accessToken();
+
+      Properties props = new Properties();
+      props.put("mail.smtp.auth", "true");
+      props.put("mail.smtp.starttls.enable", "true");
+      props.put("mail.smtp.host", "smtp.office365.com");
+      props.put("mail.smtp.port", "587");
+      props.put("mail.smtp.auth.mechanisms", "XOAUTH2");
+      props.put("mail.smtp.auth.login.disable", "true");
+      props.put("mail.smtp.auth.plain.disable", "true");
+      Session session = Session.getInstance(props, new Authenticator() {
+        protected PasswordAuthentication getPasswordAuthentication() {
+          return new PasswordAuthentication(null, accessToken);
+        }
+      });
+      MimeMessage message = new MimeMessage(session);
+      message.setFrom(new InternetAddress("your-email@domain.com"));
+      message.addRecipient(Message.RecipientType.TO, new InternetAddress("recipient-email@domain.com"));
+      message.setSubject("Your Subject Here");
+      message.setText("Email body content here.");
+      Transport.send(message);
+
+    } catch (MalformedURLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (AddressException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (MessagingException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     // Laad configuratie (optioneel uit properties bestand)
     Properties config = new Properties();
     try (InputStream input = MainAppJakarta.class.getClassLoader().getResourceAsStream("emailconfig.properties")) {
