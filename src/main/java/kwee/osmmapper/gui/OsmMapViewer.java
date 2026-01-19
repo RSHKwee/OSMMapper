@@ -104,15 +104,17 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
    * @param extraInfo   Additional information
    * @param color       Marker color
    */
-  public void addCustomMarker(double lat, double lon, String title, String description, String extraInfo, Color color,
-      String pictureIdx) {
+  public boolean addCustomMarker(double lat, double lon, String title, String description, String extraInfo,
+      Color color, String pictureIdx) {
     if (!Const.compareDouble(lat, Const.c_LongLatUndefined) && !Const.compareDouble(lon, Const.c_LongLatUndefined)) {
       CustomMarker marker = new CustomMarker(lat, lon, title, description, extraInfo, color, pictureIdx);
       map().addMapMarker(marker);
       longarr.add(lon);
       latarr.add(lat);
       numberMarkers++;
+      return true;
     }
+    return false;
   }
 
   /**
@@ -171,7 +173,6 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
     addMarkers(inputFile);
 
     fotoIntegration = new FotoIntegration(fotoDirectory, memocontarr);
-    // fotoIntegration.laadFotoKoppelingen(memocontarr);
 
     if (Const.compareDouble(lat, Const.c_LongLatUndefined) || Const.compareDouble(lon, Const.c_LongLatUndefined)
         || (zoom == Const.c_ZoomUndefined)) {
@@ -254,11 +255,12 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
    */
   private void addMarkers(String inputFile) {
     OSMMapExcel mExcel = new OSMMapExcel(inputFile);
-    memocontarr = mExcel.ReadExcel();
+    ArrayList<MemoContent> l_memocontarr = mExcel.ReadExcel();
     rowIndex = 0;
     notComplete = 0;
+    memocontarr.clear();
 
-    memocontarr.forEach(memoinh -> {
+    l_memocontarr.forEach(memoinh -> {
       Double longitude = memoinh.getLongitude();
       Double latitude = memoinh.getLatitude();
       String street = memoinh.getStreet();
@@ -320,7 +322,9 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
               break;
             }
           }
-          addCustomMarker(latitude, longitude, title, description, extraInfo, color, pictureIdx);
+          if (addCustomMarker(latitude, longitude, title, description, extraInfo, color, pictureIdx)) {
+            memocontarr.add(memoinh);
+          }
         } else {
           notComplete++;
         }
@@ -333,6 +337,14 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
     } else {
       LOGGER.log(Level.INFO, "Aantal markers: " + numberMarkers);
     }
+  }
+
+  public ArrayList<MemoContent> getMemoContArr() {
+    return memocontarr;
+  }
+
+  public FotoIntegration getFotoIntegration() {
+    return fotoIntegration;
   }
 
   /**
