@@ -39,14 +39,14 @@ public class MailHandlingGui {
       });
 
       // 2. SMTP configuratie
-      EmailSenderGUI.SMTPConfig smtpConfig = new EmailSenderGUI.SMTPConfig("smtp.gmail.com", 587,
-          "jouw.email@gmail.com", "jouw-wachtwoord");
+      EmailSenderGUI.SMTPConfig smtpConfig = new EmailSenderGUI.SMTPConfig("smtp-mail.outlook.com", 587,
+          "hoevelaken.duuurzaam@outlook.com", "jouw-wachtwoord");
 
-      // {straat_nr}
-      // {postcode} {plaats}
       // 3. Bericht configuratie
-      String berichtTemplate = "Beste {voornaam} {naam},\n\n" + "Hierbij ontvangt u uw warmtescan foto.\n\n"
-          + " Adres : \n\n" + "{straat_nr} \n\n{postcode} {plaats}\n\n" + "Met vriendelijke groet,\n"
+      String berichtTemplate = "";
+
+      berichtTemplate = "Beste {voornaam} {achternaam},\n\n" + "Hierbij ontvangt u uw warmtescan foto.\n\n"
+          + " Adres : \n" + "{straat_nr} \n{postcode} {plaats}\n\n" + "Met vriendelijke groet,\n"
           + "Het Buurkracht team Hoevelaken Duurzaam";
 
       EmailSenderGUI.MessageConfig messageConfig = new EmailSenderGUI.MessageConfig(

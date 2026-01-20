@@ -31,9 +31,9 @@
 	  <version>${kweeLibrary.version}</version>
 	</dependency> 
     <dependency>
-	    <groupId>com.email.sender</groupId>
-	    <artifactId>EmailSenderPro</artifactId>
-	    <version>0.0.1.0</version>
+	    <groupId>kwee.email.sender</groupId>
+	    <artifactId>emailsenderpro</artifactId>
+	    <version>${kweeEmailSender.version}</version>
 	</dependency>
     <dependency>
       <groupId>org.apache.poi</groupId>
