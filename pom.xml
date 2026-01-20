@@ -30,7 +30,11 @@
 	  <artifactId>library</artifactId>
 	  <version>${kweeLibrary.version}</version>
 	</dependency> 
-    
+    <dependency>
+	    <groupId>kwee.email.sender</groupId>
+	    <artifactId>emailsenderpro</artifactId>
+	    <version>${kweeEmailSender.version}</version>
+	</dependency>
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi</artifactId>

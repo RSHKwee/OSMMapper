@@ -48,7 +48,7 @@ public class CreateUpperPanel {
     JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
     panel.setBorder(BorderFactory.createTitledBorder("Acties"));
 
-    // Knop 1: Nieuwe kaart
+    // Knop 2: Nieuwe kaart
     JButton nieuweKnop = new JButton("➕ Nieuwe Kaart");
     nieuweKnop.addActionListener(e -> {
       // Keuze dialoog: bestand of lege kaart
@@ -284,20 +284,7 @@ public class CreateUpperPanel {
       }
     });
 
-    // Knop 2: Switch tussen kaarten
-    JButton switchKnop = new JButton("🔀 Wissel Kaart");
-    switchKnop.addActionListener(e -> {
-      String[] kaartNamen = kaartController.getKaartNamen();
-      if (kaartNamen.length > 0) {
-        String keuze = (String) JOptionPane.showInputDialog(hoofdFrame, "Kies een kaart:", "Kaart Selectie",
-            JOptionPane.QUESTION_MESSAGE, null, kaartNamen, kaartNamen[0]);
-        if (keuze != null) {
-          kaartController.toonKaart(keuze);
-        }
-      }
-    });
-
-    // Knop 3: Voeg Geo info toe
+    // Knop 1: Voeg Geo info toe
     JButton addLongLatKnop = new JButton("🔀 Voeg Geo info toe");
     addLongLatKnop.addActionListener(e -> {
       JPanel filePanel = new JPanel(new GridBagLayout());
@@ -502,6 +489,32 @@ public class CreateUpperPanel {
       }
     });
 
+    // Knop 3: Switch tussen kaarten
+    JButton switchKnop = new JButton("🔀 Wissel Kaart");
+    switchKnop.addActionListener(e -> {
+      String[] kaartNamen = kaartController.getKaartNamen();
+      if (kaartNamen.length > 0) {
+        String keuze = (String) JOptionPane.showInputDialog(hoofdFrame, "Kies een kaart:", "Kaart Selectie",
+            JOptionPane.QUESTION_MESSAGE, null, kaartNamen, kaartNamen[0]);
+        if (keuze != null) {
+          kaartController.toonKaart(keuze);
+        }
+      }
+    });
+
+    // Knop 4: Kies kaart voor mail voorbereiding
+    JButton mailKnop = new JButton("🔀 Mail voorbereiden");
+    mailKnop.addActionListener(e -> {
+      String[] kaartNamen = kaartController.getKaartNamen();
+      if (kaartNamen.length > 0) {
+        String keuze = (String) JOptionPane.showInputDialog(hoofdFrame, "Kies een kaart:", "Kaart Selectie",
+            JOptionPane.QUESTION_MESSAGE, null, kaartNamen, kaartNamen[0]);
+        if (keuze != null) {
+          MailHandlingGui.startMailSender(kaartController.getOsmMapViewer(keuze));
+        }
+      }
+    });
+
     // Progress bars
     JPanel progrespanel = new JPanel();
     m_ProgressLabel = new JLabel("Progress ");
@@ -515,6 +528,7 @@ public class CreateUpperPanel {
     panel.add(addLongLatKnop);
     panel.add(nieuweKnop);
     panel.add(switchKnop);
+    panel.add(mailKnop);
     panel.add(progrespanel, BorderLayout.SOUTH);
 
     return panel;

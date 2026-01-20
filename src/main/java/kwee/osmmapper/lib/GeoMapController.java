@@ -154,6 +154,10 @@ public class GeoMapController {
     LOGGER.log(Level.INFO, "Kaart niet gevonden: " + naam);
   }
 
+  public OsmMapViewer getOsmMapViewer(String naam) {
+    return kaarten.get(naam);
+  }
+
   // Verwijder specifieke kaart
   int i = 0;
 
