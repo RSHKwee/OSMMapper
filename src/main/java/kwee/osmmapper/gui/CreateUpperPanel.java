@@ -510,7 +510,7 @@ public class CreateUpperPanel {
         String keuze = (String) JOptionPane.showInputDialog(hoofdFrame, "Kies een kaart:", "Kaart Selectie",
             JOptionPane.QUESTION_MESSAGE, null, kaartNamen, kaartNamen[0]);
         if (keuze != null) {
-          MailHandlingGui.startMailSender(kaartController.getOsmMapViewer(keuze));
+          MailHandlingGui.startMailSender(kaartController.getOsmMapViewer(keuze), keuze);
         }
       }
     });

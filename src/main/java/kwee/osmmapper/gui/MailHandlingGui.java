@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 public class MailHandlingGui {
   private static final Logger LOGGER = MyLogger.getLogger();
 
-  public static void startMailSender(OsmMapViewer osmViewer) {
+  public static void startMailSender(OsmMapViewer osmViewer, String a_title) {
     ArrayList<MemoContent> memocontarr = osmViewer.getMemoContArr();
     FotoIntegration fotoIntegration = osmViewer.getFotoIntegration();
 
@@ -40,7 +40,7 @@ public class MailHandlingGui {
 
       // 2. SMTP configuratie
       EmailSenderGUI.SMTPConfig smtpConfig = new EmailSenderGUI.SMTPConfig("smtp-mail.outlook.com", 587,
-          "hoevelaken.duuurzaam@outlook.com", "jouw-wachtwoord");
+          "hoevelaken.duurzaam@outlook.com", "jouw-wachtwoord");
 
       // 3. Bericht configuratie
       String berichtTemplate = "";
@@ -57,7 +57,7 @@ public class MailHandlingGui {
           new File("C:/documenten/algemeen/privacybeleid.docx"));
 
       // 5. Start de GUI met alle parameters
-      EmailSenderGUI gui = new EmailSenderGUI(recipients, smtpConfig, messageConfig, commonAttachments);
+      EmailSenderGUI gui = new EmailSenderGUI(a_title, recipients, smtpConfig, messageConfig, commonAttachments);
 
       gui.setVisible(true);
       gui.setLocationRelativeTo(null); // Centreer op scherm
