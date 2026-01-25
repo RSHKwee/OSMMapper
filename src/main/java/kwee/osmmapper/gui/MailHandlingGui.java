@@ -20,7 +20,7 @@ public class MailHandlingGui {
 
     SwingUtilities.invokeLater(() -> {
 
-      // 1. Bereid ontvangers voor
+      // 1. Prepare receivers
       List<EmailSenderGUI.RecipientData> recipients = new ArrayList<>();
       memocontarr.forEach(memo -> {
         String pictureIdx = memo.getPostcode().replace(" ", "").toUpperCase()
@@ -38,11 +38,12 @@ public class MailHandlingGui {
         }
       });
 
-      // 2. SMTP configuratie
+      // 2. SMTP configuration
       EmailSenderGUI.SMTPConfig smtpConfig = new EmailSenderGUI.SMTPConfig("smtp-mail.outlook.com", 587,
-          "hoevelaken.duurzaam@outlook.com", "jouw-wachtwoord");
+          "hoevelaken.duurzaam@outlook.com", "jouw-wachtwoord", "cc", "hoevelaken.duurzaam@proton.me",
+          "Hoevelaken Duurzaam");
 
-      // 3. Bericht configuratie
+      // 3. Message configuration
       String berichtTemplate = "";
 
       berichtTemplate = "Beste {voornaam} {achternaam},\n\n" + "Hierbij ontvangt u uw warmtescan foto.\n\n"
@@ -52,17 +53,17 @@ public class MailHandlingGui {
       EmailSenderGUI.MessageConfig messageConfig = new EmailSenderGUI.MessageConfig(
           "Uw persoonlijke documenten - {datum}", berichtTemplate);
 
-      // 4. Algemene bijlagen (voor alle ontvangers)
+      // 4. Attachments for all receivers
       List<File> commonAttachments = Arrays.asList(new File("C:/documenten/algemeen/voorwaarden.pdf"),
           new File("C:/documenten/algemeen/privacybeleid.docx"));
 
-      // 5. Start de GUI met alle parameters
+      // 5. Start Mail GUI
       EmailSenderGUI gui = new EmailSenderGUI(a_title, recipients, smtpConfig, messageConfig, commonAttachments);
 
       gui.setVisible(true);
       gui.setLocationRelativeTo(null); // Centreer op scherm
 
-      // Optioneel: Toon aantal geladen items
+      // Optional: Show number items loaded
       LOGGER.log(Level.INFO, "GUI gestart met " + recipients.size() + " ontvangers");
     });
   }
