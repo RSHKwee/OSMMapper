@@ -34,7 +34,7 @@ public class MailHandlingGui {
         recipients.add(recepdata);
         if (attFiles.size() > 0) {
           LOGGER.log(Level.INFO,
-              " Voor " + memo.getSurname() + " " + memo.getFamilyname() + " attachments: " + attFiles.size());
+              "Voor " + memo.getSurname() + " " + memo.getFamilyname() + " attachments: " + attFiles.size());
         }
       });
 

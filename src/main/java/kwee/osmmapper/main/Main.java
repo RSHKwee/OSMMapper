@@ -10,8 +10,8 @@ public class Main {
   static public String c_CopyrightYear;
 
   public static void main(String[] args) {
-    m_creationtime = JarInfo.getProjectVersion(Main.class);
-    c_CopyrightYear = JarInfo.getYear(Main.class);
+    m_creationtime = JarInfo.getProjectVersion(MainMenu.class);
+    c_CopyrightYear = JarInfo.getYear(MainMenu.class);
 
     SwingUtilities.invokeLater(() -> new MainMenu().start());
   }

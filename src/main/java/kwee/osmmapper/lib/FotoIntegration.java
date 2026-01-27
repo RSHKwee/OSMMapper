@@ -64,8 +64,7 @@ public class FotoIntegration {
           }
         });
       } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        LOGGER.log(Level.WARNING, e.getMessage());
       }
 
     } else if (testFile.isFile()) {
@@ -86,14 +85,11 @@ public class FotoIntegration {
   }
 
   public List<File> getFotosVoorAdres(String adres) {
-    LOGGER.log(Level.INFO, "getFotosVoorAdres: " + adres);
-    // File lpatsh = new File("D:\\Data\\Hoevelaken\\Fotos\\034.jpg");
     List<File> larr = adresFotoMap.get(adres);
     if (larr == null) {
       larr = new ArrayList<File>();
     }
-    // larr.add(lpatsh);
+    LOGGER.log(Level.INFO, "Foto's opgehaald voor adres: " + adres);
     return larr;
-    // return adresFotoMap.getOrDefault(adres, new ArrayList<>());
   }
 }

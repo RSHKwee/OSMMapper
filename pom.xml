@@ -9,7 +9,7 @@
   <artifactId>osmmapper</artifactId>
   <packaging>jar</packaging>
   <name>osmmapper</name>
-  <version>0.1.0.4</version>
+  <version>0.1.0.5</version>
 
   <parent>
 	<groupId>kwee</groupId>
@@ -72,6 +72,18 @@
     </resources>   
 
 	<plugins>
+	  <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>${maven-resources-plugin.version}</version>
+        <configuration>
+           <!-- Deze configuratie zorgt ervoor dat @...@ placeholders werken -->
+           <delimiters>
+            <delimiter>@</delimiter>
+          </delimiters>
+          <useDefaultDelimiters>false</useDefaultDelimiters>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
@@ -170,7 +182,7 @@
             </configuration>
           </execution>     
           <execution>
-            <id>CopyToolsOsmmapper</id>
+            <id>CopyToolsOsmmapper2</id>
             <phase>initialize</phase>
             <goals>
               <goal>copy-resources</goal>
