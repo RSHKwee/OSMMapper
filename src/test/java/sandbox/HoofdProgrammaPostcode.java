@@ -4,8 +4,9 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import report.image.PostcodePdfGenerator;
-import report.image.StraatFotoOrganisatorPerPostcode;
+import kwee.osmmapper.report.image.StraatFotoOrganisatorPerPostcode;
+import kwee.osmmapper.lib.OSMMapExcel;
+import kwee.osmmapper.report.image.PostcodePdfGenerator;
 
 public class HoofdProgrammaPostcode {
 
@@ -32,9 +33,11 @@ public class HoofdProgrammaPostcode {
       System.out.println("└── 3872AB2/     (postcode 3872AB, huisnummer 2)\n");
 
       // 3. OPTIE A: Organiseer per postcode EN straatkant
+      OSMMapExcel osmMapExcel = new OSMMapExcel("D:\\Data\\Hoevelaken\\hoevelaken-contacten_202601220957_met_geo.xlsx"); // TODO
+      osmMapExcel.ReadExcel();
       System.out.println("Optie A: Groeperen per postcode en straatkant");
       Map<String, Map<String, List<StraatFotoOrganisatorPerPostcode.FotoInfo>>> dataMetStraatkant = StraatFotoOrganisatorPerPostcode
-          .organiseerPerPostcodeEnStraatkant(fotoHoofdmap);
+          .organiseerPerPostcodeEnStraatkant(fotoHoofdmap, osmMapExcel);
 
       if (dataMetStraatkant.isEmpty()) {
         System.out.println("\nGeen geldige mappen gevonden!");
@@ -48,17 +51,17 @@ public class HoofdProgrammaPostcode {
       System.out.println("\nPDF genereren...");
       String pdfPadA = "StraatOverzicht_Postcode_" + java.time.LocalDate.now().toString().replace("-", "") + ".pdf";
 
-      PostcodePdfGenerator.genereerPdfPerPostcode(dataMetStraatkant, pdfPadA);
+      PostcodePdfGenerator.genereerPdfPerPostcode(dataMetStraatkant, osmMapExcel, pdfPadA);
 
       // 5. OPTIE B: Alleen per postcode (zonder oneven/even scheiding)
       System.out.println("\n---\nOptie B: Alleen groeperen per postcode");
       Map<String, List<StraatFotoOrganisatorPerPostcode.FotoInfo>> dataAlleenPostcode = StraatFotoOrganisatorPerPostcode
-          .organiseerAlleenPerPostcode(fotoHoofdmap);
+          .organiseerAlleenPerPostcode(fotoHoofdmap, osmMapExcel);
 
       String pdfPadB = "StraatOverzicht_Postcode_Eenvoudig_" + java.time.LocalDate.now().toString().replace("-", "")
           + ".pdf";
 
-      PostcodePdfGenerator.genereerPdfPerPostcodeEenvoudig(dataAlleenPostcode, pdfPadB);
+      PostcodePdfGenerator.genereerPdfPerPostcodeEenvoudig(dataAlleenPostcode, osmMapExcel, pdfPadB);
 
       // 6. Succesbericht
       System.out.println("\n✅ SUCCES!");

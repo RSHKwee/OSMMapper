@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.*;
 import java.util.regex.*;
 
+import kwee.osmmapper.lib.OSMMapExcel;
+
 public class StraatFotoOrganisator {
 
   /**
@@ -51,7 +53,7 @@ public class StraatFotoOrganisator {
    * @param hoofdMap De hoofddirectory met alle adres-mappen
    * @return Map met "ONEVEN" en "EVEN" als keys, elk met lijst van foto's
    */
-  public static Map<String, List<FotoInfo>> organiseerFotoPerStraatkant(File hoofdMap) {
+  public static Map<String, List<FotoInfo>> organiseerFotoPerStraatkant(File hoofdMap, OSMMapExcel osmMapExcel) {
     Map<String, List<FotoInfo>> resultaat = new HashMap<>();
     resultaat.put("ONEVEN", new ArrayList<>());
     resultaat.put("EVEN", new ArrayList<>());
@@ -82,6 +84,7 @@ public class StraatFotoOrganisator {
 
         // Postcode extraheren
         String postcode = extractPostcode(mapNaam);
+        String straatnaam = osmMapExcel.getStreet4ZipCode(postcode); // TODO
 
         // Alle afbeeldingen uit deze map vinden
         File[] fotoBestanden = map.listFiles((dir, naam) -> {
@@ -97,7 +100,7 @@ public class StraatFotoOrganisator {
 
           // Foto's toevoegen met metadata
           for (File foto : fotoBestanden) {
-            FotoInfo fotoInfo = new FotoInfo(foto, postcode, huisnummer, mapNaam);
+            FotoInfo fotoInfo = new FotoInfo(foto, postcode, huisnummer, straatnaam, mapNaam);
             doelLijst.add(fotoInfo);
             totaleFoto++;
           }
@@ -129,11 +132,13 @@ public class StraatFotoOrganisator {
     private String postcode;
     private int huisnummer;
     private String mapNaam;
+    private String straatnaam;
 
-    public FotoInfo(File fotoBestand, String postcode, int huisnummer, String mapNaam) {
+    public FotoInfo(File fotoBestand, String postcode, int huisnummer, String straatnaam, String mapNaam) {
       this.fotoBestand = fotoBestand;
       this.postcode = postcode;
       this.huisnummer = huisnummer;
+      this.straatnaam = straatnaam;
       this.mapNaam = mapNaam;
     }
 
@@ -147,6 +152,10 @@ public class StraatFotoOrganisator {
 
     public int getHuisnummer() {
       return huisnummer;
+    }
+
+    public String getStraatnaam() {
+      return straatnaam;
     }
 
     public String getMapNaam() {
@@ -172,8 +181,8 @@ public class StraatFotoOrganisator {
    * Alternatieve methode die Map<String, List<File>> teruggeeft (voor
    * compatibiliteit met eerder voorbeeld)
    */
-  public static Map<String, List<File>> organiseerFotoPerStraatkantSimpel(File hoofdMap) {
-    Map<String, List<FotoInfo>> georganiseerd = organiseerFotoPerStraatkant(hoofdMap);
+  public static Map<String, List<File>> organiseerFotoPerStraatkantSimpel(File hoofdMap, OSMMapExcel osmMapExcel) {
+    Map<String, List<FotoInfo>> georganiseerd = organiseerFotoPerStraatkant(hoofdMap, osmMapExcel);
 
     // Converteren naar Map<String, List<File>>
     Map<String, List<File>> resultaat = new HashMap<>();

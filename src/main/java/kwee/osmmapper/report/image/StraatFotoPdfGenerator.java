@@ -134,7 +134,7 @@ public class StraatFotoPdfGenerator {
         cs.beginText();
         cs.setFont(PDType1Font.HELVETICA, 10);
         cs.newLineAtOffset(huidigeX, huidigeY - 115);
-        cs.showText(fotoInfo.getMapNaam());
+        cs.showText(fotoInfo.getMapNaam() + " " + fotoInfo.getStraatnaam());
         cs.endText();
 
         // Bestandsnaam (kleiner)

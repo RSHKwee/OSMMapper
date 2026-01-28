@@ -3,8 +3,9 @@ package sandbox;
 import java.io.File;
 import java.util.Map;
 
-import report.image.StraatFotoOrganisator;
-import report.image.StraatFotoPdfGenerator;
+import kwee.osmmapper.lib.OSMMapExcel;
+import kwee.osmmapper.report.image.StraatFotoOrganisator;
+import kwee.osmmapper.report.image.StraatFotoPdfGenerator;
 
 import java.util.List;
 
@@ -39,9 +40,10 @@ public class HoofdProgrammaRapport {
       System.out.println("└── etc...\n");
 
       // 3. Organiseer foto's per straatkant
+      OSMMapExcel osmMapExcel = new OSMMapExcel("D:\\Data\\Hoevelaken\\hoevelaken-contacten_202601220957_met_geo.xlsx"); // TODO
       System.out.println("Foto's organiseren...");
       Map<String, List<StraatFotoOrganisator.FotoInfo>> georganiseerdeFoto = StraatFotoOrganisator
-          .organiseerFotoPerStraatkant(fotoHoofdmap);
+          .organiseerFotoPerStraatkant(fotoHoofdmap, osmMapExcel);
 
       // 4. Controleer of er foto's zijn gevonden
       int totaalOneven = georganiseerdeFoto.get("ONEVEN").size();

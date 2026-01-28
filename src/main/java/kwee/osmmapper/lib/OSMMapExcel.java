@@ -7,6 +7,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,6 +44,8 @@ public class OSMMapExcel {
   private int maxCellCount = -1;
   private String m_ExcelFile = "";
   private FormulaEvaluator evaluator;
+
+  private Map<String, String> m_ZipcodeStreet = new HashMap<>();
 
   /**
    * Constructor
@@ -123,6 +127,8 @@ public class OSMMapExcel {
           if (!memocont.isEmpty()) {
             memocontarr.add(memocont);
           }
+          String postcode = memocont.getPostcode().replace(" ", "").trim().toUpperCase();
+          m_ZipcodeStreet.put(postcode, memocont.getStreet());
         }
         rowIndex++;
       }
@@ -368,8 +374,11 @@ public class OSMMapExcel {
     } catch (Exception e) {
       LOGGER.log(Level.WARNING, e.getMessage());
     }
-
     return memocont;
+  }
+
+  public String getStreet4ZipCode(String zipCode) {
+    return m_ZipcodeStreet.get(zipCode);
   }
 
   /**

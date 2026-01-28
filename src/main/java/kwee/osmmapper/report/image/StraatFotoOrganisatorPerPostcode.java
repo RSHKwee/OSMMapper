@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.*;
 import java.util.regex.*;
 
+import kwee.osmmapper.lib.OSMMapExcel;
+
 public class StraatFotoOrganisatorPerPostcode {
 
   /**
@@ -45,7 +47,8 @@ public class StraatFotoOrganisatorPerPostcode {
    * @return Map structuur: Postcode -> Straatkant -> Lijst van FotoInfo
    *         (gesorteerd op huisnummer)
    */
-  public static Map<String, Map<String, List<FotoInfo>>> organiseerPerPostcodeEnStraatkant(File hoofdMap) {
+  public static Map<String, Map<String, List<FotoInfo>>> organiseerPerPostcodeEnStraatkant(File hoofdMap,
+      OSMMapExcel osmMapExcel) {
     Map<String, Map<String, List<FotoInfo>>> resultaat = new TreeMap<>(); // TreeMap sorteert postcodes automatisch
 
     if (!hoofdMap.exists() || !hoofdMap.isDirectory()) {
@@ -73,6 +76,7 @@ public class StraatFotoOrganisatorPerPostcode {
         String postcode = (String) adresInfo.get("postcode");
         int huisnummer = (int) adresInfo.get("huisnummer");
         String straatkant = bepaalStraatkant(huisnummer);
+        String straatnaam = osmMapExcel.getStreet4ZipCode(postcode); // TODO
 
         // Haal alle foto's uit deze map
         File[] fotoBestanden = map.listFiles((dir, naam) -> {
@@ -94,7 +98,7 @@ public class StraatFotoOrganisatorPerPostcode {
           List<FotoInfo> doelLijst = postcodeMap.get(straatkant);
 
           for (File foto : fotoBestanden) {
-            FotoInfo fotoInfo = new FotoInfo(foto, postcode, huisnummer, mapNaam);
+            FotoInfo fotoInfo = new FotoInfo(foto, postcode, huisnummer, straatnaam, mapNaam);
             doelLijst.add(fotoInfo);
             totaalFoto++;
           }
@@ -130,12 +134,14 @@ public class StraatFotoOrganisatorPerPostcode {
     private File fotoBestand;
     private String postcode;
     private int huisnummer;
+    private String straatnaam;
     private String mapNaam;
 
-    public FotoInfo(File fotoBestand, String postcode, int huisnummer, String mapNaam) {
+    public FotoInfo(File fotoBestand, String postcode, int huisnummer, String straatnaam, String mapNaam) {
       this.fotoBestand = fotoBestand;
       this.postcode = postcode;
       this.huisnummer = huisnummer;
+      this.straatnaam = straatnaam;
       this.mapNaam = mapNaam;
     }
 
@@ -151,13 +157,17 @@ public class StraatFotoOrganisatorPerPostcode {
       return huisnummer;
     }
 
+    public String getStraatnaam() {
+      return straatnaam;
+    }
+
     public String getMapNaam() {
       return mapNaam;
     }
 
     @Override
     public String toString() {
-      return String.format("%s (%d) - %s", postcode, huisnummer, fotoBestand.getName());
+      return String.format("%s %s (%d) - %s", postcode, straatnaam, huisnummer, fotoBestand.getName());
     }
   }
 
@@ -176,7 +186,7 @@ public class StraatFotoOrganisatorPerPostcode {
    * Alternatieve versie: groepeer alleen per postcode (zonder oneven/even
    * scheiding)
    */
-  public static Map<String, List<FotoInfo>> organiseerAlleenPerPostcode(File hoofdMap) {
+  public static Map<String, List<FotoInfo>> organiseerAlleenPerPostcode(File hoofdMap, OSMMapExcel osmMapExcel) {
     Map<String, List<FotoInfo>> resultaat = new TreeMap<>();
 
     File[] submappen = hoofdMap.listFiles(File::isDirectory);
@@ -190,6 +200,7 @@ public class StraatFotoOrganisatorPerPostcode {
 
       String postcode = (String) adresInfo.get("postcode");
       int huisnummer = (int) adresInfo.get("huisnummer");
+      String straatnaam = osmMapExcel.getStreet4ZipCode(postcode); // TODO
 
       File[] fotoBestanden = map.listFiles(f -> f.getName().toLowerCase().matches(".*\\.(jpg|jpeg|png|gif|bmp)$"));
 
@@ -197,7 +208,7 @@ public class StraatFotoOrganisatorPerPostcode {
         resultaat.putIfAbsent(postcode, new ArrayList<>());
 
         for (File foto : fotoBestanden) {
-          resultaat.get(postcode).add(new FotoInfo(foto, postcode, huisnummer, map.getName()));
+          resultaat.get(postcode).add(new FotoInfo(foto, postcode, huisnummer, straatnaam, map.getName()));
         }
       }
     }
