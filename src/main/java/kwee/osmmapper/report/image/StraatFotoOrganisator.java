@@ -2,11 +2,15 @@ package kwee.osmmapper.report.image;
 
 import java.io.File;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.regex.*;
 
+import kwee.logger.MyLogger;
+import java.util.logging.Level;
 import kwee.osmmapper.lib.OSMMapExcel;
 
 public class StraatFotoOrganisator {
+  private static final Logger LOGGER = MyLogger.getLogger();
 
   /**
    * Extraheert huisnummer uit mapnaam zoals "3871TD15"
@@ -22,12 +26,12 @@ public class StraatFotoOrganisator {
       try {
         return Integer.parseInt(matcher.group(1));
       } catch (NumberFormatException e) {
-        System.err.println("Ongeldig huisnummer in map: " + mapNaam);
+        LOGGER.log(Level.WARNING, "Ongeldig huisnummer in map: " + mapNaam);
         return null;
       }
     } else {
-      System.err.println("Ongeldig mapnaam formaat: " + mapNaam);
-      System.err.println("Verwacht formaat: 1234AB123 (bijv. 3871TD15)");
+      LOGGER.log(Level.WARNING, "Ongeldig mapnaam formaat: " + mapNaam);
+      LOGGER.log(Level.WARNING, "Verwacht formaat: 1234AB123 (bijv. 3871TD15)");
       return null;
     }
   }
@@ -59,16 +63,16 @@ public class StraatFotoOrganisator {
     resultaat.put("EVEN", new ArrayList<>());
 
     if (!hoofdMap.exists() || !hoofdMap.isDirectory()) {
-      System.err.println("Map bestaat niet of is geen directory: " + hoofdMap.getPath());
+      LOGGER.log(Level.WARNING, "Map bestaat niet of is geen directory: " + hoofdMap.getPath());
       return resultaat;
     }
 
-    System.out.println("Scannen van map: " + hoofdMap.getAbsolutePath());
-    System.out.println("Zoeken naar mappen met formaat 1234AB123...");
+    LOGGER.log(Level.INFO, "Scannen van map: " + hoofdMap.getAbsolutePath());
+    LOGGER.log(Level.INFO, "Zoeken naar mappen met formaat 1234AB123...");
 
     File[] submappen = hoofdMap.listFiles(File::isDirectory);
     if (submappen == null || submappen.length == 0) {
-      System.err.println("Geen submappen gevonden in: " + hoofdMap.getPath());
+      LOGGER.log(Level.WARNING, "Geen submappen gevonden in: " + hoofdMap.getPath());
       return resultaat;
     }
 
@@ -105,9 +109,9 @@ public class StraatFotoOrganisator {
             totaleFoto++;
           }
 
-          System.out.println("  ✓ " + mapNaam + ": " + fotoBestanden.length + " foto's -> " + straatkant);
+          LOGGER.log(Level.INFO, "  ✓ " + mapNaam + ": " + fotoBestanden.length + " foto's -> " + straatkant);
         } else {
-          System.out.println("  ⚠ " + mapNaam + ": geen foto's gevonden");
+          LOGGER.log(Level.INFO, "  ⚠ " + mapNaam + ": geen foto's gevonden");
         }
       }
     }
@@ -115,11 +119,11 @@ public class StraatFotoOrganisator {
     // Sorteren op huisnummer binnen elke groep
     sorteerlijsten(resultaat);
 
-    System.out.println("\nSamenvatting:");
-    System.out.println("  Geldige mappen gevonden: " + geldigeMappen);
-    System.out.println("  Totale foto's: " + totaleFoto);
-    System.out.println("  Oneven huisnummers: " + resultaat.get("ONEVEN").size() + " foto's");
-    System.out.println("  Even huisnummers: " + resultaat.get("EVEN").size() + " foto's");
+    LOGGER.log(Level.INFO, "\nSamenvatting:");
+    LOGGER.log(Level.INFO, "  Geldige mappen gevonden: " + geldigeMappen);
+    LOGGER.log(Level.INFO, "  Totale foto's: " + totaleFoto);
+    LOGGER.log(Level.INFO, "  Oneven huisnummers: " + resultaat.get("ONEVEN").size() + " foto's");
+    LOGGER.log(Level.INFO, "  Even huisnummers: " + resultaat.get("EVEN").size() + " foto's");
 
     return resultaat;
   }

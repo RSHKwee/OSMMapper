@@ -2,35 +2,42 @@ package kwee.osmmapper.report.image;
 
 import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-
-import kwee.osmmapper.lib.OSMMapExcel;
-
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import kwee.logger.MyLogger;
+import kwee.osmmapper.lib.OSMMapExcel;
 
 public class PostcodePdfGenerator {
+  private static final Logger LOGGER = MyLogger.getLogger();
 
   /**
-   * Genereert PDF gegroepeerd per postcode, gesorteerd op huisnummer
+   * Generate PDF grouped by postal code and sorted on house number.
+   * 
+   * @param data
+   * @param osmMapExcel
+   * @param uitvoerPad
+   * @throws IOException
    */
   public static void genereerPdfPerPostcode(
       Map<String, Map<String, List<StraatFotoOrganisatorPerPostcode.FotoInfo>>> data, OSMMapExcel osmMapExcel,
       String uitvoerPad) throws IOException {
 
     try (PDDocument document = new PDDocument()) {
-      System.out.println("\nPDF genereren per postcode...");
+      LOGGER.log(Level.INFO, "PDF genereren per postcode...");
 
       // Verwerk elke postcode
       for (Map.Entry<String, Map<String, List<StraatFotoOrganisatorPerPostcode.FotoInfo>>> postcodeEntry : data
           .entrySet()) {
 
         String postcode = postcodeEntry.getKey();
-        String straatnaam = osmMapExcel.getStreet4ZipCode(postcode); // TODO
+        String straatnaam = osmMapExcel.getStreet4ZipCode(postcode);
         Map<String, List<StraatFotoOrganisatorPerPostcode.FotoInfo>> straatkantData = postcodeEntry.getValue();
 
         // Voeg sectie toe voor deze postcode
@@ -38,21 +45,27 @@ public class PostcodePdfGenerator {
       }
 
       document.save(uitvoerPad);
-      System.out.println("PDF opgeslagen als: " + uitvoerPad);
+      LOGGER.log(Level.INFO, "PDF opgeslagen als: " + uitvoerPad);
 
     } catch (IOException e) {
-      System.err.println("Fout bij maken PDF: " + e.getMessage());
+      LOGGER.log(Level.WARNING, "Fout bij maken PDF: " + e.getMessage());
       throw e;
     }
   }
 
   /**
-   * Voegt een complete postcode sectie toe aan het document
+   * Add complete section for postal code to document.
+   * 
+   * @param document
+   * @param postcode
+   * @param straatnaam
+   * @param straatkantData
+   * @throws IOException
    */
   private static void voegPostcodeSectieToe(PDDocument document, String postcode, String straatnaam,
       Map<String, List<StraatFotoOrganisatorPerPostcode.FotoInfo>> straatkantData) throws IOException {
 
-    System.out.println("  Verwerken postcode: " + postcode);
+    LOGGER.log(Level.INFO, "  Verwerken postcode: " + postcode);
 
     // Pagina voor postcode titel
     PDPage titelPagina = new PDPage(PDRectangle.A4);
@@ -83,7 +96,7 @@ public class PostcodePdfGenerator {
 
     // Eerst oneven huisnummers voor deze postcode
     if (!straatkantData.get("ONEVEN").isEmpty()) {
-      voegStraatkantSectieToe(document, postcode, "ON EVEN HUISNUMMERS", straatkantData.get("ONEVEN"));
+      voegStraatkantSectieToe(document, postcode, "ONEVEN HUISNUMMERS", straatkantData.get("ONEVEN"));
     }
 
     // Dan even huisnummers voor deze postcode
@@ -188,7 +201,7 @@ public class PostcodePdfGenerator {
         cs.endText();
 
       } catch (IOException e) {
-        System.err.println("Foto overslaan: " + fotoInfo.getFotoBestand().getPath());
+        LOGGER.log(Level.WARNING, "Foto overslaan: " + fotoInfo.getFotoBestand().getPath());
       }
 
       huidigeIndex++;

@@ -2,11 +2,15 @@ package kwee.osmmapper.report.image;
 
 import java.io.File;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.*;
 
+import kwee.logger.MyLogger;
 import kwee.osmmapper.lib.OSMMapExcel;
 
 public class StraatFotoOrganisatorPerPostcode {
+  private static final Logger LOGGER = MyLogger.getLogger();
 
   /**
    * Extraheert postcode en huisnummer uit mapnaam zoals "3871TD15"
@@ -52,11 +56,11 @@ public class StraatFotoOrganisatorPerPostcode {
     Map<String, Map<String, List<FotoInfo>>> resultaat = new TreeMap<>(); // TreeMap sorteert postcodes automatisch
 
     if (!hoofdMap.exists() || !hoofdMap.isDirectory()) {
-      System.err.println("Map bestaat niet of is geen directory: " + hoofdMap.getPath());
+      LOGGER.log(Level.INFO, "Map bestaat niet of is geen directory: " + hoofdMap.getPath());
       return resultaat;
     }
 
-    System.out.println("Scannen van map: " + hoofdMap.getAbsolutePath());
+    LOGGER.log(Level.INFO, "Scannen van map: " + hoofdMap.getAbsolutePath());
 
     File[] submappen = hoofdMap.listFiles(File::isDirectory);
     if (submappen == null) {
@@ -103,7 +107,8 @@ public class StraatFotoOrganisatorPerPostcode {
             totaalFoto++;
           }
 
-          System.out.printf("  ✓ %s: %d foto's -> %s/%s%n", mapNaam, fotoBestanden.length, postcode, straatkant);
+          LOGGER.log(Level.INFO,
+              "  ✓ " + mapNaam + ":" + fotoBestanden.length + " foto's -> " + postcode + " " + straatkant);
         }
       }
     }
@@ -112,16 +117,16 @@ public class StraatFotoOrganisatorPerPostcode {
     sorteerlijstenPerPostcode(resultaat);
 
     // Toon samenvatting
-    System.out.println("\n=== SAMENVATTING ===");
-    System.out.println("Verwerkte mappen: " + verwerkteMappen);
-    System.out.println("Totaal foto's: " + totaalFoto);
-    System.out.println("Aantal postcodes: " + resultaat.size());
+    LOGGER.log(Level.INFO, "\n=== SAMENVATTING ===");
+    LOGGER.log(Level.INFO, "Verwerkte mappen: " + verwerkteMappen);
+    LOGGER.log(Level.INFO, "Totaal foto's: " + totaalFoto);
+    LOGGER.log(Level.INFO, "Aantal postcodes: " + resultaat.size());
 
     for (Map.Entry<String, Map<String, List<FotoInfo>>> entry : resultaat.entrySet()) {
       String postcode = entry.getKey();
       int oneven = entry.getValue().get("ONEVEN").size();
       int even = entry.getValue().get("EVEN").size();
-      System.out.printf("  %s: %d oneven, %d even%n", postcode, oneven, even);
+      LOGGER.log(Level.INFO, "  " + postcode + ": " + oneven + " oneven, " + even + " even");
     }
 
     return resultaat;
@@ -225,22 +230,22 @@ public class StraatFotoOrganisatorPerPostcode {
    * Toon de georganiseerde structuur in console
    */
   public static void toonStructuur(Map<String, Map<String, List<FotoInfo>>> data) {
-    System.out.println("\n=== GESTRUCTUREERD OVERZICHT ===");
+    LOGGER.log(Level.FINE, "\n=== GESTRUCTUREERD OVERZICHT ===");
 
     for (Map.Entry<String, Map<String, List<FotoInfo>>> postcodeEntry : data.entrySet()) {
       String postcode = postcodeEntry.getKey();
       Map<String, List<FotoInfo>> straatkantData = postcodeEntry.getValue();
 
-      System.out.println("\n" + postcode + ":");
+      LOGGER.log(Level.FINE, "\n" + postcode + ":");
 
-      System.out.println("  Oneven huisnummers:");
+      LOGGER.log(Level.FINE, "  Oneven huisnummers:");
       for (FotoInfo foto : straatkantData.get("ONEVEN")) {
-        System.out.println("    " + foto.getHuisnummer() + " - " + foto.getFotoBestand().getName());
+        LOGGER.log(Level.FINE, "    " + foto.getHuisnummer() + " - " + foto.getFotoBestand().getName());
       }
 
-      System.out.println("  Even huisnummers:");
+      LOGGER.log(Level.FINE, "  Even huisnummers:");
       for (FotoInfo foto : straatkantData.get("EVEN")) {
-        System.out.println("    " + foto.getHuisnummer() + " - " + foto.getFotoBestand().getName());
+        LOGGER.log(Level.FINE, "    " + foto.getHuisnummer() + " - " + foto.getFotoBestand().getName());
       }
     }
   }
