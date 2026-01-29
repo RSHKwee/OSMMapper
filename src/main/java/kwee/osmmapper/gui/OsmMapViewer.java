@@ -72,6 +72,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
 
   private ArrayList<MemoContent> memocontarr = new ArrayList<MemoContent>();
   private FotoIntegration fotoIntegration = new FotoIntegration();
+  private OSMMapExcel mExcel;
   private String fotoDirectory = "";
 
   public OsmMapViewer(String inpFile, String subtitel, double a_lat, double a_lon, int a_zoom, String a_projects,
@@ -254,7 +255,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
    * @param inputFile Excel file with marker info.
    */
   private void addMarkers(String inputFile) {
-    OSMMapExcel mExcel = new OSMMapExcel(inputFile);
+    mExcel = new OSMMapExcel(inputFile);
     ArrayList<MemoContent> l_memocontarr = mExcel.ReadExcel();
     rowIndex = 0;
     notComplete = 0;
@@ -339,12 +340,28 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
     }
   }
 
+  /**
+   * 
+   * @return
+   */
   public ArrayList<MemoContent> getMemoContArr() {
     return memocontarr;
   }
 
+  /**
+   * 
+   * @return
+   */
   public FotoIntegration getFotoIntegration() {
     return fotoIntegration;
+  }
+
+  /**
+   * 
+   * @return
+   */
+  public OSMMapExcel getOSMMapExcel() {
+    return mExcel;
   }
 
   /**

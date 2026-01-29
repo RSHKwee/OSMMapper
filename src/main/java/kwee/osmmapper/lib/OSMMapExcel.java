@@ -8,7 +8,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,6 +48,7 @@ public class OSMMapExcel {
   private FormulaEvaluator evaluator;
 
   private Map<String, String> m_ZipcodeStreet = new HashMap<>();
+  private TreeSet<String> m_cities = new TreeSet<>();
 
   /**
    * Constructor
@@ -129,6 +132,7 @@ public class OSMMapExcel {
           }
           String postcode = memocont.getPostcode().replace(" ", "").trim().toUpperCase();
           m_ZipcodeStreet.put(postcode, memocont.getStreet());
+          m_cities.add(memocont.getCity());
         }
         rowIndex++;
       }
@@ -278,6 +282,27 @@ public class OSMMapExcel {
   }
 
   /**
+   * Get Street name for zipcode
+   * 
+   * @param zipCode Postal code
+   * @return Street name
+   */
+  public String getStreet4ZipCode(String zipCode) {
+    return m_ZipcodeStreet.get(zipCode);
+  }
+
+  /**
+   * Get cities
+   * 
+   * @return List of cities
+   */
+  public List<String> getCities() {
+    List<String> l_cities = new ArrayList<String>(m_cities);
+    return l_cities;
+  }
+
+  // ========= Private functions ============================
+  /**
    * Fill structure Memo content.
    * 
    * @param row Excel row to convert to Memo content.
@@ -375,10 +400,6 @@ public class OSMMapExcel {
       LOGGER.log(Level.WARNING, e.getMessage());
     }
     return memocont;
-  }
-
-  public String getStreet4ZipCode(String zipCode) {
-    return m_ZipcodeStreet.get(zipCode);
   }
 
   /**

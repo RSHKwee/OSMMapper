@@ -22,6 +22,7 @@ public class FotoIntegration {
   private Map<String, List<File>> adresFotoMap = new HashMap<>();
   private Set<String> adressen = new HashSet<String>();
   private List<File> fotoBestanden = new ArrayList<File>();
+  private String pictureRootDir;
 
   public FotoIntegration() {
     // Do Nothing
@@ -31,6 +32,7 @@ public class FotoIntegration {
     LOGGER.log(Level.INFO, "Picture source: " + pictureSource);
     laadFotoKoppelingen(memocontarr);
 
+    pictureRootDir = pictureSource;
     File testFile = new File(pictureSource);
     if (testFile.isDirectory()) {
       // Directory
@@ -66,12 +68,37 @@ public class FotoIntegration {
       } catch (IOException e) {
         LOGGER.log(Level.WARNING, e.getMessage());
       }
-
     } else if (testFile.isFile()) {
       // File
     }
   }
 
+  /**
+   * 
+   * @param adres
+   * @return
+   */
+  public List<File> getFotosVoorAdres(String adres) {
+    List<File> larr = adresFotoMap.get(adres);
+    if (larr == null) {
+      larr = new ArrayList<File>();
+    }
+    LOGGER.log(Level.INFO, "Foto's opgehaald voor adres: " + adres);
+    return larr;
+  }
+
+  /**
+   * 
+   * @return
+   */
+  public String getPictureRootDir() {
+    return pictureRootDir;
+  }
+
+  /**
+   * 
+   * @param memocontarr
+   */
   private void laadFotoKoppelingen(ArrayList<MemoContent> memocontarr) {
     adressen.clear();
     memocontarr.forEach(memoc -> {
@@ -82,14 +109,5 @@ public class FotoIntegration {
           houseNumber.strip().replace(" ", "").toUpperCase());
       adressen.add(pictureIdx);
     });
-  }
-
-  public List<File> getFotosVoorAdres(String adres) {
-    List<File> larr = adresFotoMap.get(adres);
-    if (larr == null) {
-      larr = new ArrayList<File>();
-    }
-    LOGGER.log(Level.INFO, "Foto's opgehaald voor adres: " + adres);
-    return larr;
   }
 }

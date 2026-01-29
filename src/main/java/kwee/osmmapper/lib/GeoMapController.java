@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -20,8 +22,10 @@ import javax.swing.JTabbedPane;
 
 import kwee.library.ApplicationMessages;
 import kwee.logger.MyLogger;
+import kwee.osmmapper.gui.MailHandlingGui;
 import kwee.osmmapper.gui.OsmMapViewer;
 import kwee.osmmapper.main.UserSetting;
+import kwee.osmmapper.report.ReportMenu;
 
 /**
  * 
@@ -111,6 +115,17 @@ public class GeoMapController {
     voegKaartToe(fileNaam, naam, lat, lon, zoom, projects, fotodirectory, true);
   }
 
+  /**
+   * 
+   * @param fileNaam
+   * @param naam
+   * @param lat
+   * @param lon
+   * @param zoom
+   * @param projects
+   * @param fotodirectory
+   * @param administrate
+   */
   public void voegKaartToe(String fileNaam, String naam, double lat, double lon, int zoom, String projects,
       String fotodirectory, boolean administrate) {
     try {
@@ -143,6 +158,10 @@ public class GeoMapController {
     }
   }
 
+  /**
+   * 
+   * @param naam
+   */
   public void toonKaart(String naam) {
     for (int i = 0; i < kaartTabPane.getTabCount(); i++) {
       if (kaartTabPane.getTitleAt(i).equals(naam)) {
@@ -154,6 +173,11 @@ public class GeoMapController {
     LOGGER.log(Level.INFO, "Kaart niet gevonden: " + naam);
   }
 
+  /**
+   * 
+   * @param naam
+   * @return
+   */
   public OsmMapViewer getOsmMapViewer(String naam) {
     return kaarten.get(naam);
   }
@@ -212,6 +236,8 @@ public class GeoMapController {
   }
 
   // Voeg context menu toe aan tabblad pane
+  String m_excelfile;
+
   private void voegContextMenuToe() {
     JPopupMenu contextMenu = new JPopupMenu();
 
@@ -255,8 +281,49 @@ public class GeoMapController {
       }
     });
 
+    JMenuItem prepareMailItem = new JMenuItem("Mail voorbereiden");
+    prepareMailItem.addActionListener(e -> {
+      int tabIndex = kaartTabPane.getSelectedIndex();
+      if (tabIndex != -1) {
+        String naam = kaartTabPane.getTitleAt(tabIndex);
+        MailHandlingGui.startMailSender(this.getOsmMapViewer(naam), naam);
+      }
+    });
+
+    JMenuItem prepareReportItem = new JMenuItem("Rapporten maken");
+    prepareReportItem.addActionListener(e -> {
+      int tabIndex = kaartTabPane.getSelectedIndex();
+      if (tabIndex != -1) {
+        String reportdir = m_params.get_ReportDirectory();
+        JFileChooser fileChooser = new JFileChooser("Rapport directory");
+        fileChooser.setDialogTitle("Rapport directory");
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fileChooser.setSelectedFile(new File(reportdir));
+        int option = fileChooser.showOpenDialog(kaartTabPane);
+        if (option == JFileChooser.APPROVE_OPTION) {
+          File file = fileChooser.getSelectedFile();
+          LOGGER.log(Level.INFO, "ReportFolder" + file.getAbsolutePath());
+          reportdir = file.getAbsolutePath() + "/";
+          m_params.set_ReportDirectory(reportdir);
+          m_params.save();
+
+          String naam = kaartTabPane.getTitleAt(tabIndex);
+          OsmMapViewer osmview = this.getOsmMapViewer(naam);
+          String picrootdir = osmview.getFotoIntegration().getPictureRootDir();
+          tablist.forEach(tab -> {
+            if (tab.getTitle().toLowerCase().equals(naam.toLowerCase())) {
+              m_excelfile = tab.getFilePath();
+            }
+          });
+          ReportMenu.generateReport(new File(picrootdir), m_excelfile, reportdir);
+        }
+      }
+    });
+
     contextMenu.add(verwijderItem);
     contextMenu.add(hernoemItem);
+    contextMenu.add(prepareMailItem);
+    contextMenu.add(prepareReportItem);
 
     // Voeg mouse listener toe voor context menu
     kaartTabPane.addMouseListener(new MouseAdapter() {

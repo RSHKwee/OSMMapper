@@ -46,6 +46,7 @@ public class UserSetting {
   private String c_DuplicateTabs = "DuplicateTabs";
   private String c_Country = "Country";
   private String c_PictureDirectory = "PictureDirectory";
+  private String c_ReportDirectory = "ReportDirectory";
 
   private String m_Level = c_LevelValue;
   private String m_LookAndFeel;
@@ -63,6 +64,7 @@ public class UserSetting {
   private boolean m_DuplicateTabs = false; // NO duplicate tabs.
   private String m_Country = "Netherlands";
   private String m_PictureDirectory = "";
+  private String m_ReportDirectory = "";
 
   private Preferences pref;
   private Preferences userPrefs = Preferences.userRoot();
@@ -101,6 +103,7 @@ public class UserSetting {
     m_DuplicateTabs = pref.getBoolean(c_DuplicateTabs, false);
     m_Country = pref.get(c_Country, "");
     m_PictureDirectory = pref.get(c_PictureDirectory, "");
+    m_ReportDirectory = pref.get(c_ReportDirectory, "");
   }
 
   // Getters for all parameters
@@ -182,6 +185,10 @@ public class UserSetting {
     return m_PictureDirectory;
   }
 
+  public String get_ReportDirectory() {
+    return m_ReportDirectory;
+  }
+
   // == Setters ========
   public void set_LogDir(String m_LogDir) {
     this.m_LogDir = m_LogDir;
@@ -251,8 +258,14 @@ public class UserSetting {
     this.m_Country = Country;
   }
 
-  public void set_PictureDirectory(String m_PictureDirectory) {
-    this.m_PictureDirectory = m_PictureDirectory;
+  public void set_PictureDirectory(String a_PictureDirectory) {
+    pref.put(c_PictureDirectory, a_PictureDirectory);
+    this.m_PictureDirectory = a_PictureDirectory;
+  }
+
+  public void set_ReportDirectory(String a_ReportDirectory) {
+    pref.put(c_ReportDirectory, a_ReportDirectory);
+    this.m_ReportDirectory = a_ReportDirectory;
   }
 
   /**
@@ -275,6 +288,7 @@ public class UserSetting {
       pref.putBoolean(c_DuplicateTabs, m_DuplicateTabs);
       pref.put(c_Country, m_Country);
       pref.put(c_PictureDirectory, m_PictureDirectory);
+      pref.put(c_ReportDirectory, m_ReportDirectory);
 
       pref.flush();
     } catch (BackingStoreException e) {
@@ -304,6 +318,7 @@ public class UserSetting {
       freezeInstance.set_DuplicateTabs(m_DuplicateTabs);
       freezeInstance.set_Country(m_Country);
       freezeInstance.set_PictureDirectory(m_PictureDirectory);
+      freezeInstance.set_ReportDirectory(m_ReportDirectory);
     } else {
       LOGGER.log(Level.INFO, "Nothing to freeze....");
     }
@@ -326,6 +341,7 @@ public class UserSetting {
       uniqueInstance.set_DuplicateTabs(freezeInstance.is_DuplicateTabs());
       uniqueInstance.set_Country(freezeInstance.get_Country());
       uniqueInstance.set_PictureDirectory(freezeInstance.get_PictureDirectory());
+      uniqueInstance.set_ReportDirectory(freezeInstance.get_ReportDirectory());
 
       freezeInstance = null;
     } else {
@@ -355,6 +371,7 @@ public class UserSetting {
     l_line = l_line + c_DuplicateTabs + ": " + m_DuplicateTabs + "\n";
     l_line = l_line + c_Country + ": " + m_Country + "\n";
     l_line = l_line + c_PictureDirectory + ": " + m_PictureDirectory + "\n";
+    l_line = l_line + c_ReportDirectory + ": " + m_ReportDirectory + "\n";
 
     return l_line;
   }
