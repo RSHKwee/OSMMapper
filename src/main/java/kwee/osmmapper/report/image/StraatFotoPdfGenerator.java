@@ -2,6 +2,9 @@ package kwee.osmmapper.report.image;
 
 import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+
+import kwee.logger.MyLogger;
+
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
@@ -9,8 +12,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class StraatFotoPdfGenerator {
+  private static final Logger LOGGER = MyLogger.getLogger();
 
   /**
    * Genereert PDF met foto's gesorteerd op straatkant Gebruikt de FotoInfo class
@@ -32,10 +38,10 @@ public class StraatFotoPdfGenerator {
       }
 
       document.save(uitvoerPad);
-      System.out.println("PDF opgeslagen als: " + uitvoerPad);
+      LOGGER.log(Level.INFO, "PDF opgeslagen als: " + uitvoerPad);
 
     } catch (IOException e) {
-      System.err.println("Fout bij maken PDF: " + e.getMessage());
+      LOGGER.log(Level.WARNING, "Fout bij maken PDF: " + e.getMessage());
       throw e;
     }
   }
