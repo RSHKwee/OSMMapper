@@ -158,7 +158,8 @@ public class PostcodePdfGenerator {
 
     float x = 50;
     float y = 700;
-    int fotoPerRij = 4;
+    // int fotoPerRij = 4;
+    int fotoPerRij = 2;
     int huidigeIndex = startIndex;
 
     while (huidigeIndex < fotoLijst.size()) {
@@ -168,11 +169,14 @@ public class PostcodePdfGenerator {
       int rij = indexOpPagina / fotoPerRij;
       int kolom = indexOpPagina % fotoPerRij;
 
-      float huidigeX = x + kolom * 130;
-      float huidigeY = y - rij * 140;
+      // float huidigeX = x + kolom * 130;
+      // float huidigeY = y - rij * 140;
+      float huidigeX = x + kolom * 260;
+      float huidigeY = y - rij * 280;
 
       // Stop als we onderaan de pagina zijn
-      if (huidigeY < 100) {
+      // if (huidigeY < 100) {
+      if (huidigeY < 200) {
         return huidigeIndex;
       }
 
@@ -180,18 +184,21 @@ public class PostcodePdfGenerator {
         // Foto toevoegen
         PDImageXObject pdFoto = PDImageXObject.createFromFileByContent(fotoInfo.getFotoBestand(), doc);
 
-        cs.drawImage(pdFoto, huidigeX, huidigeY - 100, 100, 100);
+        // cs.drawImage(pdFoto, huidigeX, huidigeY - 100, 100, 100);
+        cs.drawImage(pdFoto, huidigeX, huidigeY - 200, 200, 200);
 
         // Huisnummer en bestandsnaam
         cs.beginText();
         cs.setFont(PDType1Font.HELVETICA_BOLD, 12);
-        cs.newLineAtOffset(huidigeX, huidigeY - 115);
+        // cs.newLineAtOffset(huidigeX, huidigeY - 115);
+        cs.newLineAtOffset(huidigeX, huidigeY - 230);
         cs.showText(String.valueOf(fotoInfo.getHuisnummer()));
         cs.endText();
 
         cs.beginText();
         cs.setFont(PDType1Font.HELVETICA, 8);
-        cs.newLineAtOffset(huidigeX, huidigeY - 130);
+        // cs.newLineAtOffset(huidigeX, huidigeY - 130);
+        cs.newLineAtOffset(huidigeX, huidigeY - 260);
 
         String bestandsNaam = fotoInfo.getFotoBestand().getName();
         if (bestandsNaam.length() > 15) {
@@ -214,8 +221,10 @@ public class PostcodePdfGenerator {
       int startIndex) {
 
     float y = 700;
-    int fotoPerRij = 4;
-    int maxRijen = (int) ((700 - 100) / 140); // 100px onderkant marge
+//    int fotoPerRij = 4;
+    int fotoPerRij = 2;
+    // int maxRijen = (int) ((700 - 100) / 140); // 100px onderkant marge
+    int maxRijen = (int) ((700 - 200) / 280); // 100px onderkant marge
 
     int maxFotoPerPagina = maxRijen * fotoPerRij;
     int beschikbareFoto = fotoLijst.size() - startIndex;

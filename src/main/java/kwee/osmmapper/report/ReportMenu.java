@@ -45,7 +45,7 @@ public class ReportMenu {
       PostcodePdfGenerator.genereerPdfPerPostcode(dataMetStraatkant, osmMapExcel, pdfPadA);
 
       // 5. OPTIE B: Alleen per postcode (zonder oneven/even scheiding)
-      LOGGER.log(Level.INFO, "\n---\nOptie B: Alleen groeperen per postcode");
+      LOGGER.log(Level.INFO, "Optie B: Alleen groeperen per postcode");
       Map<String, List<StraatFotoOrganisatorPerPostcode.FotoInfo>> dataAlleenPostcode = StraatFotoOrganisatorPerPostcode
           .organiseerAlleenPerPostcode(a_fotoHoofdmap, osmMapExcel);
 
@@ -57,7 +57,7 @@ public class ReportMenu {
       LOGGER.log(Level.INFO, "Twee PDF's gegenereerd:");
       LOGGER.log(Level.INFO, "1. " + pdfPadA + " (gegroepeerd per postcode en straatkant)");
       LOGGER.log(Level.INFO, "2. " + pdfPadB + " (alleen per postcode, alle nummers op volgorde)");
-      LOGGER.log(Level.INFO, "De foto's zijn nu gegroepeerd per postcode en gesorteerd op huisnummer.");
+      LOGGER.log(Level.INFO, "De foto's zijn gegroepeerd per postcode en gesorteerd op huisnummer.");
 
     } catch (Exception e) {
       LOGGER.log(Level.WARNING, "❌ FOUT: " + e.getMessage());

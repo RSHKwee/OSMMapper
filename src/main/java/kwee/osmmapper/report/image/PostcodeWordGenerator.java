@@ -164,19 +164,21 @@ public class PostcodeWordGenerator {
 
       // Cel voor foto's (rechterkolom)
       XWPFTableCell fotoCel = huidigeRij.getCell(1);
-      fotoCel.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.TOP);
+      if (fotoCel != null) {
+        fotoCel.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.TOP);
 
-      // Voeg alle foto's voor dit huisnummer toe
-      voegFotoToeAanCel(fotoCel, fotoVoorDitHuisnummer);
+        // Voeg alle foto's voor dit huisnummer toe
+        voegFotoToeAanCel(fotoCel, fotoVoorDitHuisnummer);
 
-      // Voeg lege rij toe voor ruimte tussen huisnummers (als niet de laatste)
-      if (rijIndex < fotoPerHuisnummer.size()) {
-        XWPFTableRow legeRij = fotoTabel.createRow();
-        legeRij.getCell(0).setText("");
-        legeRij.getCell(1).setText("");
+        // Voeg lege rij toe voor ruimte tussen huisnummers (als niet de laatste)
+        if (rijIndex < fotoPerHuisnummer.size()) {
+          XWPFTableRow legeRij = fotoTabel.createRow();
+          legeRij.getCell(0).setText("");
+          legeRij.getCell(1).setText("");
 
-        // Stel minimale rijhoogte in voor ruimte
-        legeRij.setHeight(100);
+          // Stel minimale rijhoogte in voor ruimte
+          legeRij.setHeight(100);
+        }
       }
     }
 
