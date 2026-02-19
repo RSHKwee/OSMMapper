@@ -167,7 +167,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
     map().setTileSource(new OsmTileSource.Mapnik());
     map().setTileLoader(new OsmTileLoader(map()));
     map().setMapMarkerVisible(true);
-    map().setZoomControlsVisible(true);
+//    map().setZoomControlsVisible(true);
 
     setupMarkerInteraction();
     enableMarkerTooltips();
@@ -192,7 +192,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
     if (!inputFile.isEmpty() && (latarr.isEmpty() || longarr.isEmpty())) {
       LOGGER.log(Level.INFO, "Geen geo info in XLSX: " + inputFile);
     }
-
+    LOGGER.log(Level.INFO, "Centrum coordinaten; lat: " + lat + ", lon: " + lon);
     map().setDisplayPosition(new Coordinate(lat, lon), zoom);
     updateZoomParameters();
 

@@ -8,12 +8,16 @@ import java.awt.BorderLayout;
 import javax.swing.*;
 
 public class MapApp extends JFrame {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -6260469231993863742L;
   private JMapViewer mapViewer;
 
   public MapApp() {
     mapViewer = new JMapViewer();
     mapViewer.setTileSource(new OsmTileSource.Mapnik()); // Use OSM tiles
-    mapViewer.setZoomControlsVisible(true);
+//    mapViewer.setZoomControlsVisible(true);
     mapViewer.setDisplayPosition(new Coordinate(52.5200, 13.4050), 10); // Center on Berlin, zoom 10
 
     this.setLayout(new BorderLayout());
