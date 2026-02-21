@@ -167,7 +167,8 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
     map().setTileSource(new OsmTileSource.Mapnik());
     map().setTileLoader(new OsmTileLoader(map()));
     map().setMapMarkerVisible(true);
-//    map().setZoomControlsVisible(true);
+    map().setZoomControlsVisible(true);
+    map().setCachePad(m_params.get_CacheDirectory());
 
     setupMarkerInteraction();
     enableMarkerTooltips();

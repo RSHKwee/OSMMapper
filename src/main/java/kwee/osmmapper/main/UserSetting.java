@@ -47,6 +47,7 @@ public class UserSetting {
   private String c_Country = "Country";
   private String c_PictureDirectory = "PictureDirectory";
   private String c_ReportDirectory = "ReportDirectory";
+  private String c_CacheDirectory = "CacheDirectory";
 
   private String m_Level = c_LevelValue;
   private String m_LookAndFeel;
@@ -65,6 +66,7 @@ public class UserSetting {
   private String m_Country = "Netherlands";
   private String m_PictureDirectory = "";
   private String m_ReportDirectory = "";
+  private String m_CacheDirectory = "";
 
   private Preferences pref;
   private Preferences userPrefs = Preferences.userRoot();
@@ -104,6 +106,8 @@ public class UserSetting {
     m_Country = pref.get(c_Country, "");
     m_PictureDirectory = pref.get(c_PictureDirectory, "");
     m_ReportDirectory = pref.get(c_ReportDirectory, "");
+    m_CacheDirectory = pref.get(c_CacheDirectory, System.getProperty("user.home") + "/.jmapviewer/cache/");
+
   }
 
   // Getters for all parameters
@@ -189,6 +193,10 @@ public class UserSetting {
     return m_ReportDirectory;
   }
 
+  public String get_CacheDirectory() {
+    return m_CacheDirectory;
+  }
+
   // == Setters ========
   public void set_LogDir(String m_LogDir) {
     this.m_LogDir = m_LogDir;
@@ -268,6 +276,11 @@ public class UserSetting {
     this.m_ReportDirectory = a_ReportDirectory;
   }
 
+  public void set_CacheDirectory(String a_CacheDirectory) {
+    pref.put(c_CacheDirectory, a_CacheDirectory);
+    this.m_CacheDirectory = a_CacheDirectory;
+  }
+
   /**
    * Save all settings
    */
@@ -289,6 +302,7 @@ public class UserSetting {
       pref.put(c_Country, m_Country);
       pref.put(c_PictureDirectory, m_PictureDirectory);
       pref.put(c_ReportDirectory, m_ReportDirectory);
+      pref.put(c_CacheDirectory, m_CacheDirectory);
 
       pref.flush();
     } catch (BackingStoreException e) {
@@ -319,6 +333,8 @@ public class UserSetting {
       freezeInstance.set_Country(m_Country);
       freezeInstance.set_PictureDirectory(m_PictureDirectory);
       freezeInstance.set_ReportDirectory(m_ReportDirectory);
+      freezeInstance.set_CacheDirectory(m_CacheDirectory);
+
     } else {
       LOGGER.log(Level.INFO, "Nothing to freeze....");
     }
@@ -342,6 +358,7 @@ public class UserSetting {
       uniqueInstance.set_Country(freezeInstance.get_Country());
       uniqueInstance.set_PictureDirectory(freezeInstance.get_PictureDirectory());
       uniqueInstance.set_ReportDirectory(freezeInstance.get_ReportDirectory());
+      uniqueInstance.set_CacheDirectory(freezeInstance.get_CacheDirectory());
 
       freezeInstance = null;
     } else {
@@ -372,6 +389,7 @@ public class UserSetting {
     l_line = l_line + c_Country + ": " + m_Country + "\n";
     l_line = l_line + c_PictureDirectory + ": " + m_PictureDirectory + "\n";
     l_line = l_line + c_ReportDirectory + ": " + m_ReportDirectory + "\n";
+    l_line = l_line + c_CacheDirectory + ": " + m_CacheDirectory + "\n";
 
     return l_line;
   }

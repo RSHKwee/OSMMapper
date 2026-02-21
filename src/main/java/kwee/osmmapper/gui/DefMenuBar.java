@@ -39,6 +39,8 @@ public class DefMenuBar {
   private boolean m_toDisk = false;
   private Level m_Level = Level.INFO;
   private String m_LogDir = "c:/";
+  private String m_CacheDir = System.getProperty("user.home") + "/.jmapviewer/cache/";
+
   @SuppressWarnings("unused")
   private boolean m_DuplicateTabs = false; // NO duplicate tabs.
 
@@ -146,8 +148,39 @@ public class DefMenuBar {
       menu.add(item);
     }
 
+    // Option CacheDirectory
+    JCheckBoxMenuItem mntmCacheDir = new JCheckBoxMenuItem(bundle.getMessage("CacheFolder"));
+    m_CacheDir = m_param.get_CacheDirectory();
+    mntmCacheDir.setSelected(!m_CacheDir.isBlank());
+    mntmCacheDir.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        boolean selected = mntmCacheDir.isSelected();
+        if (selected) {
+          JFileChooser fileChooser = new JFileChooser();
+          fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+          fileChooser.setSelectedFile(new File(m_CacheDir));
+          int option = fileChooser.showOpenDialog(hoofdFrame);
+          if (option == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            LOGGER.log(Level.INFO, bundle.getMessage("CacheFolderSet", file.getAbsolutePath()));
+            m_CacheDir = file.getAbsolutePath() + "/";
+            m_param.set_CacheDirectory(m_CacheDir);
+            m_param.save();
+          }
+        } else {
+          m_CacheDir = "";
+          m_param.set_CacheDirectory(m_CacheDir);
+          m_param.save();
+        }
+      }
+    });
+    mnSettings.add(mntmCacheDir);
+
     // Option Logging to Disk
     JCheckBoxMenuItem mntmLogToDisk = new JCheckBoxMenuItem(bundle.getMessage("CreateLogfiles"));
+    m_LogDir = m_param.get_LogDir();
+    mntmLogToDisk.setSelected(!m_LogDir.isBlank());
     mntmLogToDisk.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
