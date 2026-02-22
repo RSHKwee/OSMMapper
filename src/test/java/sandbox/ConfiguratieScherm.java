@@ -2,8 +2,6 @@ package sandbox;
 
 import javax.swing.*;
 
-import kwee.osmmapper.report.image.FlexibeleWordGenerator;
-
 import java.awt.*;
 import java.util.Map;
 import java.util.List;
