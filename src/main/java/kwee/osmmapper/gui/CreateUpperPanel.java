@@ -489,32 +489,6 @@ public class CreateUpperPanel {
       }
     });
 
-    // Knop 3: Switch tussen kaarten
-    JButton switchKnop = new JButton("🔀 Wissel Kaart");
-    switchKnop.addActionListener(e -> {
-      String[] kaartNamen = kaartController.getKaartNamen();
-      if (kaartNamen.length > 0) {
-        String keuze = (String) JOptionPane.showInputDialog(hoofdFrame, "Kies een kaart:", "Kaart Selectie",
-            JOptionPane.QUESTION_MESSAGE, null, kaartNamen, kaartNamen[0]);
-        if (keuze != null) {
-          kaartController.toonKaart(keuze);
-        }
-      }
-    });
-
-    // Knop 4: Kies kaart voor mail voorbereiding
-    JButton mailKnop = new JButton("🔀 Mail voorbereiden");
-    mailKnop.addActionListener(e -> {
-      String[] kaartNamen = kaartController.getKaartNamen();
-      if (kaartNamen.length > 0) {
-        String keuze = (String) JOptionPane.showInputDialog(hoofdFrame, "Kies een kaart:", "Kaart Selectie",
-            JOptionPane.QUESTION_MESSAGE, null, kaartNamen, kaartNamen[0]);
-        if (keuze != null) {
-          MailHandlingGui.startMailSender(kaartController.getOsmMapViewer(keuze), keuze);
-        }
-      }
-    });
-
     // Progress bars
     JPanel progrespanel = new JPanel();
     m_ProgressLabel = new JLabel("Progress ");
@@ -527,8 +501,6 @@ public class CreateUpperPanel {
 
     panel.add(addLongLatKnop);
     panel.add(nieuweKnop);
-    panel.add(switchKnop);
-    panel.add(mailKnop);
     panel.add(progrespanel, BorderLayout.SOUTH);
 
     return panel;

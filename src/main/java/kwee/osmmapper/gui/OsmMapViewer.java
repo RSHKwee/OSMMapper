@@ -478,7 +478,7 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
         tab = l_tablist.get(i);
         if (tab.getTitle().equalsIgnoreCase(title)) {
           tab.setZoomfactor(map().getZoom());
-          // Via de huidige viewport (zichtbaar gebied)
+          // Visible area
           JMapViewer l_map = new JMapViewer();
           l_map = map();
           Coordinate center = (Coordinate) l_map.getPosition(l_map.getWidth() / 2, l_map.getHeight() / 2);
