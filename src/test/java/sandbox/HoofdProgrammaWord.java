@@ -3,7 +3,6 @@ package sandbox;
 import java.io.File;
 
 import kwee.osmmapper.lib.OSMMapExcel;
-import kwee.osmmapper.report.image.PostcodeWordGenerator;
 import kwee.osmmapper.report.image.StraatFotoOrganisatorPerPostcode;
 
 public class HoofdProgrammaWord {

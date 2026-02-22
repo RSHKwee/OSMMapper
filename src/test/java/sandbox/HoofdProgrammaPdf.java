@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Scanner;
 
 import kwee.osmmapper.lib.OSMMapExcel;
-import kwee.osmmapper.report.image.FlexibelePdfGenerator;
 import kwee.osmmapper.report.image.StraatFotoOrganisatorPerPostcode;
 
 public class HoofdProgrammaPdf {

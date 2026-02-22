@@ -1,9 +1,11 @@
-package kwee.osmmapper.report.image;
+package sandbox;
 
 import org.apache.poi.xwpf.usermodel.*;
 import org.apache.poi.util.Units;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblWidth;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblWidth;
+
+import kwee.osmmapper.report.image.StraatFotoOrganisatorPerPostcode;
 
 import java.io.File;
 import java.io.FileInputStream;

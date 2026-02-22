@@ -1,4 +1,4 @@
-package kwee.osmmapper.report.image;
+package sandbox;
 
 import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;

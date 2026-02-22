@@ -1,4 +1,4 @@
-package kwee.osmmapper.report.image;
+package sandbox;
 
 import java.io.File;
 import java.util.*;

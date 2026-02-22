@@ -4,9 +4,6 @@ import java.io.File;
 import java.util.Map;
 
 import kwee.osmmapper.lib.OSMMapExcel;
-import kwee.osmmapper.report.image.StraatFotoOrganisator;
-import kwee.osmmapper.report.image.StraatFotoPdfGenerator;
-
 import java.util.List;
 
 public class HoofdProgrammaRapport {
