@@ -7,6 +7,7 @@ import kwee.logger.MyLogger;
 
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +18,7 @@ import java.util.logging.Logger;
 
 public class StraatFotoPdfGenerator {
   private static final Logger LOGGER = MyLogger.getLogger();
+  private static PDType1Font font = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
 
   /**
    * Genereert PDF met foto's gesorteerd op straatkant Gebruikt de FotoInfo class
@@ -62,7 +64,7 @@ public class StraatFotoPdfGenerator {
     try {
       // Titel toevoegen
       contentStream.beginText();
-      contentStream.setFont(PDType1Font.HELVETICA_BOLD, 18);
+      contentStream.setFont(font, 18);
       contentStream.newLineAtOffset(50, 750);
       contentStream.showText(sectieTitel);
       contentStream.endText();
@@ -87,7 +89,7 @@ public class StraatFotoPdfGenerator {
       try {
         // Titel voor vervolgpagina
         contentStream.beginText();
-        contentStream.setFont(PDType1Font.HELVETICA_BOLD, 16);
+        contentStream.setFont(font, 16);
         contentStream.newLineAtOffset(50, 750);
         contentStream.showText(sectieTitel + " (vervolg)");
         contentStream.endText();
@@ -138,14 +140,14 @@ public class StraatFotoPdfGenerator {
 
         // Mapnaam onder foto (postcode + huisnummer)
         cs.beginText();
-        cs.setFont(PDType1Font.HELVETICA, 10);
+        cs.setFont(font, 10);
         cs.newLineAtOffset(huidigeX, huidigeY - 115);
         cs.showText(fotoInfo.getMapNaam() + " " + fotoInfo.getStraatnaam());
         cs.endText();
 
         // Bestandsnaam (kleiner)
         cs.beginText();
-        cs.setFont(PDType1Font.HELVETICA, 8);
+        cs.setFont(font, 8);
         cs.newLineAtOffset(huidigeX, huidigeY - 128);
 
         // Kort de bestandsnaam af als te lang
@@ -160,7 +162,7 @@ public class StraatFotoPdfGenerator {
         System.err.println("Kon foto niet laden: " + fotoInfo.getFotoBestand().getPath());
         // Tekst plaatshouder voor ontbrekende foto
         cs.beginText();
-        cs.setFont(PDType1Font.HELVETICA, 8);
+        cs.setFont(font, 8);
         cs.newLineAtOffset(huidigeX + 25, huidigeY - 50);
         cs.showText("[Foto niet\nbeschikbaar]");
         cs.endText();
@@ -178,7 +180,7 @@ public class StraatFotoPdfGenerator {
   private static int berekenAantalFotoVoorPagina(List<StraatFotoOrganisator.FotoInfo> fotoLijst, int startIndex,
       float startX, float startY) {
 
-    float y = startY;
+    // float y = startY;
     int fotoPerRij = 4;
     int maxRijen = (int) ((startY - 100) / 140); // 100px onderkant marge
 
@@ -218,7 +220,7 @@ public class StraatFotoPdfGenerator {
     try {
       // Titel
       cs.beginText();
-      cs.setFont(PDType1Font.HELVETICA_BOLD, 18);
+      cs.setFont(font, 18);
       cs.newLineAtOffset(50, 750);
       cs.showText(titel);
       cs.endText();
@@ -247,7 +249,7 @@ public class StraatFotoPdfGenerator {
             // Mapnaam (uit parent directory)
             String mapNaam = foto.getParentFile().getName();
             cs.beginText();
-            cs.setFont(PDType1Font.HELVETICA, 9);
+            cs.setFont(font, 9);
             cs.newLineAtOffset(posX, posY - 115);
             cs.showText(mapNaam);
             cs.endText();

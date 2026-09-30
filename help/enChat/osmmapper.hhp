@@ -1,0 +1,10 @@
+[OPTIONS]
+Compatibility=1.1 or later
+Compiled file=osmmapper.chm
+Contents file=contents.hhc
+Index file=index.hhk
+Default topic=osmmapper.htm
+Title=OSM Mapper Handleiding
+
+[FILES]
+osmmapper.htm

@@ -7,6 +7,7 @@ import kwee.osmmapper.report.image.StraatFotoOrganisatorPerPostcode;
 
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class FlexibelePdfGenerator {
+  private static PDType1Font font = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
 
   // Configuratie klasse
   public static class PdfConfig {
@@ -145,14 +147,14 @@ public class FlexibelePdfGenerator {
       PdfConfig config) throws IOException {
 
     cs.beginText();
-    cs.setFont(PDType1Font.HELVETICA_BOLD, 18);
+    cs.setFont(font, 18);
     cs.newLineAtOffset(config.marge, PDRectangle.A4.getHeight() - config.marge - 30);
     cs.showText(postcodeNummer + ". POSTCODE: " + postcode);
     cs.endText();
 
     // Samenvatting onder titel
     cs.beginText();
-    cs.setFont(PDType1Font.HELVETICA, 10);
+    cs.setFont(font, 10);
     cs.newLineAtOffset(config.marge, PDRectangle.A4.getHeight() - config.marge - 55);
     cs.showText("Foto's gegroepeerd op huisnummer - " + config.fotoPerRij + " per rij");
     cs.endText();
@@ -172,7 +174,7 @@ public class FlexibelePdfGenerator {
 
     // Sectie titel
     cs.beginText();
-    cs.setFont(PDType1Font.HELVETICA_BOLD, 14);
+    cs.setFont(font, 14);
     cs.newLineAtOffset(config.marge, y);
     cs.showText(straatkantTitel + " (" + fotoLijst.size() + " foto's)");
     cs.endText();
@@ -200,7 +202,7 @@ public class FlexibelePdfGenerator {
 
         // Sectie titel op nieuwe pagina
         cs.beginText();
-        cs.setFont(PDType1Font.HELVETICA_BOLD, 14);
+        cs.setFont(font, 14);
         cs.newLineAtOffset(config.marge, y);
         cs.showText(straatkantTitel + " (vervolg)");
         cs.endText();
@@ -211,7 +213,7 @@ public class FlexibelePdfGenerator {
       // Huisnummer label (optioneel)
       if (config.toonHuisnummer) {
         cs.beginText();
-        cs.setFont(PDType1Font.HELVETICA_BOLD, 11);
+        cs.setFont(font, 11);
         cs.newLineAtOffset(config.marge, y);
         cs.showText("Huisnummer " + huisnummer + ":");
         cs.endText();
@@ -270,7 +272,7 @@ public class FlexibelePdfGenerator {
         // Toon huisnummer onder foto (optioneel)
         if (config.toonHuisnummer) {
           cs.beginText();
-          cs.setFont(PDType1Font.HELVETICA, 9);
+          cs.setFont(font, 9);
           cs.newLineAtOffset(fotoX, fotoY - 12);
           cs.showText("Nr: " + fotoInfo.getHuisnummer());
           cs.endText();
@@ -279,7 +281,7 @@ public class FlexibelePdfGenerator {
         // Toon bestandsnaam (optioneel)
         if (config.toonBestandsnaam) {
           cs.beginText();
-          cs.setFont(PDType1Font.HELVETICA, 7);
+          cs.setFont(font, 7);
           cs.newLineAtOffset(fotoX, fotoY - 24);
 
           String bestandsNaam = fotoInfo.getFotoBestand().getName();
@@ -298,7 +300,7 @@ public class FlexibelePdfGenerator {
         cs.stroke();
 
         cs.beginText();
-        cs.setFont(PDType1Font.HELVETICA, 8);
+        cs.setFont(font, 8);
         cs.newLineAtOffset(fotoX + 5, fotoY + config.fotoHoogte / 2);
         cs.showText("Geen foto");
         cs.endText();
@@ -342,13 +344,13 @@ public class FlexibelePdfGenerator {
 
       // Titel
       cs.beginText();
-      cs.setFont(PDType1Font.HELVETICA_BOLD, 20);
+      cs.setFont(font, 20);
       cs.newLineAtOffset(config.marge, y - 30);
       cs.showText("STRAATFOTO OVERZICHT");
       cs.endText();
 
       cs.beginText();
-      cs.setFont(PDType1Font.HELVETICA, 12);
+      cs.setFont(font, 12);
       cs.newLineAtOffset(config.marge, y - 55);
       cs.showText(config.fotoPerRij + " foto's per rij | " + (alleOneven.size() + alleEven.size()) + " foto's totaal");
       cs.endText();
@@ -379,7 +381,7 @@ public class FlexibelePdfGenerator {
 
     // Sectie titel
     cs.beginText();
-    cs.setFont(PDType1Font.HELVETICA_BOLD, 16);
+    cs.setFont(font, 16);
     cs.newLineAtOffset(config.marge, y);
     cs.showText(titel + " (" + fotoLijst.size() + " foto's)");
     cs.endText();
@@ -406,7 +408,7 @@ public class FlexibelePdfGenerator {
 
         // Titel op nieuwe pagina
         cs.beginText();
-        cs.setFont(PDType1Font.HELVETICA_BOLD, 16);
+        cs.setFont(font, 16);
         cs.newLineAtOffset(config.marge, PDRectangle.A4.getHeight() - config.marge - 30);
         cs.showText(titel + " (vervolg)");
         cs.endText();
@@ -428,7 +430,7 @@ public class FlexibelePdfGenerator {
 
         // Huisnummer
         cs.beginText();
-        cs.setFont(PDType1Font.HELVETICA_BOLD, 10);
+        cs.setFont(font, 10);
         cs.newLineAtOffset(fotoX, fotoY - 15);
         cs.showText("" + fotoInfo.getHuisnummer());
         cs.endText();
@@ -436,7 +438,7 @@ public class FlexibelePdfGenerator {
         // Postcode (optioneel)
         if (config.toonPostcode) {
           cs.beginText();
-          cs.setFont(PDType1Font.HELVETICA, 8);
+          cs.setFont(font, 8);
           cs.newLineAtOffset(fotoX, fotoY - 28);
           cs.showText(fotoInfo.getPostcode());
           cs.endText();

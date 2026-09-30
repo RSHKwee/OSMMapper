@@ -14,6 +14,7 @@ public class MemoContent {
   private String projects = "";
   private String country = "";
   private String pictureIdx = "";
+  private String agenda = "";
 
   private Color color = null;
   private double longitude = Const.c_LongLatUndefined;
@@ -60,6 +61,10 @@ public class MemoContent {
 
   public String getProjects() {
     return projects;
+  }
+
+  public String getAgenda() {
+    return agenda;
   }
 
   public double getLongitude() {
@@ -122,6 +127,10 @@ public class MemoContent {
     this.projects = projects;
   }
 
+  public void setAgenda(String agenda) {
+    this.agenda = agenda;
+  }
+
   public void setLongitude(double longitude) {
     this.longitude = longitude;
   }
@@ -165,6 +174,7 @@ public class MemoContent {
     bstat = bstat && phonenumber.isBlank();
     bstat = bstat && mailaddress.isBlank();
     bstat = bstat && projects.isBlank();
+    bstat = bstat && agenda.isBlank();
     return bstat;
   }
 }

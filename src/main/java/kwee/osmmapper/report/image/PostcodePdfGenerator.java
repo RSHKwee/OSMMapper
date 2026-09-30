@@ -4,6 +4,7 @@ import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,6 +17,7 @@ import kwee.osmmapper.lib.OSMMapExcel;
 
 public class PostcodePdfGenerator {
   private static final Logger LOGGER = MyLogger.getLogger();
+  private static PDType1Font font = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
 
   /**
    * Generate PDF grouped by postal code and sorted on house number.
@@ -74,7 +76,7 @@ public class PostcodePdfGenerator {
     try (PDPageContentStream cs = new PDPageContentStream(document, titelPagina)) {
       // Grote titel voor postcode
       cs.beginText();
-      cs.setFont(PDType1Font.HELVETICA_BOLD, 24);
+      cs.setFont(font, 24);
       cs.newLineAtOffset(50, 400);
       cs.showText("POSTCODE: " + postcode + " " + straatnaam);
       cs.endText();
@@ -84,7 +86,7 @@ public class PostcodePdfGenerator {
       int totaalEven = straatkantData.get("EVEN").size();
 
       cs.beginText();
-      cs.setFont(PDType1Font.HELVETICA, 14);
+      cs.setFont(font, 14);
       cs.newLineAtOffset(50, 350);
       cs.showText(totaalOneven + " oneven huisnummers");
       cs.newLineAtOffset(0, -25);
@@ -118,7 +120,7 @@ public class PostcodePdfGenerator {
     try (PDPageContentStream cs = new PDPageContentStream(document, pagina)) {
       // Titel: Postcode + Straatkant
       cs.beginText();
-      cs.setFont(PDType1Font.HELVETICA_BOLD, 18);
+      cs.setFont(font, 18);
       cs.newLineAtOffset(50, 750);
       cs.showText(postcode + " - " + straatkant);
       cs.endText();
@@ -139,7 +141,7 @@ public class PostcodePdfGenerator {
       try (PDPageContentStream cs = new PDPageContentStream(document, pagina)) {
         // Titel voor vervolgpagina
         cs.beginText();
-        cs.setFont(PDType1Font.HELVETICA_BOLD, 16);
+        cs.setFont(font, 16);
         cs.newLineAtOffset(50, 750);
         cs.showText(postcode + " - " + straatkant + " (vervolg pagina " + paginaNummer + ")");
         cs.endText();
@@ -189,14 +191,14 @@ public class PostcodePdfGenerator {
 
         // Huisnummer en bestandsnaam
         cs.beginText();
-        cs.setFont(PDType1Font.HELVETICA_BOLD, 12);
+        cs.setFont(font, 12);
         // cs.newLineAtOffset(huidigeX, huidigeY - 115);
         cs.newLineAtOffset(huidigeX, huidigeY - 230);
         cs.showText(String.valueOf(fotoInfo.getHuisnummer()));
         cs.endText();
 
         cs.beginText();
-        cs.setFont(PDType1Font.HELVETICA, 8);
+        cs.setFont(font, 8);
         // cs.newLineAtOffset(huidigeX, huidigeY - 130);
         cs.newLineAtOffset(huidigeX, huidigeY - 260);
 
@@ -254,14 +256,14 @@ public class PostcodePdfGenerator {
         try (PDPageContentStream cs = new PDPageContentStream(document, pagina)) {
           // Titel
           cs.beginText();
-          cs.setFont(PDType1Font.HELVETICA_BOLD, 20);
+          cs.setFont(font, 20);
           cs.newLineAtOffset(50, 750);
           cs.showText("POSTCODE: " + postcode + " " + straat);
           cs.endText();
 
           // Subtitle
           cs.beginText();
-          cs.setFont(PDType1Font.HELVETICA, 12);
+          cs.setFont(font, 12);
           cs.newLineAtOffset(50, 720);
           cs.showText(fotoLijst.size() + " foto's, gesorteerd op huisnummer");
           cs.endText();
@@ -288,14 +290,14 @@ public class PostcodePdfGenerator {
 
                 // Huisnummer
                 cs.beginText();
-                cs.setFont(PDType1Font.HELVETICA_BOLD, 11);
+                cs.setFont(font, 11);
                 cs.newLineAtOffset(posX, posY - 115);
                 cs.showText("Nr: " + fotoInfo.getHuisnummer());
                 cs.endText();
 
                 // Bestandsnaam
                 cs.beginText();
-                cs.setFont(PDType1Font.HELVETICA, 8);
+                cs.setFont(font, 8);
                 cs.newLineAtOffset(posX, posY - 130);
                 String naam = fotoInfo.getFotoBestand().getName();
                 if (naam.length() > 12)

@@ -1,0 +1,29 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head></head>
+<body>
+
+<ul>
+<li><object type="text/sitemap">
+    <param name="Name" value="Excel">
+    <param name="Local" value="osmmapper.htm">
+</object></li>
+
+<li><object type="text/sitemap">
+    <param name="Name" value="GEO informatie">
+    <param name="Local" value="osmmapper.htm">
+</object></li>
+
+<li><object type="text/sitemap">
+    <param name="Name" value="Markers">
+    <param name="Local" value="osmmapper.htm">
+</object></li>
+
+<li><object type="text/sitemap">
+    <param name="Name" value="Foto's">
+    <param name="Local" value="osmmapper.htm">
+</object></li>
+</ul>
+
+</body>
+</html>

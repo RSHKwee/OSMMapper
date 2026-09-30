@@ -1,5 +1,19 @@
 package kwee.osmmapper.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 /**
  * OSM Map GUI
  */
@@ -14,31 +28,15 @@ import org.openstreetmap.gui.jmapviewer.interfaces.JMapViewerEventListener;
 import org.openstreetmap.gui.jmapviewer.interfaces.MapMarker;
 import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource;
 
+import kwee.logger.MyLogger;
 import kwee.osmmapper.lib.Const;
 import kwee.osmmapper.lib.CustomMarker;
+import kwee.osmmapper.lib.FotoIntegration;
 import kwee.osmmapper.lib.Mediaan;
 import kwee.osmmapper.lib.MemoContent;
 import kwee.osmmapper.lib.OSMMapExcel;
-import kwee.osmmapper.lib.FotoIntegration;
 import kwee.osmmapper.lib.TabInfo;
 import kwee.osmmapper.main.UserSetting;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.BorderFactory;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import kwee.logger.MyLogger;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 
 /**
  * Start a Swing application which shows a map and has some pre-defined options
@@ -243,10 +241,12 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
   }
 
   private void updateZoomParameters() {
-    if (mperpLabelValue != null)
+    if (mperpLabelValue != null) {
       mperpLabelValue.setText(String.format("%s", map().getMeterPerPixel()));
-    if (zoomValue != null)
+    }
+    if (zoomValue != null) {
       zoomValue.setText(String.format("%s", map().getZoom()));
+    }
     updatePreference();
   }
 
@@ -271,7 +271,9 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
       String city = memoinh.getCity();
       String country = memoinh.getCountry();
       String projects = memoinh.getProjects();
-      if (projects.toLowerCase().contains(m_projects) || m_projects.isBlank()) {
+      String agenda = memoinh.getAgenda();
+      if (agenda.toLowerCase().contains(m_projects) || projects.toLowerCase().contains(m_projects)
+          || m_projects.isBlank()) {
         if (!street.isBlank()) {
           String sNameDetail = "";
           if (!memoinh.getSurname().isBlank()) {
@@ -288,6 +290,9 @@ public class OsmMapViewer extends JFrame implements JMapViewerEventListener {
           }
           if (!memoinh.getProjects().isBlank()) {
             sNameDetail = sNameDetail + "\nProjecten: " + memoinh.getProjects();
+          }
+          if (!memoinh.getAgenda().isBlank()) {
+            sNameDetail = sNameDetail + "\nAgenda: " + memoinh.getAgenda();
           }
 
           // Maak titel en extra informatie

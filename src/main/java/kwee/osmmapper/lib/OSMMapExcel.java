@@ -17,7 +17,14 @@ import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import kwee.library.Address;
 import kwee.library.ApplicationMessages;
@@ -42,6 +49,7 @@ public class OSMMapExcel {
   private int latIndex = -1;
   private int countryIndex = -1;
   private int colorIndex = -1;
+  private int agendaIndex = -1;
 
   private int maxCellCount = -1;
   private String m_ExcelFile = "";
@@ -114,6 +122,8 @@ public class OSMMapExcel {
                 countryIndex = cellindex;
               } else if (str.toLowerCase().contains("kleur")) {
                 colorIndex = cellindex;
+              } else if (str.toLowerCase().contains("agenda")) {
+                agendaIndex = cellindex;
               } else {
                 LOGGER.log(Level.FINE, "cellindex: " + cellindex);
               }
@@ -370,6 +380,12 @@ public class OSMMapExcel {
         Cell l_cell = row.getCell(projectidx);
         if (l_cell != null) {
           memocont.setProjects(getCelValue(l_cell));
+        }
+      }
+      if (agendaIndex != -1) {
+        Cell l_cell = row.getCell(agendaIndex);
+        if (l_cell != null) {
+          memocont.setAgenda(getCelValue(l_cell));
         }
       }
       if (longIndex != -1) {

@@ -9,31 +9,31 @@
   <artifactId>osmmapper</artifactId>
   <packaging>jar</packaging>
   <name>osmmapper</name>
-  <version>0.1.0.5</version>
+  <version>${revision}</version>
 
   <parent>
 	<groupId>kwee</groupId>
 	<artifactId>aggregator</artifactId>
-	<version>1.1.0.3</version>
+	<version>${revision}</version>
 	<relativePath>../pom.xml</relativePath>
   </parent>
  
   <properties> 
     <project.description>OSM Markers mapper</project.description>
-    <com.fasterxml.jackson.core.version>2.17.2</com.fasterxml.jackson.core.version> 
   </properties>
 
   <dependencies>
     <dependency>
 	  <groupId>kwee</groupId>
 	  <artifactId>library</artifactId>
-	  <version>${kweeLibrary.version}</version>
+	  <version>${revision}</version>
 	</dependency> 
     <dependency>
-	    <groupId>kwee.email.sender</groupId>
-	    <artifactId>emailsenderpro</artifactId>
-	    <version>${kweeEmailSender.version}</version>
+	  <groupId>kwee.email.sender</groupId>
+	  <artifactId>emailsenderpro</artifactId>
+      <version>${revision}</version>
 	</dependency>
+	
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi</artifactId>
@@ -64,28 +64,21 @@
     <dependency>
       <groupId>org.openstreetmap.gui</groupId>
       <artifactId>jmapviewer</artifactId>
-      <version>2.1</version>
+      <version>${org-openstreetmap-gui-jmapviewer.version}</version>
     </dependency>
 	
     <!-- Apache PDFBox voor PDF generatie -->
     <dependency>
-        <groupId>org.apache.pdfbox</groupId>
-        <artifactId>pdfbox</artifactId>
-        <version>2.0.27</version>
+      <groupId>org.apache.pdfbox</groupId>
+      <artifactId>pdfbox</artifactId>
+      <version>${org-apache-pdfbox-pdfbox.version}</version>
     </dependency>
-    
-    <!-- Apache POI voor Word documenten -->
-    <dependency>
-        <groupId>org.apache.poi</groupId>
-        <artifactId>poi-ooxml</artifactId>
-        <version>5.2.3</version>
-    </dependency>
-     
+	 
     <!-- Voor afbeelding verwerking -->
     <dependency>
-        <groupId>com.twelvemonkeys.imageio</groupId>
-        <artifactId>imageio-jpeg</artifactId>
-        <version>3.9.4</version>
+      <groupId>com.twelvemonkeys.imageio</groupId>
+      <artifactId>imageio-jpeg</artifactId>
+      <version>${com.twelvemonkeys.imageio.imageio-jpeg.version}</version>
     </dependency>	
   </dependencies>
 
@@ -257,7 +250,7 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.directory}\usb\Programs</outputDirectory>
+              <outputDirectory>${project.build.directory}\Programs</outputDirectory>
               <resources>                                        
                 <resource>
                   <directory>.</directory>

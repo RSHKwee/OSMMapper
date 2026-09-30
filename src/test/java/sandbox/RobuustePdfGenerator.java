@@ -7,16 +7,14 @@ import kwee.osmmapper.report.image.StraatFotoOrganisatorPerPostcode;
 
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.io.RandomAccessFile;
-import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 
 import java.io.*;
 import java.util.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class RobuustePdfGenerator {
+  private static PDType1Font font = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
 
   public static class PdfConfig {
     public int fotoPerRij = 2;
@@ -91,7 +89,7 @@ public class RobuustePdfGenerator {
 
         // Titel
         cs.beginText();
-        cs.setFont(PDType1Font.HELVETICA_BOLD, 18);
+        cs.setFont(font, 18);
         cs.newLineAtOffset(config.marge, PDRectangle.A4.getHeight() - config.marge - 30);
         cs.showText("POSTCODE " + postcode);
         cs.endText();
@@ -128,7 +126,7 @@ public class RobuustePdfGenerator {
 
     // Sectie titel
     cs.beginText();
-    cs.setFont(PDType1Font.HELVETICA_BOLD, 14);
+    cs.setFont(font, 14);
     cs.newLineAtOffset(config.marge, startY);
     cs.showText(titel);
     cs.endText();
@@ -146,7 +144,7 @@ public class RobuustePdfGenerator {
       // Huisnummer label
       if (config.toonHuisnummer) {
         cs.beginText();
-        cs.setFont(PDType1Font.HELVETICA, 11);
+        cs.setFont(font, 11);
         cs.newLineAtOffset(config.marge, y);
         cs.showText("Huisnr " + huisnummer + ":");
         cs.endText();
@@ -191,7 +189,7 @@ public class RobuustePdfGenerator {
         // Huisnummer onder foto
         if (config.toonHuisnummer) {
           cs.beginText();
-          cs.setFont(PDType1Font.HELVETICA, 9);
+          cs.setFont(font, 9);
           cs.newLineAtOffset(fotoX, fotoY - 12);
           cs.showText("" + fotoInfo.getHuisnummer());
           cs.endText();
@@ -244,7 +242,7 @@ public class RobuustePdfGenerator {
           cs.stroke();
 
           cs.beginText();
-          cs.setFont(PDType1Font.HELVETICA, 8);
+          cs.setFont(font, 8);
           cs.newLineAtOffset(x + 5, y + hoogte / 2);
           cs.showText(fotoBestand.getName());
           cs.endText();
@@ -288,7 +286,7 @@ public class RobuustePdfGenerator {
 
       // Titel
       cs.beginText();
-      cs.setFont(PDType1Font.HELVETICA_BOLD, 20);
+      cs.setFont(font, 20);
       cs.newLineAtOffset(config.marge, y - 30);
       cs.showText("STRAATFOTO OVERZICHT");
       cs.endText();
@@ -315,7 +313,7 @@ public class RobuustePdfGenerator {
       List<StraatFotoOrganisatorPerPostcode.FotoInfo> fotoLijst, float startY, PdfConfig config) throws IOException {
 
     cs.beginText();
-    cs.setFont(PDType1Font.HELVETICA_BOLD, 14);
+    cs.setFont(font, 14);
     cs.newLineAtOffset(config.marge, startY);
     cs.showText(titel);
     cs.endText();
