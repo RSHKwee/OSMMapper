@@ -91,18 +91,7 @@
     </resources>   
 
 	<plugins>
-	  <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>${maven-resources-plugin.version}</version>
-        <configuration>
-           <!-- Deze configuratie zorgt ervoor dat @...@ placeholders werken -->
-           <delimiters>
-            <delimiter>@</delimiter>
-          </delimiters>
-          <useDefaultDelimiters>false</useDefaultDelimiters>
-        </configuration>
-      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
@@ -174,10 +163,17 @@
       </plugin>
       
       <!-- Distribute tools v -->
-      <plugin>
+	  <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
         <version>${maven-resources-plugin.version}</version>
+        <configuration>
+           <!-- Deze configuratie zorgt ervoor dat @...@ placeholders werken -->
+           <delimiters>
+            <delimiter>@</delimiter>
+          </delimiters>
+          <useDefaultDelimiters>false</useDefaultDelimiters>
+        </configuration>
         <executions>
           <execution>
             <id>CopyToolsOsmMapper</id>
