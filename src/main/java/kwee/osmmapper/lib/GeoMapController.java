@@ -6,13 +6,16 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -24,8 +27,10 @@ import kwee.library.ApplicationMessages;
 import kwee.logger.MyLogger;
 import kwee.osmmapper.gui.MailHandlingGui;
 import kwee.osmmapper.gui.OsmMapViewer;
+import kwee.osmmapper.gui.ReportSelectionDialog;
 import kwee.osmmapper.main.UserSetting;
 import kwee.osmmapper.report.ReportMenu;
+import kwee.osmmapper.report.ReportType;
 
 /**
  * 
@@ -293,31 +298,57 @@ public class GeoMapController {
     JMenuItem prepareReportItem = new JMenuItem("Rapporten maken");
     prepareReportItem.addActionListener(e -> {
       int tabIndex = kaartTabPane.getSelectedIndex();
-      if (tabIndex != -1) {
-        String reportdir = m_params.get_ReportDirectory();
-        JFileChooser fileChooser = new JFileChooser("Rapport directory");
-        fileChooser.setDialogTitle("Rapport directory");
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        fileChooser.setSelectedFile(new File(reportdir));
-        int option = fileChooser.showOpenDialog(kaartTabPane);
-        if (option == JFileChooser.APPROVE_OPTION) {
-          File file = fileChooser.getSelectedFile();
-          LOGGER.log(Level.INFO, "ReportFolder" + file.getAbsolutePath());
-          reportdir = file.getAbsolutePath() + "/";
-          m_params.set_ReportDirectory(reportdir);
-          m_params.save();
-
-          String naam = kaartTabPane.getTitleAt(tabIndex);
-          OsmMapViewer osmview = this.getOsmMapViewer(naam);
-          String picrootdir = osmview.getFotoIntegration().getPictureRootDir();
-          tablist.forEach(tab -> {
-            if (tab.getTitle().toLowerCase().equals(naam.toLowerCase())) {
-              m_excelfile = tab.getFilePath();
-            }
-          });
-          ReportMenu.generateReport(naam, new File(picrootdir), m_excelfile, reportdir);
-        }
+      if (tabIndex == -1) {
+        return;
       }
+
+      // 1. Eerst de rapporten laten kiezen
+      ReportSelectionDialog dlg = new ReportSelectionDialog(
+          (JFrame) javax.swing.SwingUtilities.getWindowAncestor(kaartTabPane), EnumSet.allOf(ReportType.class)); // standaard
+                                                                                                                 // alle
+                                                                                                                 // drie
+                                                                                                                 // aan
+      dlg.setVisible(true);
+
+      Set<ReportType> keuze = dlg.getSelection();
+      if (keuze == null || keuze.isEmpty()) {
+        LOGGER.log(Level.INFO, "Rapport-generatie geannuleerd of niets geselecteerd.");
+        return;
+      }
+
+      // 2. Dan de directory kiezen
+      String reportdir = m_params.get_ReportDirectory();
+      JFileChooser fileChooser = new JFileChooser("Rapport directory");
+      fileChooser.setDialogTitle("Rapport directory");
+      fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+      fileChooser.setSelectedFile(new File(reportdir));
+      int option = fileChooser.showOpenDialog(kaartTabPane);
+      if (option != JFileChooser.APPROVE_OPTION) {
+        return;
+      }
+
+      File file = fileChooser.getSelectedFile();
+      LOGGER.log(Level.INFO, "ReportFolder " + file.getAbsolutePath());
+      reportdir = file.getAbsolutePath() + File.separator;
+      m_params.set_ReportDirectory(reportdir);
+      m_params.save();
+
+      // 3. Tab- en fotogegevens ophalen
+      String naam = kaartTabPane.getTitleAt(tabIndex);
+      OsmMapViewer osmview = this.getOsmMapViewer(naam);
+      String picrootdir = osmview.getFotoIntegration().getPictureRootDir();
+
+      for (Object t : tablist) { // of List<Tab> — pas type aan
+        // if (t.getTitle()... ) — pas aan op je eigen type
+      }
+      tablist.forEach(tab -> {
+        if (tab.getTitle().toLowerCase().equals(naam.toLowerCase())) {
+          m_excelfile = tab.getFilePath();
+        }
+      });
+
+      // 4. Genereren
+      ReportMenu.generateReport(naam, new File(picrootdir), m_excelfile, reportdir, keuze);
     });
 
     contextMenu.add(verwijderItem);

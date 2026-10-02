@@ -1,8 +1,10 @@
 package kwee.osmmapper.report;
 
 import java.io.File;
+//import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,51 +17,55 @@ import kwee.osmmapper.report.image.StraatFotoOrganisatorPerPostcode;
 public class ReportMenu {
   private static final Logger LOGGER = MyLogger.getLogger();
 
-  // ============================================================
-  // Bestaande functionaliteit: foto-overzicht per postcode
-  // ============================================================
-  static public void generateReport(String a_Tabname, File a_fotoHoofdmap, String a_ExcelFile,
-      String a_ReportDirectory) {
+  /**
+   * Genereert de geselecteerde rapporten.
+   *
+   * @param a_Tabname         naam van de tab (voor de bestandsnaam)
+   * @param a_fotoHoofdmap    map met foto's
+   * @param a_ExcelFile       Excel-bestand
+   * @param a_ReportDirectory doelmap
+   * @param a_types           welke rapporten te genereren; leeg = niets
+   */
+  static public void generateReport(String a_Tabname, File a_fotoHoofdmap, String a_ExcelFile, String a_ReportDirectory,
+      Set<ReportType> a_types) {
+    if (a_types == null || a_types.isEmpty()) {
+      LOGGER.log(Level.INFO, "Geen rapporten geselecteerd, niets te doen.");
+      return;
+    }
+
+    String datum = java.time.LocalDate.now().toString().replace("-", "");
+    List<String> gegenereerd = new java.util.ArrayList<>();
+
     try {
       OSMMapExcel osmMapExcel = new OSMMapExcel(a_ExcelFile);
       osmMapExcel.ReadExcel();
 
-      // Optie A: Groeperen per postcode en straatkant
-      LOGGER.log(Level.INFO, "Optie A: Groeperen per postcode en straatkant");
-      Map<String, Map<String, List<StraatFotoOrganisatorPerPostcode.FotoInfo>>> dataMetStraatkant = StraatFotoOrganisatorPerPostcode
-          .organiseerPerPostcodeEnStraatkant(a_fotoHoofdmap, osmMapExcel);
-
-      if (dataMetStraatkant.isEmpty()) {
-        LOGGER.log(Level.INFO, "Geen geldige mappen gevonden!");
-        return;
+      // ---- Optie A: per postcode + straatkant ----
+      if (a_types.contains(ReportType.POSTCODE_PER_STRAATKANT)) {
+        String pad = a_ReportDirectory + File.separator + a_Tabname + "_StraatOverzicht_Postcode_" + datum + ".pdf";
+        genereerPerPostcodeEnStraatkant(a_fotoHoofdmap, osmMapExcel, pad);
+        gegenereerd.add(pad + " (per postcode en straatkant)");
       }
 
-      StraatFotoOrganisatorPerPostcode.toonStructuur(dataMetStraatkant);
-      LOGGER.log(Level.INFO, "PDF genereren...");
-      String pdfPadA = a_ReportDirectory + "\\" + a_Tabname + "_StraatOverzicht_Postcode_"
-          + java.time.LocalDate.now().toString().replace("-", "") + ".pdf";
-      PostcodePdfGenerator.genereerPdfPerPostcode(dataMetStraatkant, osmMapExcel, pdfPadA);
+      // ---- Optie B: alleen per postcode ----
+      if (a_types.contains(ReportType.POSTCODE_EENVOUDIG)) {
+        String pad = a_ReportDirectory + File.separator + a_Tabname + "_StraatOverzicht_Postcode_Eenvoudig_" + datum
+            + ".pdf";
+        genereerAlleenPerPostcode(a_fotoHoofdmap, osmMapExcel, pad);
+        gegenereerd.add(pad + " (alleen per postcode)");
+      }
 
-      // Optie B: Alleen groeperen per postcode
-      LOGGER.log(Level.INFO, "Optie B: Alleen groeperen per postcode");
-      Map<String, List<StraatFotoOrganisatorPerPostcode.FotoInfo>> dataAlleenPostcode = StraatFotoOrganisatorPerPostcode
-          .organiseerAlleenPerPostcode(a_fotoHoofdmap, osmMapExcel);
+      // ---- Memo overzicht ----
+      if (a_types.contains(ReportType.MEMO_OVERZICHT)) {
+        String pad = a_ReportDirectory + File.separator + a_Tabname + "_Memo_overzicht_" + datum + ".pdf";
+        genereerMemoOverzicht(a_ExcelFile, pad);
+        gegenereerd.add(pad + " (memo overzicht)");
+      }
 
-      String pdfPadB = a_ReportDirectory + "\\" + a_Tabname + "_StraatOverzicht_Postcode_Eenvoudig_"
-          + java.time.LocalDate.now().toString().replace("-", "") + ".pdf";
-      PostcodePdfGenerator.genereerPdfPerPostcodeEenvoudig(dataAlleenPostcode, osmMapExcel, pdfPadB);
-
-      // Memo report
-      LOGGER.log(Level.INFO, "Memo rapport");
-      String pdfPadMemo = a_ReportDirectory + "\\" + a_Tabname + "_OSM Mapper - Memo overzicht_"
-          + java.time.LocalDate.now().toString().replace("-", "") + ".pdf";
-      generateMemoReport(a_ExcelFile, pdfPadMemo);
-
-      LOGGER.log(Level.INFO, "Drie PDF's gegenereerd:");
-      LOGGER.log(Level.INFO, "1. " + pdfPadA + " (gegroepeerd per postcode en straatkant)");
-      LOGGER.log(Level.INFO, "2. " + pdfPadB + " (alleen per postcode, alle nummers op volgorde)");
-      LOGGER.log(Level.INFO, "3. " + pdfPadMemo + " (uitgangsdata)");
-      LOGGER.log(Level.INFO, "De foto's zijn gegroepeerd per postcode en gesorteerd op huisnummer.");
+      LOGGER.log(Level.INFO, gegenereerd.size() + " PDF('s) gegenereerd:");
+      for (String s : gegenereerd) {
+        LOGGER.log(Level.INFO, " - " + s);
+      }
 
     } catch (Exception e) {
       LOGGER.log(Level.WARNING, "FOUT: " + e.getMessage());
@@ -67,30 +73,40 @@ public class ReportMenu {
   }
 
   // ============================================================
-  // Nieuw: memo-rapport op basis van List<MemoContent>
+  // Private helpers per rapport
   // ============================================================
-  /**
-   * Genereert een PDF-rapport met alle MemoContent entries.
-   *
-   * @param a_ExcelFile       Excel bestand
-   * @param a_ReportDirectory map waarin de PDF wordt opgeslagen
-   */
-  static public void generateMemoReport(String a_ExcelFile, String a_pdfmemo) {
-    OSMMapExcel osmMapExcel = new OSMMapExcel(a_ExcelFile);
-    List<MemoContent> a_memos = osmMapExcel.ReadExcel();
 
-    try {
-      if (a_memos == null || a_memos.isEmpty()) {
-        LOGGER.log(Level.INFO, "Geen memo's om te rapporteren.");
-        return;
-      }
+  private static void genereerPerPostcodeEnStraatkant(File fotoHoofdmap, OSMMapExcel osmMapExcel, String pad)
+      throws Exception {
+    LOGGER.log(Level.INFO, "Rapport A: per postcode en straatkant");
+    Map<String, Map<String, List<StraatFotoOrganisatorPerPostcode.FotoInfo>>> data = StraatFotoOrganisatorPerPostcode
+        .organiseerPerPostcodeEnStraatkant(fotoHoofdmap, osmMapExcel);
 
-      LOGGER.log(Level.INFO, "Memo PDF genereren naar: " + a_pdfmemo);
-      MemoPdfReporter.generateReport(a_memos, a_pdfmemo, "OSM Mapper - Memo overzicht");
-
-      LOGGER.log(Level.INFO, "Memo PDF gegenereerd: " + a_pdfmemo);
-    } catch (Exception e) {
-      LOGGER.log(Level.WARNING, "FOUT bij genereren memo-rapport: " + e.getMessage());
+    if (data.isEmpty()) {
+      LOGGER.log(Level.INFO, "Geen geldige mappen gevonden, rapport A overgeslagen.");
+      return;
     }
+    StraatFotoOrganisatorPerPostcode.toonStructuur(data);
+    PostcodePdfGenerator.genereerPdfPerPostcode(data, osmMapExcel, pad);
+  }
+
+  private static void genereerAlleenPerPostcode(File fotoHoofdmap, OSMMapExcel osmMapExcel, String pad)
+      throws Exception {
+    LOGGER.log(Level.INFO, "Rapport B: alleen per postcode");
+    Map<String, List<StraatFotoOrganisatorPerPostcode.FotoInfo>> data = StraatFotoOrganisatorPerPostcode
+        .organiseerAlleenPerPostcode(fotoHoofdmap, osmMapExcel);
+    PostcodePdfGenerator.genereerPdfPerPostcodeEenvoudig(data, osmMapExcel, pad);
+  }
+
+  private static void genereerMemoOverzicht(String excelFile, String pad) throws Exception {
+    LOGGER.log(Level.INFO, "Rapport C: memo overzicht");
+    OSMMapExcel osmMapExcel = new OSMMapExcel(excelFile);
+    List<MemoContent> memos = osmMapExcel.ReadExcel();
+
+    if (memos == null || memos.isEmpty()) {
+      LOGGER.log(Level.INFO, "Geen memo's om te rapporteren, rapport C overgeslagen.");
+      return;
+    }
+    MemoPdfReporter.generateReport(memos, pad, "OSM Mapper - Memo overzicht");
   }
 }
