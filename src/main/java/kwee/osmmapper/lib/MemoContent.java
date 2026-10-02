@@ -81,7 +81,7 @@ public class MemoContent {
 
   public String getPicturIdx() {
     if (pictureIdx.isBlank()) {
-
+      pictureIdx = "";
     }
     return pictureIdx;
   }

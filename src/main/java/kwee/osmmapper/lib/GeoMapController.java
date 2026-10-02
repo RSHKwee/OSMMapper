@@ -315,7 +315,7 @@ public class GeoMapController {
               m_excelfile = tab.getFilePath();
             }
           });
-          ReportMenu.generateReport(new File(picrootdir), m_excelfile, reportdir);
+          ReportMenu.generateReport(naam, new File(picrootdir), m_excelfile, reportdir);
         }
       }
     });
@@ -334,6 +334,7 @@ public class GeoMapController {
         }
       }
 
+      @Override
       public void mouseReleased(MouseEvent e) {
         if (e.isPopupTrigger()) {
           showContextMenu(e);

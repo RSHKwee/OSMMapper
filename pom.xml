@@ -80,6 +80,12 @@
       <artifactId>imageio-jpeg</artifactId>
       <version>${com.twelvemonkeys.imageio.imageio-jpeg.version}</version>
     </dependency>	
+    
+    <dependency>
+      <groupId>com.github.librepdf</groupId>
+      <artifactId>openpdf</artifactId>
+      <version>1.3.39</version>
+    </dependency>
   </dependencies>
 
   <build>

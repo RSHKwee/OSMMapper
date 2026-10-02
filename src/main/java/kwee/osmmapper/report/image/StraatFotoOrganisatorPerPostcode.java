@@ -1,10 +1,16 @@
 package kwee.osmmapper.report.image;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import kwee.logger.MyLogger;
 import kwee.osmmapper.lib.OSMMapExcel;
@@ -83,7 +89,7 @@ public class StraatFotoOrganisatorPerPostcode {
         String straatnaam = osmMapExcel.getStreet4ZipCode(postcode); // TODO
 
         // Haal alle foto's uit deze map
-        File[] fotoBestanden = map.listFiles((dir, naam) -> {
+        File[] fotoBestanden = map.listFiles((_, naam) -> {
           String lowercase = naam.toLowerCase();
           return lowercase.endsWith(".jpg") || lowercase.endsWith(".jpeg") || lowercase.endsWith(".png")
               || lowercase.endsWith(".gif") || lowercase.endsWith(".bmp");
@@ -195,13 +201,15 @@ public class StraatFotoOrganisatorPerPostcode {
     Map<String, List<FotoInfo>> resultaat = new TreeMap<>();
 
     File[] submappen = hoofdMap.listFiles(File::isDirectory);
-    if (submappen == null)
+    if (submappen == null) {
       return resultaat;
+    }
 
     for (File map : submappen) {
       Map<String, Object> adresInfo = extractAdresInfo(map.getName());
-      if (adresInfo == null)
+      if (adresInfo == null) {
         continue;
+      }
 
       String postcode = (String) adresInfo.get("postcode");
       int huisnummer = (int) adresInfo.get("huisnummer");

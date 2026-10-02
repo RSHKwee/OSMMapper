@@ -1,40 +1,54 @@
 package kwee.osmmapper.report.image;
 
-import org.apache.pdfbox.pdmodel.*;
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
-
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Image;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfWriter;
+
 import kwee.logger.MyLogger;
 import kwee.osmmapper.lib.OSMMapExcel;
 
 public class PostcodePdfGenerator {
   private static final Logger LOGGER = MyLogger.getLogger();
-  private static PDType1Font font = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
 
-  /**
-   * Generate PDF grouped by postal code and sorted on house number.
-   * 
-   * @param data
-   * @param osmMapExcel
-   * @param uitvoerPad
-   * @throws IOException
-   */
+  // A4 in points
+  private static final float PAGE_W = PageSize.A4.getWidth(); // 595
+  private static final float PAGE_H = PageSize.A4.getHeight(); // 842
+
+  // Layout constanten (identiek aan originele PDFBox-versie)
+  private static final float MARGIN = 50f;
+  private static final int FOTO_PER_RIJ = 2;
+  private static final float FOTO_BREEDTE = 200f;
+  private static final float FOTO_HOOGTE = 200f;
+  private static final float CEL_BREEDTE = 260f;
+  private static final float CEL_HOOGTE = 280f;
+  private static final float START_Y = 700f;
+  private static final float MIN_Y = 200f;
+
+  // ============================================================
+  // Versie 1: per postcode EN straatkant (oneven/even)
+  // ============================================================
   public static void genereerPdfPerPostcode(
       Map<String, Map<String, List<StraatFotoOrganisatorPerPostcode.FotoInfo>>> data, OSMMapExcel osmMapExcel,
       String uitvoerPad) throws IOException {
 
-    try (PDDocument document = new PDDocument()) {
-      LOGGER.log(Level.INFO, "PDF genereren per postcode...");
+    LOGGER.log(Level.INFO, "PDF genereren per postcode...");
 
-      // Verwerk elke postcode
+    Document document = new Document(PageSize.A4, MARGIN, MARGIN, MARGIN, MARGIN);
+    try {
+      PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(uitvoerPad));
+      document.open();
+
       for (Map.Entry<String, Map<String, List<StraatFotoOrganisatorPerPostcode.FotoInfo>>> postcodeEntry : data
           .entrySet()) {
 
@@ -42,280 +56,209 @@ public class PostcodePdfGenerator {
         String straatnaam = osmMapExcel.getStreet4ZipCode(postcode);
         Map<String, List<StraatFotoOrganisatorPerPostcode.FotoInfo>> straatkantData = postcodeEntry.getValue();
 
-        // Voeg sectie toe voor deze postcode
-        voegPostcodeSectieToe(document, postcode, straatnaam, straatkantData);
+        voegPostcodeSectieToe(document, writer, postcode, straatnaam, straatkantData);
       }
 
-      document.save(uitvoerPad);
+      document.close();
       LOGGER.log(Level.INFO, "PDF opgeslagen als: " + uitvoerPad);
 
-    } catch (IOException e) {
+    } catch (DocumentException e) {
       LOGGER.log(Level.WARNING, "Fout bij maken PDF: " + e.getMessage());
-      throw e;
+      throw new IOException(e);
     }
   }
 
-  /**
-   * Add complete section for postal code to document.
-   * 
-   * @param document
-   * @param postcode
-   * @param straatnaam
-   * @param straatkantData
-   * @throws IOException
-   */
-  private static void voegPostcodeSectieToe(PDDocument document, String postcode, String straatnaam,
-      Map<String, List<StraatFotoOrganisatorPerPostcode.FotoInfo>> straatkantData) throws IOException {
+  private static void voegPostcodeSectieToe(Document document, PdfWriter writer, String postcode, String straatnaam,
+      Map<String, List<StraatFotoOrganisatorPerPostcode.FotoInfo>> straatkantData)
+      throws DocumentException, IOException {
 
     LOGGER.log(Level.INFO, "  Verwerken postcode: " + postcode);
 
-    // Pagina voor postcode titel
-    PDPage titelPagina = new PDPage(PDRectangle.A4);
-    document.addPage(titelPagina);
+    // --- Titelpagina voor deze postcode ---
+    document.newPage();
+    PdfContentByte cb = writer.getDirectContent();
 
-    try (PDPageContentStream cs = new PDPageContentStream(document, titelPagina)) {
-      // Grote titel voor postcode
-      cs.beginText();
-      cs.setFont(font, 24);
-      cs.newLineAtOffset(50, 400);
-      cs.showText("POSTCODE: " + postcode + " " + straatnaam);
-      cs.endText();
+    schrijfTekst(cb, "POSTCODE: " + postcode + " " + straatnaam, 24, MARGIN, 400);
 
-      // Statistieken
-      int totaalOneven = straatkantData.get("ONEVEN").size();
-      int totaalEven = straatkantData.get("EVEN").size();
+    int totaalOneven = straatkantData.getOrDefault("ONEVEN", List.of()).size();
+    int totaalEven = straatkantData.getOrDefault("EVEN", List.of()).size();
 
-      cs.beginText();
-      cs.setFont(font, 14);
-      cs.newLineAtOffset(50, 350);
-      cs.showText(totaalOneven + " oneven huisnummers");
-      cs.newLineAtOffset(0, -25);
-      cs.showText(totaalEven + " even huisnummers");
-      cs.newLineAtOffset(0, -25);
-      cs.showText((totaalOneven + totaalEven) + " foto's totaal");
-      cs.endText();
+    schrijfTekst(cb, totaalOneven + " oneven huisnummers", 14, MARGIN, 350);
+    schrijfTekst(cb, totaalEven + " even huisnummers", 14, MARGIN, 325);
+    schrijfTekst(cb, (totaalOneven + totaalEven) + " foto's totaal", 14, MARGIN, 300);
+
+    // --- Oneven sectie ---
+    List<StraatFotoOrganisatorPerPostcode.FotoInfo> oneven = straatkantData.get("ONEVEN");
+    if (oneven != null && !oneven.isEmpty()) {
+      voegStraatkantSectieToe(document, writer, postcode, "ONEVEN HUISNUMMERS", oneven);
     }
 
-    // Eerst oneven huisnummers voor deze postcode
-    if (!straatkantData.get("ONEVEN").isEmpty()) {
-      voegStraatkantSectieToe(document, postcode, "ONEVEN HUISNUMMERS", straatkantData.get("ONEVEN"));
-    }
-
-    // Dan even huisnummers voor deze postcode
-    if (!straatkantData.get("EVEN").isEmpty()) {
-      voegStraatkantSectieToe(document, postcode, "EVEN HUISNUMMERS", straatkantData.get("EVEN"));
+    // --- Even sectie ---
+    List<StraatFotoOrganisatorPerPostcode.FotoInfo> even = straatkantData.get("EVEN");
+    if (even != null && !even.isEmpty()) {
+      voegStraatkantSectieToe(document, writer, postcode, "EVEN HUISNUMMERS", even);
     }
   }
 
-  /**
-   * Voegt een straatkant sectie toe voor een specifieke postcode
-   */
-  private static void voegStraatkantSectieToe(PDDocument document, String postcode, String straatkant,
-      List<StraatFotoOrganisatorPerPostcode.FotoInfo> fotoLijst) throws IOException {
+  private static void voegStraatkantSectieToe(Document document, PdfWriter writer, String postcode, String straatkant,
+      List<StraatFotoOrganisatorPerPostcode.FotoInfo> fotoLijst) throws DocumentException, IOException {
 
-    // Eerste pagina voor deze straatkant
-    PDPage pagina = new PDPage(PDRectangle.A4);
-    document.addPage(pagina);
-
-    try (PDPageContentStream cs = new PDPageContentStream(document, pagina)) {
-      // Titel: Postcode + Straatkant
-      cs.beginText();
-      cs.setFont(font, 18);
-      cs.newLineAtOffset(50, 750);
-      cs.showText(postcode + " - " + straatkant);
-      cs.endText();
-
-      // Foto's toevoegen
-      voegFotoToeAanPagina(cs, document, fotoLijst, 0);
-    }
-
-    // Controleer of er meer foto's zijn (voor paginering)
-    int startIndex = berekenAantalFotoVoorPagina(fotoLijst, 0);
+    int startIndex = 0;
     int paginaNummer = 1;
 
     while (startIndex < fotoLijst.size()) {
-      pagina = new PDPage(PDRectangle.A4);
-      document.addPage(pagina);
-      paginaNummer++;
+      document.newPage();
+      PdfContentByte cb = writer.getDirectContent();
 
-      try (PDPageContentStream cs = new PDPageContentStream(document, pagina)) {
-        // Titel voor vervolgpagina
-        cs.beginText();
-        cs.setFont(font, 16);
-        cs.newLineAtOffset(50, 750);
-        cs.showText(postcode + " - " + straatkant + " (vervolg pagina " + paginaNummer + ")");
-        cs.endText();
-
-        // Meer foto's toevoegen
-        startIndex = voegFotoToeAanPagina(cs, document, fotoLijst, startIndex);
+      // Titel
+      String titel = postcode + " - " + straatkant;
+      if (paginaNummer > 1) {
+        titel += " (vervolg pagina " + paginaNummer + ")";
       }
+      schrijfTekst(cb, titel, paginaNummer == 1 ? 18 : 16, MARGIN, 780);
+
+      startIndex = voegFotoToeAanPagina(cb, document, fotoLijst, startIndex);
+      paginaNummer++;
     }
   }
 
   /**
-   * Voegt foto's toe aan een pagina
+   * Voegt foto's toe aan de huidige pagina vanaf startIndex.
+   *
+   * @return de nieuwe startIndex (eerste foto die NIET meer op deze pagina paste)
    */
-  private static int voegFotoToeAanPagina(PDPageContentStream cs, PDDocument doc,
-      List<StraatFotoOrganisatorPerPostcode.FotoInfo> fotoLijst, int startIndex) throws IOException {
+  private static int voegFotoToeAanPagina(PdfContentByte cb, Document document,
+      List<StraatFotoOrganisatorPerPostcode.FotoInfo> fotoLijst, int startIndex) throws DocumentException, IOException {
 
-    float x = 50;
-    float y = 700;
-    // int fotoPerRij = 4;
-    int fotoPerRij = 2;
-    int huidigeIndex = startIndex;
+    int fotoOpPagina = 0;
 
-    while (huidigeIndex < fotoLijst.size()) {
-      StraatFotoOrganisatorPerPostcode.FotoInfo fotoInfo = fotoLijst.get(huidigeIndex);
+    for (int i = startIndex; i < fotoLijst.size(); i++) {
+      int rij = fotoOpPagina / FOTO_PER_RIJ;
+      int kolom = fotoOpPagina % FOTO_PER_RIJ;
 
-      int indexOpPagina = huidigeIndex - startIndex;
-      int rij = indexOpPagina / fotoPerRij;
-      int kolom = indexOpPagina % fotoPerRij;
+      float huidigeX = MARGIN + kolom * CEL_BREEDTE;
+      float huidigeY = START_Y - rij * CEL_HOOGTE;
 
-      // float huidigeX = x + kolom * 130;
-      // float huidigeY = y - rij * 140;
-      float huidigeX = x + kolom * 260;
-      float huidigeY = y - rij * 280;
-
-      // Stop als we onderaan de pagina zijn
-      // if (huidigeY < 100) {
-      if (huidigeY < 200) {
-        return huidigeIndex;
+      // Past deze foto nog op de pagina?
+      if (huidigeY - FOTO_HOOGTE < MIN_Y) {
+        return i; // volgende pagina
       }
 
+      StraatFotoOrganisatorPerPostcode.FotoInfo fotoInfo = fotoLijst.get(i);
+
       try {
-        // Foto toevoegen
-        PDImageXObject pdFoto = PDImageXObject.createFromFileByContent(fotoInfo.getFotoBestand(), doc);
+        Image img = Image.getInstance(fotoInfo.getFotoBestand().getAbsolutePath());
+        img.scaleAbsolute(FOTO_BREEDTE, FOTO_HOOGTE);
+        img.setAbsolutePosition(huidigeX, huidigeY - FOTO_HOOGTE);
+        document.add(img);
 
-        // cs.drawImage(pdFoto, huidigeX, huidigeY - 100, 100, 100);
-        cs.drawImage(pdFoto, huidigeX, huidigeY - 200, 200, 200);
+        // Huisnummer
+        schrijfTekst(cb, String.valueOf(fotoInfo.getHuisnummer()), 12, huidigeX, huidigeY - FOTO_HOOGTE - 15);
 
-        // Huisnummer en bestandsnaam
-        cs.beginText();
-        cs.setFont(font, 12);
-        // cs.newLineAtOffset(huidigeX, huidigeY - 115);
-        cs.newLineAtOffset(huidigeX, huidigeY - 230);
-        cs.showText(String.valueOf(fotoInfo.getHuisnummer()));
-        cs.endText();
-
-        cs.beginText();
-        cs.setFont(font, 8);
-        // cs.newLineAtOffset(huidigeX, huidigeY - 130);
-        cs.newLineAtOffset(huidigeX, huidigeY - 260);
-
+        // Bestandsnaam (afgekapt)
         String bestandsNaam = fotoInfo.getFotoBestand().getName();
         if (bestandsNaam.length() > 15) {
           bestandsNaam = bestandsNaam.substring(0, 12) + "...";
         }
-        cs.showText(bestandsNaam);
-        cs.endText();
+        schrijfTekst(cb, bestandsNaam, 8, huidigeX, huidigeY - FOTO_HOOGTE - 30);
 
       } catch (IOException e) {
         LOGGER.log(Level.WARNING, "Foto overslaan: " + fotoInfo.getFotoBestand().getPath());
       }
 
-      huidigeIndex++;
+      fotoOpPagina++;
     }
 
-    return huidigeIndex;
+    return fotoLijst.size();
   }
 
-  private static int berekenAantalFotoVoorPagina(List<StraatFotoOrganisatorPerPostcode.FotoInfo> fotoLijst,
-      int startIndex) {
-
-    float y = 700;
-//    int fotoPerRij = 4;
-    int fotoPerRij = 2;
-    // int maxRijen = (int) ((700 - 100) / 140); // 100px onderkant marge
-    int maxRijen = (int) ((700 - 200) / 280); // 100px onderkant marge
-
-    int maxFotoPerPagina = maxRijen * fotoPerRij;
-    int beschikbareFoto = fotoLijst.size() - startIndex;
-
-    return startIndex + Math.min(maxFotoPerPagina, beschikbareFoto);
-  }
-
-  /**
-   * Eenvoudigere versie: alle foto's per postcode op volgorde (zonder oneven/even
-   * scheiding)
-   */
+  // ============================================================
+  // Versie 2: eenvoudig, alleen per postcode
+  // ============================================================
   public static void genereerPdfPerPostcodeEenvoudig(Map<String, List<StraatFotoOrganisatorPerPostcode.FotoInfo>> data,
       OSMMapExcel osmMapExcel, String uitvoerPad) throws IOException {
 
-    try (PDDocument document = new PDDocument()) {
+    Document document = new Document(PageSize.A4, MARGIN, MARGIN, MARGIN, MARGIN);
+    try {
+      PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(uitvoerPad));
+      document.open();
 
       for (Map.Entry<String, List<StraatFotoOrganisatorPerPostcode.FotoInfo>> entry : data.entrySet()) {
-
         String postcode = entry.getKey();
         String straat = osmMapExcel.getStreet4ZipCode(postcode);
         List<StraatFotoOrganisatorPerPostcode.FotoInfo> fotoLijst = entry.getValue();
 
-        // Start nieuwe pagina voor elke postcode
-        PDPage pagina = new PDPage(PDRectangle.A4);
-        document.addPage(pagina);
+        document.newPage();
+        PdfContentByte cb = writer.getDirectContent();
 
-        try (PDPageContentStream cs = new PDPageContentStream(document, pagina)) {
-          // Titel
-          cs.beginText();
-          cs.setFont(font, 20);
-          cs.newLineAtOffset(50, 750);
-          cs.showText("POSTCODE: " + postcode + " " + straat);
-          cs.endText();
+        schrijfTekst(cb, "POSTCODE: " + postcode + " " + straat, 20, MARGIN, 780);
+        schrijfTekst(cb, fotoLijst.size() + " foto's, gesorteerd op huisnummer", 12, MARGIN, 750);
 
-          // Subtitle
-          cs.beginText();
-          cs.setFont(font, 12);
-          cs.newLineAtOffset(50, 720);
-          cs.showText(fotoLijst.size() + " foto's, gesorteerd op huisnummer");
-          cs.endText();
+        // Foto's in raster van 4 per rij
+        float startY = 700f;
+        int fotoTeller = 0;
+        int maxPerPagina = 12;
 
-          // Foto's in raster (4 per rij)
-          float x = 50;
-          float y = 680;
-          int fotoTeller = 0;
-
-          for (StraatFotoOrganisatorPerPostcode.FotoInfo fotoInfo : fotoLijst) {
-            if (fotoTeller >= 12)
-              break; // Max 12 per pagina
-
-            int rij = fotoTeller / 4;
-            int kolom = fotoTeller % 4;
-
-            float posX = x + kolom * 130;
-            float posY = y - rij * 140;
-
-            if (posY > 100) {
-              try {
-                PDImageXObject img = PDImageXObject.createFromFileByContent(fotoInfo.getFotoBestand(), document);
-                cs.drawImage(img, posX, posY - 100, 100, 100);
-
-                // Huisnummer
-                cs.beginText();
-                cs.setFont(font, 11);
-                cs.newLineAtOffset(posX, posY - 115);
-                cs.showText("Nr: " + fotoInfo.getHuisnummer());
-                cs.endText();
-
-                // Bestandsnaam
-                cs.beginText();
-                cs.setFont(font, 8);
-                cs.newLineAtOffset(posX, posY - 130);
-                String naam = fotoInfo.getFotoBestand().getName();
-                if (naam.length() > 12)
-                  naam = naam.substring(0, 9) + "...";
-                cs.showText(naam);
-                cs.endText();
-
-              } catch (IOException e) {
-                System.err.println("Fout: " + fotoInfo.getFotoBestand().getName());
-              }
-            }
-
-            fotoTeller++;
+        for (StraatFotoOrganisatorPerPostcode.FotoInfo fotoInfo : fotoLijst) {
+          if (fotoTeller >= maxPerPagina) {
+            break; // (zie opmerking onderaan — dit is een beperking van de originele code)
           }
+
+          int rij = fotoTeller / 4;
+          int kolom = fotoTeller % 4;
+
+          float posX = MARGIN + kolom * 130;
+          float posY = startY - rij * 140;
+
+          if (posY - 100 > 100) {
+            try {
+              Image img = Image.getInstance(fotoInfo.getFotoBestand().getAbsolutePath());
+              img.scaleAbsolute(100, 100);
+              img.setAbsolutePosition(posX, posY - 100);
+              document.add(img);
+
+              schrijfTekst(cb, "Nr: " + fotoInfo.getHuisnummer(), 11, posX, posY - 115);
+
+              String naam = fotoInfo.getFotoBestand().getName();
+              if (naam.length() > 12) {
+                naam = naam.substring(0, 9) + "...";
+              }
+              schrijfTekst(cb, naam, 8, posX, posY - 130);
+
+            } catch (IOException e) {
+              LOGGER.log(Level.WARNING, "Fout: " + fotoInfo.getFotoBestand().getName());
+            }
+          }
+
+          fotoTeller++;
         }
       }
 
-      document.save(uitvoerPad);
+      document.close();
+
+    } catch (DocumentException e) {
+      LOGGER.log(Level.WARNING, "Fout bij maken PDF: " + e.getMessage());
+      throw new IOException(e);
     }
+  }
+
+  // ============================================================
+  // Helper: tekst schrijven met directe content byte
+  // ============================================================
+  private static final BaseFont FONT;
+  static {
+    try {
+      FONT = BaseFont.createFont(BaseFont.HELVETICA_BOLD, BaseFont.WINANSI, BaseFont.NOT_EMBEDDED);
+    } catch (DocumentException | IOException e) {
+      throw new ExceptionInInitializerError(e);
+    }
+  }
+
+  private static void schrijfTekst(PdfContentByte cb, String tekst, float grootte, float x, float y) {
+    cb.beginText();
+    cb.setFontAndSize(FONT, grootte);
+    cb.setTextMatrix(x, y);
+    cb.showText(tekst);
+    cb.endText();
   }
 }
