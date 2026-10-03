@@ -1,7 +1,6 @@
 package kwee.osmmapper.report;
 
 import java.io.File;
-//import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
