@@ -329,7 +329,7 @@ public class GeoMapController {
 
       File file = fileChooser.getSelectedFile();
       LOGGER.log(Level.INFO, "ReportFolder " + file.getAbsolutePath());
-      reportdir = file.getAbsolutePath() + File.separator;
+      reportdir = file.getAbsolutePath();
       m_params.set_ReportDirectory(reportdir);
       m_params.save();
 
