@@ -18,7 +18,7 @@ AllowUNCPath=no
 CreateAppDir=yes
 DisableStartupPrompt=yes
 
-Compression=lzma2/ultra64
+Compression=zip
 SolidCompression=yes
 
 AppName={#MyAppName}

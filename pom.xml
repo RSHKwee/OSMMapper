@@ -96,7 +96,6 @@
     </resources>   
 
 	<plugins>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
@@ -148,7 +147,6 @@
           </execution>
           
           <!-- Execution 2: Maak distributie in install fase -->
-		  
           <execution>
             <id>create-distribution</id>
             <phase>deploy</phase>
@@ -214,8 +212,9 @@
                   <directory>..\BuildTools</directory>
                   <includes>
                     <include>Library.iss</include>
+                    <include>keystore.jks</include>
                   </includes>
-                  <filtering>true</filtering>
+                  <filtering>false</filtering>
                 </resource>
               </resources>
               <encoding>${project.build.sourceEncoding}</encoding>
@@ -321,7 +320,7 @@
                <headerType>console</headerType>
                <jar>${project.build.directory}/osmmapper-jar-with-dependencies.jar</jar>
                <outfile>${project.build.directory}/osmmapper.exe</outfile>
-               <downloadUrl>https://cdn.azul.com/zulu/bin/zulu22.32.21-ca-crac-jdk22.0.2-win_x64.zip</downloadUrl>
+               <downloadUrl>${downloadUrl.jre}</downloadUrl>
                <classPath>
                  <mainClass>kwee.osmmapper.main.Main</mainClass>
               </classPath>
@@ -339,6 +338,7 @@
                 <productName>${project.name}</productName>
                 <internalName>osmmapper</internalName>
                 <originalFilename>osmmapper.exe</originalFilename>
+                <companyName>${companyName}</companyName>
               </versionInfo>
             </configuration>
           </execution>
@@ -364,7 +364,7 @@
               <url>https://github.com/RSHKwee/osmmapper</url>
               <keystore>keystore.jks</keystore>
               <alias>RSHK</alias>
-              <storepass>GW93ayi0j2CfeJx9VoSo</storepass>
+              <storepass>${keystore.password}</storepass>
             </configuration>
           </execution>
           
@@ -380,10 +380,30 @@
               <url>https://github.com/RSHKwee/osmmapper</url>
               <keystore>keystore.jks</keystore>
               <alias>RSHK</alias>
-              <storepass>GW93ayi0j2CfeJx9VoSo</storepass>
+              <storepass>${keystore.password}</storepass>
             </configuration>
           </execution>
-          
+        </executions>
+      </plugin>
+
+	  <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jarsigner-plugin</artifactId>
+        <version>${maven-jarsigner-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>sign</id>
+            <phase>package</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+            <configuration>
+              <file>${project.build.directory}/osmmapper-jar-with-dependencies.jar</file>
+			  <keystore>keystore.jks</keystore>
+              <alias>RSHK</alias>
+              <storepass>${keystore.password}</storepass>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
 
@@ -460,7 +480,7 @@
           <input>${project.build.directory}</input>
           <mainJar>${project.artifactId}-jar-with-dependencies.jar</mainJar>
           <runtimeImage>${java.home}</runtimeImage>
-          <destination>${project.build.directory}/USB/Programs</destination>
+          <destination>${project.build.directory}/Programs</destination>
          
           <!-- BELANGRIJK: Verwijzen naar je custom runtime -->
           <!--       <runtimeImage>${project.basedir}/../jre</runtimeImage> -->
@@ -468,7 +488,7 @@
           <!-- Optionele metadata -->
           <appVersion>${project.version}</appVersion>
           <vendor>RSH Kwee</vendor>
-          <copyright>Copyright © 2026 RSH Kwee. Alle rechten voorbehouden.</copyright>
+          <copyright>${project.copyright.text}</copyright>
           <description>Excel Markers in OSM</description>                          
         </configuration>
       </plugin>   
@@ -486,10 +506,11 @@
                 <target>
                   <delete dir="${project.basedir}\BuildTools"/>
                   <delete file="${project.basedir}\Library.iss"/>   
-                  <delete file="${project.build.directory}\USB\Programs\OSMMapper\app\osmmapper.exe"/>
-                  <delete file="${project.build.directory}\USB\Programs\OSMMapper\app\osmmapper_v${project.version}_setup.exe"/>
-                  <delete file="${project.build.directory}\USB\Programs\OSMMapper\app\osmmapper-${project.version}.jar"/>
-                  <delete dir="${project.build.directory}\USB\Programs\OSMMapper\app\USB"/>
+                  <delete file="${project.basedir}\keystore.jks"/>   
+                  <delete file="${project.build.directory}\Programs\OSMMapper\app\osmmapper.exe"/>
+                  <delete file="${project.build.directory}\Programs\OSMMapper\app\osmmapper_v${project.version}_setup.exe"/>
+                  <delete file="${project.build.directory}\Programs\OSMMapper\app\osmmapper-${project.version}.jar"/>
+                  <delete dir="${project.build.directory}\Programs\OSMMapper\app\USB"/>
                 </target>
               </configuration>
           </execution>
