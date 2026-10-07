@@ -10,6 +10,7 @@ import kwee.osmmapper.report.ReportType;
 
 class ReportSelectionDialogTest {
 
+  // TODO
   @Test
   void beginSelectieKomtOvereenMetModel() throws Exception {
     ReportType eerste = ReportType.values()[0];
