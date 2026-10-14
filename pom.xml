@@ -83,6 +83,7 @@
     </dependency>	
   </dependencies>
 
+  <!-- Bouw instructies -->
   <build>
     <resources>
       <resource>
@@ -100,7 +101,7 @@
           <execution>
             <id>enforce-maven-version</id>
             <goals>
-             <goal>enforce</goal>
+              <goal>enforce</goal>
             </goals>
             <configuration>
               <rules>
@@ -118,11 +119,10 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>${maven-assembly-plugin.version}</version> <!-- Gebruik één versie -->
-        
         <executions>
           <!-- Execution 1: Maak uber-jar in package fase -->
           <execution>
-            <id>create-uber-jar</id>
+            <id>jar-with-deps</id>
             <phase>package</phase>
             <goals>
               <goal>single</goal>
@@ -144,20 +144,19 @@
           
           <!-- Execution 2: Maak distributie in install fase -->
           <execution>
-            <id>create-distribution</id>
-            <phase>deploy</phase>
+            <id>zip-programs</id>
+            <phase>install</phase>
             <goals>
               <goal>single</goal>
             </goals>
             <configuration>
-              <finalName>OSMMAPPER</finalName>
-              <appendAssemblyId>false</appendAssemblyId>
               <descriptors>
                 <descriptor>src/assembly/distribution.xml</descriptor>
               </descriptors>
+              <finalName>Programs-archive</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
             </configuration>
-          </execution>
-		  
+          </execution>		  
         </executions>
       </plugin>
       
@@ -365,7 +364,7 @@
           </execution>
           
           <execution>
-            <id>signinst</id>
+            <id>sign_inst</id>
             <phase>install</phase>
             <goals>
               <goal>sign</goal>
@@ -478,16 +477,14 @@
           <runtimeImage>${java.home}</runtimeImage>
           <destination>${project.build.directory}/Programs</destination>
          
-          <!-- BELANGRIJK: Verwijzen naar je custom runtime -->
-          <!--       <runtimeImage>${project.basedir}/../jre</runtimeImage> -->
-          
-          <!-- Optionele metadata -->
           <appVersion>${project.version}</appVersion>
           <vendor>RSH Kwee</vendor>
           <copyright>${project.copyright.text}</copyright>
           <description>Excel Markers in OSM</description>                          
         </configuration>
-      </plugin>   
+      </plugin>
+	  
+      <!-- Opruimen -->	  
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <version>${maven-antrun-pluginversion}</version>
@@ -510,6 +507,35 @@
                 </target>
               </configuration>
           </execution>
+           <execution>
+             <id>clean-zip</id>
+             <phase>install</phase>
+             <goals>
+               <goal>run</goal>
+             </goals>
+             <configuration>
+               <target>
+                 <!-- 1. Zip uitpakken naar tijdelijke map -->
+                 <unzip src="${project.build.directory}/Programs-archive.zip"
+                        dest="${project.build.directory}/zip-temp/usb"/>
+                 
+                 <!-- 2. Verwijder de bestanden die er niet in horen -->
+                 <delete file="${project.build.directory}/zip-temp/usb/OSMMapper/app/OSMMapper.exe"/>
+                 <delete file="${project.build.directory}/zip-temp/usb/OSMMapper/app/OSMMapper_v${project.version}_setup.exe"/>
+                 <delete file="${project.build.directory}/zip-temp/usb/OSMMapper/app/OSMMapper-${project.version}.jar"/>
+                 <delete dir="${project.build.directory}/zip-temp/usb/OSMMapper/app/Programs"/>
+                 
+                 <!-- 3. Zip opnieuw maken (oude zip wordt overschreven) -->
+                 <zip destfile="${project.build.directory}/OSMMapperStandalone-${project.version}.zip"
+                      basedir="${project.build.directory}/zip-temp"/>
+                 
+                 <!-- 4. Tijdelijke map opruimen -->
+                 <delete dir="${project.build.directory}/zip-temp"/>
+                 <delete file="${project.build.directory}/Programs-archive.zip"/>				 
+               </target>
+             </configuration>
+           </execution>	
+		  
         </executions>
       </plugin>  
     </plugins>
