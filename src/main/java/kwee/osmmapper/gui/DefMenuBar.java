@@ -1,6 +1,5 @@
 package kwee.osmmapper.gui;
 
-import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,6 +21,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import kwee.library.ApplicationMessages;
+import kwee.library.ChmOpener;
 import kwee.library.swing.AboutWindow;
 import kwee.library.swing.ShowPreferences;
 import kwee.logger.MyLogger;
@@ -278,10 +278,10 @@ public class DefMenuBar {
 
         if (helpFile.exists()) {
           try {
-            // Open the help file with the default viewer
-            Desktop.getDesktop().open(helpFile);
-          } catch (IOException e1) {
-            e1.printStackTrace();
+            LOGGER.log(Level.FINE, "Open helpfile: " + helpFile.getAbsolutePath());
+            ChmOpener.openChm(helpFile);
+          } catch (Exception e1) {
+            LOGGER.log(Level.INFO, e1.getMessage());
           }
         } else {
           LOGGER.log(Level.INFO, bundle.getMessage("HelpFileNotFound", helpFile.getAbsolutePath()));
