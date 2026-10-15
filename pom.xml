@@ -12,24 +12,24 @@
   <packaging>jar</packaging>
 
   <parent>
-	<groupId>kwee</groupId>
-	<artifactId>aggregator</artifactId>
-	<version>${revision}</version>
-	<relativePath>../pom.xml</relativePath>
+    <groupId>kwee</groupId>
+    <artifactId>aggregator</artifactId>
+    <version>${revision}</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
  
   <dependencies>
     <dependency>
-	  <groupId>kwee</groupId>
-	  <artifactId>library</artifactId>
-	  <version>${revision}</version>
-	</dependency> 
-    <dependency>
-	  <groupId>kwee.email.sender</groupId>
-	  <artifactId>emailsenderpro</artifactId>
+      <groupId>kwee</groupId>
+      <artifactId>library</artifactId>
       <version>${revision}</version>
-	</dependency>
-	
+    </dependency> 
+    <dependency>
+      <groupId>kwee.email.sender</groupId>
+      <artifactId>emailsenderpro</artifactId>
+      <version>${revision}</version>
+    </dependency>
+    
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi</artifactId>
@@ -56,20 +56,20 @@
       <artifactId>slf4j-jdk14</artifactId>
       <version>${slf4j.version}</version>
     </dependency>
-	
+    
     <dependency>
       <groupId>org.openstreetmap.gui</groupId>
       <artifactId>jmapviewer</artifactId>
       <version>${org-openstreetmap-gui-jmapviewer.version}</version>
     </dependency>
-	
+    
     <!-- Apache PDFBox voor PDF generatie -->
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>pdfbox</artifactId>
       <version>${org-apache-pdfbox-pdfbox.version}</version>
     </dependency>
-	<dependency>
+    <dependency>
       <groupId>com.github.librepdf</groupId>
       <artifactId>openpdf</artifactId>
       <version>${com.github.librepdf.openpdf.version}</version>
@@ -80,7 +80,7 @@
       <groupId>com.twelvemonkeys.imageio</groupId>
       <artifactId>imageio-jpeg</artifactId>
       <version>${com.twelvemonkeys.imageio.imageio-jpeg.version}</version>
-    </dependency>	
+    </dependency>    
   </dependencies>
 
   <!-- Bouw instructies -->
@@ -92,11 +92,11 @@
       </resource>
     </resources>   
 
-	<plugins>
+    <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>${maven-enforcer-plugin.version}</version> <!-- Gebruik een geschikte versie van de plugin -->
+        <version>${maven-enforcer-plugin.version}</version>
         <executions>
           <execution>
             <id>enforce-maven-version</id>
@@ -105,44 +105,57 @@
             </goals>
             <configuration>
               <rules>
-               <requireMavenVersion>
-                 <version>${maven.min.version}</version> <!-- Minimale Maven-versie vereist -->
+                <requireMavenVersion>
+                  <version>${maven.min.version}</version>
                 </requireMavenVersion>
               </rules>
-              <fail>false</fail> <!-- Stop de build niet bij niet-naleving -->
+              <fail>false</fail>
             </configuration>
           </execution>
         </executions>
       </plugin> 
 
+      <!-- Fat jar met alle dependencies, services-bestanden samengevoegd -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>${org-apache-maven-shade-plugin.version}</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <shadedArtifactAttached>true</shadedArtifactAttached>
+              <shadedClassifierName>jar-with-dependencies</shadedClassifierName>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>kwee.osmmapper.main.Main</mainClass>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>${maven-assembly-plugin.version}</version> <!-- Gebruik één versie -->
+        <version>${maven-assembly-plugin.version}</version>
         <executions>
-          <!-- Execution 1: Maak uber-jar in package fase -->
-          <execution>
-            <id>jar-with-deps</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <archive>
-                <manifest>
-                  <addClasspath>true</addClasspath>
-                  <mainClass>kwee.osmmapper.main.Main</mainClass>
-                </manifest>
-              </archive>
-              <descriptorRefs>
-                <descriptorRef>jar-with-dependencies</descriptorRef>
-              </descriptorRefs>
-              <finalName>osmmapper</finalName>
-              <appendAssemblyId>true</appendAssemblyId> <!-- Voegt -jar-with-dependencies toe -->
-            </configuration>
-          </execution>
-          
-          <!-- Execution 2: Maak distributie in install fase -->
           <execution>
             <id>zip-programs</id>
             <phase>install</phase>
@@ -156,18 +169,17 @@
               <finalName>Programs-archive</finalName>
               <appendAssemblyId>false</appendAssemblyId>
             </configuration>
-          </execution>		  
+          </execution>          
         </executions>
       </plugin>
       
       <!-- Distribute tools v -->
-	  <plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
         <version>${maven-resources-plugin.version}</version>
         <configuration>
-           <!-- Deze configuratie zorgt ervoor dat @...@ placeholders werken -->
-           <delimiters>
+          <delimiters>
             <delimiter>@</delimiter>
           </delimiters>
           <useDefaultDelimiters>false</useDefaultDelimiters>
@@ -215,7 +227,6 @@
               <encoding>${project.build.sourceEncoding}</encoding>
             </configuration>
           </execution>     
-	      <!-- Distribute readme.md v -->
           <execution>
             <id>readme-md</id>
             <phase>process-resources</phase>
@@ -259,7 +270,7 @@
               </resources>
               <encoding>${project.build.sourceEncoding}</encoding>
             </configuration>
-          </execution>		  
+          </execution>          
           <execution>
             <id>helpfile</id>
             <phase>package</phase>
@@ -297,32 +308,33 @@
             </configuration>
           </execution>         
         </executions>
-      </plugin>		
-	  <!-- readme.md ^ -->
-	  <!-- LAUNCH4J create executable v -->      
+      </plugin>        
+
+      <!-- LAUNCH4J create executable v -->
       <plugin>
-         <groupId>com.akathist.maven.plugins.launch4j</groupId>
-         <artifactId>launch4j-maven-plugin</artifactId>
-         <version>${launch4j-maven-plugin.version}</version>
-         <executions>
-           <execution>
-             <id>l4j-clui</id>
-             <phase>package</phase>
-             <goals>
-               <goal>launch4j</goal>
-             </goals>
-             <configuration>
-               <headerType>console</headerType>
-               <jar>${project.build.directory}/osmmapper-jar-with-dependencies.jar</jar>
-               <outfile>${project.build.directory}/osmmapper.exe</outfile>
-               <downloadUrl>${downloadUrl.jre}</downloadUrl>
-               <classPath>
-                 <mainClass>kwee.osmmapper.main.Main</mainClass>
+        <groupId>com.akathist.maven.plugins.launch4j</groupId>
+        <artifactId>launch4j-maven-plugin</artifactId>
+        <version>${launch4j-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>l4j-clui</id>
+            <phase>package</phase>
+            <goals>
+              <goal>launch4j</goal>
+            </goals>
+            <configuration>
+              <headerType>console</headerType>
+              <!-- BELANGRIJK: gebruik de fat jar, niet de dunne osmmapper.jar -->
+              <jar>${project.build.directory}/${project.artifactId}-${project.version}-jar-with-dependencies.jar</jar>
+              <outfile>${project.build.directory}/osmmapper.exe</outfile>
+              <downloadUrl>${downloadUrl.jre}</downloadUrl>
+              <classPath>
+                <mainClass>kwee.osmmapper.main.Main</mainClass>
               </classPath>
               <jre>
-	            <path>%java_home%</path>
+                <path>%java_home%</path>
               </jre>
-	  	      <icon>src/main/resources/OSMMapper.ico</icon>
+              <icon>src/main/resources/OSMMapper.ico</icon>
               <versionInfo>
                 <fileVersion>${project.version}</fileVersion>
                 <txtFileVersion>${project.version}</txtFileVersion>
@@ -339,8 +351,9 @@
           </execution>
         </executions>
       </plugin>
-	  <!-- LAUNCH4J ^ -->
-	  <!-- Sign executable v -->
+      <!-- LAUNCH4J ^ -->
+
+      <!-- Sign executable v -->
       <plugin>
         <groupId>net.jsign</groupId>
         <artifactId>jsign-maven-plugin</artifactId>
@@ -353,7 +366,6 @@
               <goal>sign</goal>
             </goals>
             <configuration>
-            <!--   <file>${project.build.directory}/osmmapper-${project.version}.exe</file> -->
               <file>${project.build.directory}/osmmapper.exe</file>
               <name>OSM Mapper</name>
               <url>https://github.com/RSHKwee/osmmapper</url>
@@ -381,7 +393,8 @@
         </executions>
       </plugin>
 
-	  <plugin>
+      <!-- Onderteken de FAT jar, niet de dunne osmmapper.jar -->
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jarsigner-plugin</artifactId>
         <version>${maven-jarsigner-plugin.version}</version>
@@ -393,26 +406,26 @@
               <goal>sign</goal>
             </goals>
             <configuration>
-              <file>${project.build.directory}/osmmapper-jar-with-dependencies.jar</file>
-			  <keystore>keystore.jks</keystore>
+              <file>${project.build.directory}/${project.artifactId}-${project.version}-jar-with-dependencies.jar</file>
+              <keystore>keystore.jks</keystore>
               <alias>RSHK</alias>
               <storepass>${keystore.password}</storepass>
             </configuration>
           </execution>
         </executions>
       </plugin>
+      <!-- Sign executable ^ -->
 
-	  <!-- Sign executable ^ -->
       <!-- Windows installers v -->    
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <version>${exec-maven-plugin.version}</version>
         <executions>
-		  <execution>
+          <execution>
             <id>osmmapperHelpEn</id>
             <phase>generate-resources</phase>
-           <goals>
+            <goals>
               <goal>exec</goal>
             </goals>          
             <configuration>
@@ -423,10 +436,10 @@
               </arguments>
             </configuration>          
           </execution>
-		  <execution>
+          <execution>
             <id>osmmapperHelpNl</id>
             <phase>generate-resources</phase>
-           <goals>
+            <goals>
               <goal>exec</goal>
             </goals>          
             <configuration>
@@ -436,11 +449,11 @@
                 <argument>osmmapper.hhp</argument>
               </arguments>
             </configuration>          
-          </execution>	  
+          </execution>      
           <execution>
             <id>innoSetup</id>
             <phase>post-integration-test</phase>
-           <goals>
+            <goals>
               <goal>exec</goal>
             </goals>          
             <configuration>
@@ -453,38 +466,37 @@
           </execution>
         </executions>
       </plugin>
-      <!-- 2. JPackage Plugin voor zelfstandige app op USB -->
+
+      <!-- JPackage Plugin voor zelfstandige app op USB -->
       <plugin>
         <groupId>org.panteleyev</groupId>
         <artifactId>jpackage-maven-plugin</artifactId>
         <version>${jpackage-maven-plugin.version}</version>
         <executions>
           <execution>
-            <!-- Voer uit na de "package" fase -->
             <phase>verify</phase>
             <goals>
               <goal>jpackage</goal>
             </goals>
           </execution>
         </executions>
-		<configuration>
+        <configuration>
           <overwrite>true</overwrite>
           <name>OSMMapper</name>
           <type>APP_IMAGE</type>
           <icon>src/main/resources/OSMMapper.ico</icon>
           <input>${project.build.directory}</input>
-          <mainJar>${project.artifactId}-jar-with-dependencies.jar</mainJar>
-          <runtimeImage>${java.home}</runtimeImage>
+          <!-- Gebruik de fat jar -->
+          <mainJar>${project.artifactId}-${project.version}-jar-with-dependencies.jar</mainJar>
           <destination>${project.build.directory}/Programs</destination>
-         
           <appVersion>${project.version}</appVersion>
           <vendor>RSH Kwee</vendor>
           <copyright>${project.copyright.text}</copyright>
           <description>Excel Markers in OSM</description>                          
         </configuration>
       </plugin>
-	  
-      <!-- Opruimen -->	  
+      
+      <!-- Opruimen -->      
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <version>${maven-antrun-pluginversion}</version>
@@ -495,59 +507,49 @@
             <goals>
               <goal>run</goal>
             </goals>
-              <configuration>
-                <target>
-                  <delete dir="${project.basedir}\BuildTools"/>
-                  <delete file="${project.basedir}\Library.iss"/>   
-                  <delete file="${project.basedir}\keystore.jks"/>   
-                  <delete file="${project.build.directory}\Programs\OSMMapper\app\osmmapper.exe"/>
-                  <delete file="${project.build.directory}\Programs\OSMMapper\app\osmmapper_v${project.version}_setup.exe"/>
-                  <delete file="${project.build.directory}\Programs\OSMMapper\app\osmmapper-${project.version}.jar"/>
-                  <delete dir="${project.build.directory}\Programs\OSMMapper\app\USB"/>
-                </target>
-              </configuration>
+            <configuration>
+              <target>
+                <delete dir="${project.basedir}\BuildTools"/>
+                <delete file="${project.basedir}\Library.iss"/>   
+                <delete file="${project.basedir}\keystore.jks"/>   
+                <delete file="${project.build.directory}\Programs\OSMMapper\app\osmmapper.exe"/>
+                <delete file="${project.build.directory}\Programs\OSMMapper\app\osmmapper_v${project.version}_setup.exe"/>
+                <delete file="${project.build.directory}\Programs\OSMMapper\app\osmmapper-${project.version}.jar"/>
+                <delete dir="${project.build.directory}\Programs\OSMMapper\app\USB"/>
+              </target>
+            </configuration>
           </execution>
-           <execution>
-             <id>clean-zip</id>
-             <phase>install</phase>
-             <goals>
-               <goal>run</goal>
-             </goals>
-             <configuration>
-               <target>
-                 <!-- 1. Zip uitpakken naar tijdelijke map -->
-                 <unzip src="${project.build.directory}/Programs-archive.zip"
-                        dest="${project.build.directory}/zip-temp/usb"/>
-                 
-                 <!-- 2. Verwijder de bestanden die er niet in horen -->
-                 <delete file="${project.build.directory}/zip-temp/usb/OSMMapper/app/OSMMapper.exe"/>
-                 <delete file="${project.build.directory}/zip-temp/usb/OSMMapper/app/OSMMapper_v${project.version}_setup.exe"/>
-                 <delete file="${project.build.directory}/zip-temp/usb/OSMMapper/app/OSMMapper-${project.version}.jar"/>
-                 <delete dir="${project.build.directory}/zip-temp/usb/OSMMapper/app/Programs"/>
-                 
-                 <!-- 3. Zip opnieuw maken (oude zip wordt overschreven) -->
-                 <zip destfile="${project.build.directory}/OSMMapperStandalone-${project.version}.zip"
-                      basedir="${project.build.directory}/zip-temp"/>
-                 
-                 <!-- 4. Tijdelijke map opruimen -->
-                 <delete dir="${project.build.directory}/zip-temp"/>
-                 <delete file="${project.build.directory}/Programs-archive.zip"/>				 
-               </target>
-             </configuration>
-           </execution>	
-		  
+          <execution>
+            <id>clean-zip</id>
+            <phase>install</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <unzip src="${project.build.directory}/Programs-archive.zip"
+                       dest="${project.build.directory}/zip-temp/usb"/>
+                <delete file="${project.build.directory}/zip-temp/usb/OSMMapper/app/OSMMapper.exe"/>
+                <delete file="${project.build.directory}/zip-temp/usb/OSMMapper/app/OSMMapper_v${project.version}_setup.exe"/>
+                <delete file="${project.build.directory}/zip-temp/usb/OSMMapper/app/OSMMapper-${project.version}.jar"/>
+                <delete dir="${project.build.directory}/zip-temp/usb/OSMMapper/app/Programs"/>
+                <zip destfile="${project.build.directory}/OSMMapperStandalone-${project.version}.zip"
+                     basedir="${project.build.directory}/zip-temp"/>
+                <delete dir="${project.build.directory}/zip-temp"/>
+                <delete file="${project.build.directory}/Programs-archive.zip"/>                 
+              </target>
+            </configuration>
+          </execution>        
         </executions>
       </plugin>  
     </plugins>
-    <!--    </pluginManagement> -->
   </build>
+
   <distributionManagement>
-    <!-- Upload to Github v-->
     <repository>
       <id>github</id>
       <name>GitHub Packages</name>
       <url>https://maven.pkg.github.com/RSHKwee/osmmapper</url>
     </repository>
-    <!-- Upload to Github ^-->
   </distributionManagement>
 </project>
