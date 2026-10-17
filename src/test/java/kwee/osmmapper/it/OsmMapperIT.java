@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import kwee.logger.MyLogger;
 
-public class MyAppIT {
+public class OsmMapperIT {
   private static final Logger LOGGER = MyLogger.getLogger();
   private String c_MainClass = "kwee.osmmapper.main.Main";
   private String c_MainClassPath = "kwee/osmmapper/main/Main.class";
