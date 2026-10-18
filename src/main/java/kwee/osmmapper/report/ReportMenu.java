@@ -1,6 +1,7 @@
 package kwee.osmmapper.report;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +16,16 @@ import kwee.osmmapper.report.image.StraatFotoOrganisatorPerPostcode;
 
 public class ReportMenu {
   private static final Logger LOGGER = MyLogger.getLogger();
+
+  static public void generateReport(String a_Tabname, File a_fotoHoofdmap, String a_ExcelFile,
+      String a_ReportDirectory) {
+    Set<ReportType> a_types = new HashSet<>();
+    a_types.add(ReportType.MEMO_OVERZICHT);
+    a_types.add(ReportType.POSTCODE_EENVOUDIG);
+    a_types.add(ReportType.POSTCODE_PER_STRAATKANT);
+
+    generateReport(a_Tabname, a_fotoHoofdmap, a_ExcelFile, a_ReportDirectory, a_types);
+  }
 
   /**
    * Genereert de geselecteerde rapporten.

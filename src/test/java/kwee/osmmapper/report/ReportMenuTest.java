@@ -71,7 +71,8 @@ class ReportMenuTest {
     // Deze test werkt alleen als je een minimale geldige Excel kunt aanmaken
     // via OSMMapExcel. Hieronder een voorbeeld met een bestaand testbestand.
     File excel = new File("src/test/resources/test-memo.xlsx");
-    org.junit.jupiter.api.Assumptions.assumeTrue(excel.exists(), "Test-Excelbestand niet aanwezig, test overgeslagen");
+    Boolean bstat = excel.exists();
+    assertTrue(bstat, "Test-Excelbestand niet aanwezig, test overgeslagen");
 
     Set<ReportType> types = EnumSet.of(ReportType.MEMO_OVERZICHT);
 
