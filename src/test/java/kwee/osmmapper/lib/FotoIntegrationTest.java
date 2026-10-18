@@ -1,6 +1,8 @@
 package kwee.osmmapper.lib;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,8 +20,8 @@ class FotoIntegrationTest {
   @Test
   void legeConstructorGeeftLegeFotosVoorAdres() {
     FotoIntegration fi = new FotoIntegration();
-    assertThat(fi.getFotosVoorAdres("1234AB12")).isEmpty();
-    assertThat(fi.getPictureRootDir()).isNull();
+    assertTrue((fi.getFotosVoorAdres("1234AB12")).isEmpty());
+    assertNull(fi.getPictureRootDir());
   }
 
   @Test
@@ -39,13 +41,13 @@ class FotoIntegrationTest {
 
     FotoIntegration fi = new FotoIntegration(tempDir.toString(), memoList);
 
-    assertThat(fi.getPictureRootDir()).isEqualTo(tempDir.toString());
-    assertThat(fi.getFotosVoorAdres("1234AB12")).hasSize(1);
+    assertEquals(tempDir.toString(), fi.getPictureRootDir());
+    assertEquals(1, fi.getFotosVoorAdres("1234AB12").size());
   }
 
   @Test
   void onbekendAdresGeeftLegeLijst() {
     FotoIntegration fi = new FotoIntegration();
-    assertThat(fi.getFotosVoorAdres("bestaatniet")).isEmpty();
+    assertTrue((fi.getFotosVoorAdres("bestaatniet")).isEmpty());
   }
 }

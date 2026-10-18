@@ -508,12 +508,6 @@
             </goals>
           </execution>
         </executions>
-        <configuration>
-          <systemPropertyVariables>
-            <!-- Het uiteindelijke JAR-pad dat Maven berekent, direct doorgeven -->
-            <built.jar.path>${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar</built.jar.path>
-          </systemPropertyVariables>
-        </configuration>
       </plugin>
       
       <!-- Opruimen -->      

@@ -1,6 +1,6 @@
 package kwee.osmmapper.lib;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;
 
@@ -12,13 +12,13 @@ class CustomMarkerTest {
   void constructorEnGettersWerken() {
     CustomMarker marker = new CustomMarker(52.0, 5.0, "Titel", "Beschrijving", "Extra", Color.RED, "1234AB12");
 
-    assertThat(marker.getLat()).isEqualTo(52.0);
-    assertThat(marker.getLon()).isEqualTo(5.0);
-    assertThat(marker.getTitle()).isEqualTo("Titel");
-    assertThat(marker.getDescription()).isEqualTo("Beschrijving");
-    assertThat(marker.getExtraInfo()).isEqualTo("Extra");
-    assertThat(marker.getPictureIndex()).isEqualTo("1234AB12");
-    assertThat(marker.getName()).isEqualTo("Titel");
+    assertEquals(52.0, marker.getLat(), 1e-9);
+    assertEquals(5.0, marker.getLon(), 1e-9);
+    assertEquals("Titel", marker.getTitle());
+    assertEquals("Beschrijving", marker.getDescription());
+    assertEquals("Extra", marker.getExtraInfo());
+    assertEquals("1234AB12", marker.getPictureIndex());
+    assertEquals("Titel", marker.getName());
   }
 
   @Test
@@ -29,9 +29,9 @@ class CustomMarkerTest {
     marker.setExtraInfo("Info");
     marker.setPictureIndex("idx");
 
-    assertThat(marker.getTitle()).isEqualTo("Nieuw");
-    assertThat(marker.getDescription()).isEqualTo("Desc");
-    assertThat(marker.getExtraInfo()).isEqualTo("Info");
-    assertThat(marker.getPictureIndex()).isEqualTo("idx");
+    assertEquals("Nieuw", marker.getTitle());
+    assertEquals("Desc", marker.getDescription());
+    assertEquals("Info", marker.getExtraInfo());
+    assertEquals("idx", marker.getPictureIndex());
   }
 }

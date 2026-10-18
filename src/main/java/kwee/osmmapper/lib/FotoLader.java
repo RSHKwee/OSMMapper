@@ -1,13 +1,20 @@
 package kwee.osmmapper.lib;
 
-import java.nio.file.*;
 import java.io.IOException;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import kwee.logger.MyLogger;
+
 public class FotoLader {
+  private static final Logger LOGGER = MyLogger.getLogger();
 
   /**
    * Haalt alle bestandsnamen op uit een directory (recursief of niet-recursief)
@@ -34,8 +41,7 @@ public class FotoLader {
       stream.close();
 
     } catch (IOException e) {
-      System.err.println("Fout bij lezen directory: " + directoryPad);
-      e.printStackTrace();
+      LOGGER.log(Level.INFO, "Fout bij lezen directory: " + directoryPad);
     }
 
     return resultaat;

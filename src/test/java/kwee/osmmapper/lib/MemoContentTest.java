@@ -1,6 +1,10 @@
 package kwee.osmmapper.lib;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 
@@ -11,14 +15,16 @@ class MemoContentTest {
   @Test
   void nieuwObjectIsLeeg() {
     MemoContent memo = new MemoContent();
-    assertThat(memo.isEmpty()).isTrue();
+    assertTrue(memo.isEmpty());
   }
 
   @Test
   void nietLeegNaSetVanEenVeld() {
     MemoContent memo = new MemoContent();
     memo.setStreet("Kerkstraat");
-    assertThat(memo.isEmpty()).isFalse();
+    assertFalse(memo.isEmpty());
+
+    assertFalse(memo.isEmpty());
   }
 
   @Test
@@ -32,40 +38,40 @@ class MemoContentTest {
 
     Address address = memo.getAddress();
 
-    assertThat(address.getStreet()).isEqualTo("Kerkstraat");
-    assertThat(address.getHousenumber()).isEqualTo("12");
-    assertThat(address.getPostalcode()).isEqualTo("1234AB");
-    assertThat(address.getCity()).isEqualTo("Amsterdam");
-    assertThat(address.getCountry()).isEqualTo("Nederland");
+    assertEquals("Kerkstraat", address.getStreet());
+    assertEquals("12", address.getHousenumber());
+    assertEquals("1234AB", address.getPostalcode());
+    assertEquals("Amsterdam", address.getCity());
+    assertEquals("Nederland", address.getCountry());
   }
 
   @Test
   void setColorMetStringGebruiktColorConverter() {
     MemoContent memo = new MemoContent();
     memo.setColor("RED");
-    assertThat(memo.getColor()).isEqualTo(Color.RED);
+    assertEquals(Color.RED, memo.getColor());
 
     memo.setColor("onbekend");
-    assertThat(memo.getColor()).isNull();
+    assertNull(memo.getColor());
   }
 
   @Test
   void setClorWerkt() {
     MemoContent memo = new MemoContent();
     memo.setClor(Color.BLUE);
-    assertThat(memo.getColor()).isEqualTo(Color.BLUE);
+    assertEquals(Color.BLUE, memo.getColor());
   }
 
   @Test
   void standaardCoordinatenZijnUndefined() {
     MemoContent memo = new MemoContent();
-    assertThat(memo.getLatitude()).isEqualTo(Const.c_LongLatUndefined);
-    assertThat(memo.getLongitude()).isEqualTo(Const.c_LongLatUndefined);
+    assertEquals(Const.c_LongLatUndefined, memo.getLatitude(), 1e-9);
+    assertEquals(Const.c_LongLatUndefined, memo.getLongitude(), 1e-9);
   }
 
   @Test
   void pictureIdxIsNooitNull() {
     MemoContent memo = new MemoContent();
-    assertThat(memo.getPicturIdx()).isNotNull().isEmpty();
+    assertNotNull(memo.getPicturIdx());
   }
 }

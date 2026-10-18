@@ -1,6 +1,6 @@
 package kwee.osmmapper.lib;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -13,13 +13,13 @@ class CustomJULHandlerTest {
   void publishGooitGeenExceptie() {
     CustomJULHandler handler = new CustomJULHandler();
     LogRecord record = new LogRecord(Level.INFO, "test");
-    assertThatCode(() -> handler.publish(record)).doesNotThrowAnyException();
+    assertDoesNotThrow(() -> handler.publish(record));
   }
 
   @Test
   void flushEnCloseGooienGeenExceptie() {
     CustomJULHandler handler = new CustomJULHandler();
-    assertThatCode(handler::flush).doesNotThrowAnyException();
-    assertThatCode(handler::close).doesNotThrowAnyException();
+    assertDoesNotThrow(handler::flush);
+    assertDoesNotThrow(handler::close);
   }
 }

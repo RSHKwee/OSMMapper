@@ -1,6 +1,7 @@
 package kwee.osmmapper.lib;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.awt.Color;
 
@@ -10,35 +11,35 @@ class ColorConverterTest {
 
   @Test
   void nullOfLeegGeeftNull() {
-    assertThat(ColorConverter.getColor(null)).isNull();
-    assertThat(ColorConverter.getColor("")).isNull();
-    assertThat(ColorConverter.getColor("   ")).isNull();
+    assertNull(ColorConverter.getColor(null));
+    assertNull(ColorConverter.getColor(""));
+    assertNull(ColorConverter.getColor("   "));
   }
 
   @Test
   void standaardKleurWordtGevonden() {
-    assertThat(ColorConverter.getColor("RED")).isEqualTo(Color.RED);
-    assertThat(ColorConverter.getColor("red")).isEqualTo(Color.RED);
-    assertThat(ColorConverter.getColor("Red")).isEqualTo(Color.RED);
+    assertEquals(Color.RED, ColorConverter.getColor("RED"));
+    assertEquals(Color.RED, ColorConverter.getColor("red"));
+    assertEquals(Color.RED, ColorConverter.getColor("Red"));
   }
 
   @Test
   void underscoresEnSpatiesWordenGenegeerd() {
-    assertThat(ColorConverter.getColor("LIGHT GRAY")).isEqualTo(Color.LIGHT_GRAY);
-    assertThat(ColorConverter.getColor("LIGHT_GRAY")).isEqualTo(Color.LIGHT_GRAY);
-    assertThat(ColorConverter.getColor("light-gray")).isEqualTo(Color.LIGHT_GRAY);
+    assertEquals(Color.LIGHT_GRAY, ColorConverter.getColor("LIGHT GRAY"));
+    assertEquals(Color.LIGHT_GRAY, ColorConverter.getColor("LIGHT_GRAY"));
+    assertEquals(Color.LIGHT_GRAY, ColorConverter.getColor("light-gray"));
   }
 
   @Test
   void extraWebKleurenWerken() {
-    assertThat(ColorConverter.getColor("MAROON")).isEqualTo(new Color(128, 0, 0));
-    assertThat(ColorConverter.getColor("GREY")).isEqualTo(Color.GRAY);
-    assertThat(ColorConverter.getColor("FUCHSIA")).isEqualTo(Color.MAGENTA);
-    assertThat(ColorConverter.getColor("AQUA")).isEqualTo(Color.CYAN);
+    assertEquals(new Color(128, 0, 0), ColorConverter.getColor("MAROON"));
+    assertEquals(Color.GRAY, ColorConverter.getColor("GREY"));
+    assertEquals(Color.MAGENTA, ColorConverter.getColor("FUCHSIA"));
+    assertEquals(Color.CYAN, ColorConverter.getColor("AQUA"));
   }
 
   @Test
   void onbekendeKleurGeeftNull() {
-    assertThat(ColorConverter.getColor("NIETBESTAANDEKLEUR")).isNull();
+    assertNull(ColorConverter.getColor("NIETBESTAANDEKLEUR"));
   }
 }

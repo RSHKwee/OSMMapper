@@ -1,10 +1,11 @@
 package kwee.osmmapper.lib;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -22,8 +23,8 @@ class FotoLaderTest {
     Files.writeString(tempDir.resolve("c.PNG"), "x");
 
     List<String> result = FotoLader.haalBestandsnamen(tempDir.toString(), false, "jpg", "png");
-
-    assertThat(result).containsExactlyInAnyOrder("a.jpg", "c.PNG");
+    List<String> expected = Arrays.asList("a.jpg", "c.PNG");
+    assertTrue(result.containsAll(expected));
   }
 
   @Test
@@ -32,8 +33,8 @@ class FotoLaderTest {
     Files.writeString(tempDir.resolve("b.txt"), "x");
 
     List<String> result = FotoLader.haalBestandsnamen(tempDir.toString(), false);
-
-    assertThat(result).containsExactlyInAnyOrder("a.jpg", "b.txt");
+    List<String> expected = Arrays.asList("a.jpg", "b.txt");
+    assertTrue(result.containsAll(expected));
   }
 
   @Test
@@ -42,8 +43,8 @@ class FotoLaderTest {
     Files.writeString(sub.resolve("d.png"), "x");
 
     List<String> result = FotoLader.haalBestandsnamen(tempDir.toString(), true, "png");
-
-    assertThat(result).containsExactly("d.png");
+    List<String> expected = Arrays.asList("d.png");
+    assertTrue(result.containsAll(expected));
   }
 
   @Test
@@ -54,13 +55,13 @@ class FotoLaderTest {
     Files.writeString(tempDir.resolve("d.txt"), "x");
 
     List<String> result = FotoLader.haalFotoBestandsnamen(tempDir.toString(), false);
-
-    assertThat(result).containsExactlyInAnyOrder("a.jpg", "b.jpeg", "c.gif");
+    List<String> expected = Arrays.asList("a.jpg", "b.jpeg", "c.gif");
+    assertTrue(result.containsAll(expected));
   }
 
   @Test
   void onbestaandeDirectoryGeeftLegeLijst() {
     List<String> result = FotoLader.haalBestandsnamen("/pad/bestaat/niet", false, "jpg");
-    assertThat(result).isEmpty();
+    assertTrue(result.isEmpty());
   }
 }

@@ -1,6 +1,7 @@
 package kwee.osmmapper.lib;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,11 +17,11 @@ class AddressTest {
 
   @Test
   void defaultsZijnLegeStrings() {
-    assertThat(address.getStreet()).isEmpty();
-    assertThat(address.getHousenumber()).isEmpty();
-    assertThat(address.getPostalcode()).isEmpty();
-    assertThat(address.getCity()).isEmpty();
-    assertThat(address.getCountry()).isEmpty();
+    assertTrue((address.getStreet()).isEmpty());
+    assertTrue((address.getHousenumber()).isEmpty());
+    assertTrue((address.getPostalcode()).isEmpty());
+    assertTrue((address.getCity()).isEmpty());
+    assertTrue((address.getCountry()).isEmpty());
   }
 
   @Test
@@ -31,11 +32,11 @@ class AddressTest {
     address.setCity("Amsterdam");
     address.setCountry("Nederland");
 
-    assertThat(address.getStreet()).isEqualTo("Kerkstraat");
-    assertThat(address.getHousenumber()).isEqualTo("12a");
-    assertThat(address.getPostalcode()).isEqualTo("1234AB");
-    assertThat(address.getCity()).isEqualTo("Amsterdam");
-    assertThat(address.getCountry()).isEqualTo("Nederland");
+    assertEquals("Kerkstraat", address.getStreet());
+    assertEquals("12a", address.getHousenumber());
+    assertEquals("1234AB", address.getPostalcode());
+    assertEquals("Amsterdam", address.getCity());
+    assertEquals("Nederland", address.getCountry());
   }
 
   @Test
@@ -46,6 +47,6 @@ class AddressTest {
     address.setCity("Amsterdam");
     address.setCountry("Nederland");
 
-    assertThat(address.toString()).isEqualTo("Kerkstraat; 12a; 1234AB; Amsterdam; Nederland");
+    assertEquals("Kerkstraat; 12a; 1234AB; Amsterdam; Nederland", address.toString());
   }
 }

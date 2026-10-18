@@ -1,6 +1,9 @@
 package kwee.osmmapper.lib;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,17 +17,17 @@ class TabInfoTest {
   void defaultConstructorGenereertUniekId() {
     TabInfo a = new TabInfo();
     TabInfo b = new TabInfo();
-    assertThat(a.getId()).isNotBlank();
-    assertThat(b.getId()).isNotBlank();
-    assertThat(a.getId()).isNotEqualTo(b.getId());
+    assertFalse(a.getId().isBlank());
+    assertFalse(b.getId().isBlank());
+    assertNotEquals(a.getId(), b.getId());
   }
 
   @Test
   void constructorMetArgumentenVultVelden() {
     TabInfo tab = new TabInfo("/tmp/x.xlsx", "Titel", "/fotos");
-    assertThat(tab.getFilePath()).isEqualTo("/tmp/x.xlsx");
-    assertThat(tab.getTitle()).isEqualTo("Titel");
-    assertThat(tab.getFotodirectory()).isEqualTo("/fotos");
+    assertEquals("/tmp/x.xlsx", tab.getFilePath());
+    assertEquals("Titel", tab.getTitle());
+    assertEquals("/fotos", tab.getFotodirectory());
   }
 
   @Test
@@ -38,19 +41,19 @@ class TabInfoTest {
     tab.setProjects("p");
     tab.setFotodirectory("d");
 
-    assertThat(tab.getFilePath()).isEqualTo("f");
-    assertThat(tab.getTitle()).isEqualTo("t");
-    assertThat(tab.getLatitude()).isEqualTo(52.1);
-    assertThat(tab.getLongtitude()).isEqualTo(5.2);
-    assertThat(tab.getZoomfactor()).isEqualTo(12);
-    assertThat(tab.getProjects()).isEqualTo("p");
-    assertThat(tab.getFotodirectory()).isEqualTo("d");
+    assertEquals("f", tab.getFilePath());
+    assertEquals("t", tab.getTitle());
+    assertEquals(52.1, tab.getLatitude());
+    assertEquals(5.2, tab.getLongtitude());
+    assertEquals(12, tab.getZoomfactor());
+    assertEquals("p", tab.getProjects());
+    assertEquals("d", tab.getFotodirectory());
   }
 
   @Test
   void verwijderDuplicatenOpFileOpNullOfLeeg() {
-    assertThat(TabInfo.verwijderDuplicatenOpFile(null)).isEmpty();
-    assertThat(TabInfo.verwijderDuplicatenOpFile(new ArrayList<>())).isEmpty();
+    assertTrue(TabInfo.verwijderDuplicatenOpFile(null).isEmpty());
+    assertTrue(TabInfo.verwijderDuplicatenOpFile(new ArrayList<>()).isEmpty());
   }
 
   @Test
@@ -61,14 +64,14 @@ class TabInfoTest {
 
     List<TabInfo> result = TabInfo.verwijderDuplicatenOpFile(Arrays.asList(a1, a2, b));
 
-    assertThat(result).hasSize(2);
-    assertThat(result).extracting(TabInfo::getTitle).containsExactly("A", "B");
-    assertThat(result.get(0).getFilePath()).isEqualTo("f1"); // eerste behouden
+    assertEquals(2, result.size());
+    assertEquals(Arrays.asList("A", "B"), result.stream().map(TabInfo::getTitle).toList());
+    assertEquals("f1", result.get(0).getFilePath()); // eerste behouden
   }
 
   @Test
   void hashCodeIsConsistentMetId() {
     TabInfo tab = new TabInfo();
-    assertThat(tab.hashCode()).isEqualTo(tab.hashCode());
+    assertEquals(tab.hashCode(), tab.hashCode());
   }
 }
